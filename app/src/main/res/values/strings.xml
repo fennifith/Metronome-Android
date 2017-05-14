@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Metronome</string>
+
+    <string name="bpm">%1$s BPM</string>
+</resources>
