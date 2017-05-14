@@ -2,4 +2,9 @@
     <string name="app_name">Metronome</string>
 
     <string name="bpm">%1$s BPM</string>
+
+    <string name="title_beep">Beep</string>
+    <string name="title_click">Click</string>
+    <string name="title_ding">Ding</string>
+    <string name="title_wood">Wood</string>
 </resources>

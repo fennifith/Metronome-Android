@@ -3,20 +3,17 @@ package james.metronome.activities;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.support.v4.animation.ValueAnimatorCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -36,10 +33,10 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     public static final String PREF_INTERVAL = "interval";
 
     public static final TickData[] ticks = new TickData[]{
-            new TickData("Beep", R.raw.beep),
-            new TickData("Click", R.raw.click),
-            new TickData("Ding", R.raw.ding),
-            new TickData("Wood", R.raw.wood)
+            new TickData(R.string.title_beep, R.raw.beep),
+            new TickData(R.string.title_click, R.raw.click),
+            new TickData(R.string.title_ding, R.raw.ding),
+            new TickData(R.string.title_wood, R.raw.wood)
     };
 
     private SoundPool soundPool;
@@ -209,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                 }
             });
 
-            ((TextView) v.findViewById(R.id.name)).setText(ticks[i].getName());
+            ((TextView) v.findViewById(R.id.name)).setText(ticks[i].getName(this));
             if (i != tick)
                 v.setVisibility(View.GONE);
 
