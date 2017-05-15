@@ -22,7 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_gravity="bottom"
-        android:background="@drawable/border_top"
+        android:background="?android:colorBackground"
         android:gravity="center">
 
         <ImageView
@@ -31,6 +31,7 @@
             android:layout_height="56dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="centerInside"
+            android:tint="?android:textColorPrimary"
             app:srcCompat="@drawable/ic_less" />
 
         <TextView
@@ -47,16 +48,25 @@
             android:layout_height="56dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="centerInside"
+            android:tint="?android:textColorPrimary"
             app:srcCompat="@drawable/ic_more" />
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/ticks"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:animateLayoutChanges="true"
-        android:background="@drawable/border_bottom"
-        android:orientation="vertical" />
+        android:layout_gravity="top"
+        android:background="?android:colorBackground">
+
+        <LinearLayout
+            android:id="@+id/ticks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:background="@drawable/border_bottom"
+            android:orientation="vertical" />
+
+    </FrameLayout>
 
 </FrameLayout>

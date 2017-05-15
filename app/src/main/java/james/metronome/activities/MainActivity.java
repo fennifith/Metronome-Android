@@ -12,13 +12,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.afollestad.aesthetic.Aesthetic;
+import com.afollestad.aesthetic.AestheticActivity;
 
 import java.util.Locale;
 
@@ -27,7 +29,7 @@ import james.metronome.data.TickData;
 import james.metronome.utils.WhileHeldListener;
 import james.metronome.views.MetronomeView;
 
-public class MainActivity extends AppCompatActivity implements Runnable {
+public class MainActivity extends AestheticActivity implements Runnable {
 
     public static final String PREF_TICK = "tick";
     public static final String PREF_INTERVAL = "interval";
@@ -60,6 +62,16 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        if (Aesthetic.isFirstTime()) {
+            Aesthetic.get()
+                    .colorPrimaryRes(R.color.colorPrimary)
+                    .colorAccentRes(R.color.colorAccent)
+                    .colorWindowBackgroundRes(R.color.colorBackground)
+                    .colorStatusBarAuto()
+                    .colorNavigationBarAuto()
+                    .apply();
+        }
 
         metronomeView = (MetronomeView) findViewById(R.id.metronome);
         playView = (ImageView) findViewById(R.id.play);
