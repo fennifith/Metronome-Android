@@ -5,6 +5,7 @@
     <color name="colorPrimaryDark">#212121</color>
     <color name="colorPrimaryAmoled">#000000</color>
     <color name="colorAccent">#FF5252</color>
+    <color name="colorAccentDark">#FFFFFF</color>
     <color name="colorBorder">#30000000</color>
     <color name="colorBorderDark">#20FFFFFF</color>
     <color name="colorBackground">#FAFAFA</color>

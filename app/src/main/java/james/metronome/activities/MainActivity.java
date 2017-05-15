@@ -1,9 +1,7 @@
 package james.metronome.activities;
 
-import android.animation.ArgbEvaluator;
-import android.animation.ValueAnimator;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -11,12 +9,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.support.v4.content.ContextCompat;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.afollestad.aesthetic.Aesthetic;
@@ -28,8 +23,10 @@ import james.metronome.R;
 import james.metronome.data.TickData;
 import james.metronome.utils.WhileHeldListener;
 import james.metronome.views.MetronomeView;
+import james.metronome.views.TicksView;
+import rx.functions.Action1;
 
-public class MainActivity extends AestheticActivity implements Runnable {
+public class MainActivity extends AestheticActivity implements Runnable, TicksView.OnTickChangedListener {
 
     public static final String PREF_TICK = "tick";
     public static final String PREF_INTERVAL = "interval";
@@ -55,13 +52,49 @@ public class MainActivity extends AestheticActivity implements Runnable {
     private MetronomeView metronomeView;
     private ImageView playView;
     private TextView bpmView;
-    private LinearLayout ticksLayout;
+    private TicksView ticksView;
+    private ImageView aboutView;
+
+    private Integer colorAccent;
+    private Integer textColorPrimary;
+    private Integer textColorPrimaryInverse;
+    private int aboutViewColor = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        Aesthetic.get()
+                .colorAccent()
+                .take(1)
+                .subscribe(new Action1<Integer>() {
+                    @Override
+                    public void call(Integer integer) {
+                        colorAccent = integer;
+                    }
+                });
+
+        Aesthetic.get()
+                .textColorPrimary()
+                .take(1)
+                .subscribe(new Action1<Integer>() {
+                    @Override
+                    public void call(Integer integer) {
+                        textColorPrimary = integer;
+                    }
+                });
+
+        Aesthetic.get()
+                .textColorPrimaryInverse()
+                .take(1)
+                .subscribe(new Action1<Integer>() {
+                    @Override
+                    public void call(Integer integer) {
+                        textColorPrimaryInverse = integer;
+                    }
+                });
 
         if (Aesthetic.isFirstTime()) {
             Aesthetic.get()
@@ -78,7 +111,8 @@ public class MainActivity extends AestheticActivity implements Runnable {
         bpmView = (TextView) findViewById(R.id.bpm);
         View lessView = findViewById(R.id.less);
         View moreView = findViewById(R.id.more);
-        ticksLayout = (LinearLayout) findViewById(R.id.ticks);
+        ticksView = (TicksView) findViewById(R.id.ticks);
+        aboutView = (ImageView) findViewById(R.id.about);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             soundPool = new SoundPool.Builder()
@@ -107,6 +141,13 @@ public class MainActivity extends AestheticActivity implements Runnable {
                 if (isPlaying)
                     pause();
                 else play();
+            }
+        });
+
+        aboutView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, AboutActivity.class));
             }
         });
 
@@ -142,88 +183,7 @@ public class MainActivity extends AestheticActivity implements Runnable {
             }
         });
 
-        LayoutInflater inflater = LayoutInflater.from(this);
-        for (int i = 0; i < ticks.length; i++) {
-            View v = inflater.inflate(R.layout.item_tick, ticksLayout, false);
-            v.setTag(i);
-            v.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int position = (int) v.getTag();
-                    if (isExpanded) {
-                        if (tick != position) {
-                            tick = position;
-                            soundId = ticks[tick].getSoundId(MainActivity.this, soundPool);
-                            prefs.edit().putInt(PREF_TICK, tick).apply();
-
-                            if (!isPlaying)
-                                soundPool.play(soundId, 1.0f, 1.0f, 0, 0, 1.0f);
-                        }
-
-                        isExpanded = false;
-                        for (int i = 0; i < ticksLayout.getChildCount(); i++) {
-                            final View view = ticksLayout.getChildAt(i);
-
-                            if (view.findViewById(R.id.background).getAlpha() == 1) {
-                                ValueAnimator animator = ValueAnimator.ofObject(new ArgbEvaluator(), Color.WHITE, Color.BLACK);
-                                animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                                    @Override
-                                    public void onAnimationUpdate(ValueAnimator animation) {
-                                        view.findViewById(R.id.background).setAlpha(1 - animation.getAnimatedFraction());
-                                        ((TextView) view.findViewById(R.id.name)).setTextColor((int) animation.getAnimatedValue());
-                                    }
-                                });
-                                animator.start();
-
-                                ValueAnimator animator2 = ValueAnimator.ofObject(new ArgbEvaluator(), Color.WHITE, ContextCompat.getColor(MainActivity.this, R.color.colorAccent));
-                                animator2.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                                    @Override
-                                    public void onAnimationUpdate(ValueAnimator animation) {
-                                        ((ImageView) view.findViewById(R.id.image)).setColorFilter((int) animation.getAnimatedValue());
-                                    }
-                                });
-                                animator2.start();
-                            }
-
-                            if (tick != i)
-                                view.setVisibility(View.GONE);
-                        }
-                    } else {
-                        isExpanded = true;
-                        for (int i = 0; i < ticksLayout.getChildCount(); i++) {
-                            final View view = ticksLayout.getChildAt(i);
-                            view.setVisibility(View.VISIBLE);
-                            if (tick == i) {
-                                ValueAnimator animator = ValueAnimator.ofObject(new ArgbEvaluator(), Color.BLACK, Color.WHITE);
-                                animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                                    @Override
-                                    public void onAnimationUpdate(ValueAnimator animation) {
-                                        view.findViewById(R.id.background).setAlpha(animation.getAnimatedFraction());
-                                        ((TextView) view.findViewById(R.id.name)).setTextColor((int) animation.getAnimatedValue());
-                                    }
-                                });
-                                animator.start();
-
-                                ValueAnimator animator2 = ValueAnimator.ofObject(new ArgbEvaluator(), ContextCompat.getColor(MainActivity.this, R.color.colorAccent), Color.WHITE);
-                                animator2.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                                    @Override
-                                    public void onAnimationUpdate(ValueAnimator animation) {
-                                        ((ImageView) view.findViewById(R.id.image)).setColorFilter((int) animation.getAnimatedValue());
-                                    }
-                                });
-                                animator2.start();
-                            }
-                        }
-                    }
-                }
-            });
-
-            ((TextView) v.findViewById(R.id.name)).setText(ticks[i].getName(this));
-            if (i != tick)
-                v.setVisibility(View.GONE);
-
-            ticksLayout.addView(v);
-        }
+        ticksView.setListener(this);
     }
 
     private static int toBpm(long interval) {
@@ -252,6 +212,20 @@ public class MainActivity extends AestheticActivity implements Runnable {
         bpmView.setText(String.format(Locale.getDefault(), getString(R.string.bpm), String.valueOf(bpm)));
 
         prefs.edit().putLong(PREF_INTERVAL, interval).apply();
+    }
+
+    @Override
+    public void onTickChanged(int tick) {
+        soundId = ticks[tick].getSoundId(MainActivity.this, soundPool);
+        prefs.edit().putInt(MainActivity.PREF_TICK, tick).apply();
+
+        if (!isPlaying)
+            soundPool.play(soundId, 1.0f, 1.0f, 0, 0, 1.0f);
+    }
+
+    @Override
+    public void onAboutViewColorChanged(int color) {
+        aboutView.setColorFilter(color);
     }
 
     @Override

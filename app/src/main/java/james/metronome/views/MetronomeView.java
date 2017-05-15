@@ -6,16 +6,20 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
+
+import com.afollestad.aesthetic.Aesthetic;
+
+import rx.functions.Action1;
 
 public class MetronomeView extends View {
 
     private Paint paint;
     private long interval = 500;
     private float distance;
+
+    private Integer color;
 
     public MetronomeView(Context context) {
         this(context, null);
@@ -27,12 +31,21 @@ public class MetronomeView extends View {
 
     public MetronomeView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
         paint = new Paint();
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(1);
         paint.setAntiAlias(true);
         paint.setColor(Color.BLACK);
+
+        Aesthetic.get()
+                .textColorSecondary()
+                .take(1)
+                .subscribe(new Action1<Integer>() {
+                    @Override
+                    public void call(Integer integer) {
+                        paint.setColor(integer);
+                    }
+                });
     }
 
     public void setInterval(long interval) {

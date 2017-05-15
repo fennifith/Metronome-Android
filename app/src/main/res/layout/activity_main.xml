@@ -20,7 +20,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="?attr/actionBarSize"
         android:layout_gravity="bottom"
         android:background="?android:colorBackground"
         android:gravity="center">
@@ -59,7 +59,7 @@
         android:layout_gravity="top"
         android:background="?android:colorBackground">
 
-        <LinearLayout
+        <james.metronome.views.TicksView
             android:id="@+id/ticks"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -68,5 +68,15 @@
             android:orientation="vertical" />
 
     </FrameLayout>
+
+    <ImageView
+        android:id="@+id/about"
+        android:layout_width="?attr/actionBarSize"
+        android:layout_height="?attr/actionBarSize"
+        android:tint="?android:textColorPrimary"
+        android:scaleType="centerInside"
+        android:layout_gravity="top|end"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:srcCompat="@drawable/ic_info" />
 
 </FrameLayout>
