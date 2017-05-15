@@ -14,11 +14,17 @@ import android.widget.TextView;
 import com.afollestad.aesthetic.Aesthetic;
 
 import james.metronome.R;
-import james.metronome.activities.MainActivity;
+import james.metronome.data.TickData;
 import rx.functions.Action1;
 
 public class TicksView extends LinearLayout {
 
+    public static final TickData[] ticks = new TickData[]{
+            new TickData(R.string.title_beep, R.raw.beep),
+            new TickData(R.string.title_click, R.raw.click),
+            new TickData(R.string.title_ding, R.raw.ding),
+            new TickData(R.string.title_wood, R.raw.wood)
+    };
     private OnTickChangedListener listener;
 
     private boolean isExpanded;
@@ -71,7 +77,7 @@ public class TicksView extends LinearLayout {
                 });
 
         LayoutInflater inflater = LayoutInflater.from(getContext());
-        for (int i = 0; i < MainActivity.ticks.length; i++) {
+        for (int i = 0; i < ticks.length; i++) {
             View v = inflater.inflate(R.layout.item_tick, this, false);
             v.setTag(i);
             v.setOnClickListener(new View.OnClickListener() {
@@ -154,11 +160,18 @@ public class TicksView extends LinearLayout {
                 }
             });
 
-            ((TextView) v.findViewById(R.id.name)).setText(MainActivity.ticks[i].getName(getContext()));
+            ((TextView) v.findViewById(R.id.name)).setText(ticks[i].getName(getContext()));
             if (i != tick)
                 v.setVisibility(View.GONE);
 
             addView(v);
+        }
+    }
+
+    public void setTick(int tick) {
+        this.tick = tick;
+        for (int i = 0; i < getChildCount(); i++) {
+            getChildAt(i).setVisibility(i == tick ? View.VISIBLE : View.GONE);
         }
     }
 
@@ -168,7 +181,6 @@ public class TicksView extends LinearLayout {
 
     public interface OnTickChangedListener {
         void onTickChanged(int tick);
-
         void onAboutViewColorChanged(int color);
     }
 

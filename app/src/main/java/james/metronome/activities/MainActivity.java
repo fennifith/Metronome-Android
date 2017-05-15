@@ -20,81 +20,34 @@ import com.afollestad.aesthetic.AestheticActivity;
 import java.util.Locale;
 
 import james.metronome.R;
-import james.metronome.data.TickData;
 import james.metronome.utils.WhileHeldListener;
 import james.metronome.views.MetronomeView;
 import james.metronome.views.TicksView;
-import rx.functions.Action1;
 
 public class MainActivity extends AestheticActivity implements Runnable, TicksView.OnTickChangedListener {
 
     public static final String PREF_TICK = "tick";
     public static final String PREF_INTERVAL = "interval";
 
-    public static final TickData[] ticks = new TickData[]{
-            new TickData(R.string.title_beep, R.raw.beep),
-            new TickData(R.string.title_click, R.raw.click),
-            new TickData(R.string.title_ding, R.raw.ding),
-            new TickData(R.string.title_wood, R.raw.wood)
-    };
-
     private SoundPool soundPool;
     private Handler handler;
     private int soundId = -1;
     private boolean isPlaying;
-    private boolean isExpanded;
 
     private SharedPreferences prefs;
-    private int tick;
     private int bpm;
     private long interval;
 
     private MetronomeView metronomeView;
     private ImageView playView;
     private TextView bpmView;
-    private TicksView ticksView;
     private ImageView aboutView;
-
-    private Integer colorAccent;
-    private Integer textColorPrimary;
-    private Integer textColorPrimaryInverse;
-    private int aboutViewColor = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-        Aesthetic.get()
-                .colorAccent()
-                .take(1)
-                .subscribe(new Action1<Integer>() {
-                    @Override
-                    public void call(Integer integer) {
-                        colorAccent = integer;
-                    }
-                });
-
-        Aesthetic.get()
-                .textColorPrimary()
-                .take(1)
-                .subscribe(new Action1<Integer>() {
-                    @Override
-                    public void call(Integer integer) {
-                        textColorPrimary = integer;
-                    }
-                });
-
-        Aesthetic.get()
-                .textColorPrimaryInverse()
-                .take(1)
-                .subscribe(new Action1<Integer>() {
-                    @Override
-                    public void call(Integer integer) {
-                        textColorPrimaryInverse = integer;
-                    }
-                });
 
         if (Aesthetic.isFirstTime()) {
             Aesthetic.get()
@@ -111,7 +64,7 @@ public class MainActivity extends AestheticActivity implements Runnable, TicksVi
         bpmView = (TextView) findViewById(R.id.bpm);
         View lessView = findViewById(R.id.less);
         View moreView = findViewById(R.id.more);
-        ticksView = (TicksView) findViewById(R.id.ticks);
+        TicksView ticksView = (TicksView) findViewById(R.id.ticks);
         aboutView = (ImageView) findViewById(R.id.about);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -123,8 +76,9 @@ public class MainActivity extends AestheticActivity implements Runnable, TicksVi
                     .build();
         } else soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
 
-        tick = prefs.getInt(PREF_TICK, 0);
-        soundId = ticks[tick].getSoundId(this, soundPool);
+        int tick = prefs.getInt(PREF_TICK, 0);
+        soundId = TicksView.ticks[tick].getSoundId(this, soundPool);
+        ticksView.setTick(tick);
 
         interval = prefs.getLong(PREF_INTERVAL, 500);
         bpm = toBpm(interval);
@@ -216,7 +170,7 @@ public class MainActivity extends AestheticActivity implements Runnable, TicksVi
 
     @Override
     public void onTickChanged(int tick) {
-        soundId = ticks[tick].getSoundId(MainActivity.this, soundPool);
+        soundId = TicksView.ticks[tick].getSoundId(MainActivity.this, soundPool);
         prefs.edit().putInt(MainActivity.PREF_TICK, tick).apply();
 
         if (!isPlaying)
