@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -229,6 +230,7 @@ public class MainActivity extends AestheticActivity implements Runnable, TicksVi
                 .subscribe(new Action1<Integer>() {
                     @Override
                     public void call(Integer integer) {
+                        DrawableCompat.setTint(seekBar.getProgressDrawable(), integer);
                         playView.setColorFilter(integer);
                         moreView.setColorFilter(integer);
                         lessView.setColorFilter(integer);

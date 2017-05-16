@@ -59,8 +59,10 @@ public class AboutActivity extends AestheticActivity implements ThemesView.OnThe
                 .subscribe(new Action1<Integer>() {
                     @Override
                     public void call(Integer integer) {
-                        if (toolbar != null)
+                        if (toolbar != null) {
                             toolbar.setTitleTextColor(integer);
+                            DrawableCompat.setTint(toolbar.getBackground(), integer);
+                        }
 
                         ActionBar actionBar = getSupportActionBar();
                         if (actionBar != null) {

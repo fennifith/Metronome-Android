@@ -54,14 +54,6 @@
 
     </LinearLayout>
 
-    <android.support.v7.widget.AppCompatSeekBar
-        android:id="@+id/seekBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:max="300"
-        android:layout_marginBottom="?attr/actionBarSize" />
-
     <FrameLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
@@ -83,10 +75,19 @@
         android:id="@+id/about"
         android:layout_width="?attr/actionBarSize"
         android:layout_height="?attr/actionBarSize"
-        android:tint="?android:textColorPrimary"
-        android:scaleType="centerInside"
         android:layout_gravity="top|end"
         android:background="?attr/selectableItemBackgroundBorderless"
+        android:scaleType="centerInside"
+        android:tint="?android:textColorPrimary"
         app:srcCompat="@drawable/ic_info" />
+
+    <james.metronome.views.CenteredSeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="?attr/actionBarSize"
+        android:max="300"
+        android:progressDrawable="@drawable/progress" />
 
 </FrameLayout>

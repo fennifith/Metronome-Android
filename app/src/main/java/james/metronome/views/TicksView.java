@@ -4,6 +4,7 @@ import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -165,6 +166,7 @@ public class TicksView extends LinearLayout {
                     @Override
                     public void call(Integer integer) {
                         textColorPrimary = integer;
+                        DrawableCompat.setTint(getBackground(), integer);
                         for (int i = 0; i < getChildCount(); i++) {
                             View v = getChildAt(i);
                             if (!isExpanded || tick != i)
