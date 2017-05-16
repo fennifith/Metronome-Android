@@ -30,6 +30,7 @@ public class AboutActivity extends AestheticActivity implements ThemesView.OnThe
     private View iconView;
     private ThemesView themesView;
     private View buttonsView;
+    private View librariesView;
 
     private Subscription textColorPrimarySubscription;
 
@@ -48,6 +49,8 @@ public class AboutActivity extends AestheticActivity implements ThemesView.OnThe
         View donateView = findViewById(R.id.donate);
         View githubView = findViewById(R.id.github);
         View playView = findViewById(R.id.play);
+        librariesView = findViewById(R.id.libraries);
+        View aesthetic = findViewById(R.id.aesthetic);
 
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -78,6 +81,13 @@ public class AboutActivity extends AestheticActivity implements ThemesView.OnThe
             }
         });
 
+        aesthetic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/afollestad/aesthetic")));
+            }
+        });
+
         subscribe();
     }
 
@@ -90,11 +100,12 @@ public class AboutActivity extends AestheticActivity implements ThemesView.OnThe
                 .subscribe(new Action1<Integer>() {
                     @Override
                     public void call(Integer integer) {
-                        if (toolbar != null && iconView != null && buttonsView != null) {
+                        if (toolbar != null && iconView != null && buttonsView != null && librariesView != null) {
                             toolbar.setTitleTextColor(integer);
                             DrawableCompat.setTint(toolbar.getBackground(), integer);
                             DrawableCompat.setTint(iconView.getBackground(), integer);
                             DrawableCompat.setTint(buttonsView.getBackground(), integer);
+                            DrawableCompat.setTint(librariesView.getBackground(), integer);
                         }
 
                         ActionBar actionBar = getSupportActionBar();

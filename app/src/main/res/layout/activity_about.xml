@@ -40,6 +40,8 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:textAlignment="center"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
                 android:text="@string/app_name"
                 android:textColor="?android:textColorPrimary"
                 android:textSize="24sp" />
@@ -72,6 +74,7 @@
                 android:background="@drawable/border_bottom"
                 android:gravity="center_horizontal"
                 android:orientation="horizontal"
+                android:layout_marginBottom="8dp"
                 android:paddingBottom="8dp"
                 android:paddingTop="8dp">
 
@@ -94,6 +97,53 @@
                     android:text="@string/action_play_store" />
 
             </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:text="@string/title_libraries"
+                android:textColor="?android:textColorPrimary"
+                android:textSize="24sp" />
+
+            <LinearLayout
+                android:id="@+id/aesthetic"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:orientation="vertical"
+                android:background="?attr/selectableItemBackground">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:text="@string/library_aesthetic"
+                    android:textColor="?android:textColorPrimary"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:text="@string/library_aesthetic_desc"
+                    android:textColor="?android:textColorSecondary"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <View
+                android:id="@+id/libraries"
+                android:layout_width="match_parent"
+                android:layout_height="1dip"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/border_bottom" />
 
             <james.metronome.views.ThemesView
                 android:id="@+id/themes"
