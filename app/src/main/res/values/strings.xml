@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">Metronome</string>
+    <string name="app_desc">Metronome is a simple metronome app that is designed to be easy to use and look nice. To keep this app free to use without ads and support the development of other apps like it, please consider making a donation using the button below.</string>
+
+    <string name="action_donate">Donate</string>
+    <string name="action_github">GitHub</string>
+    <string name="action_play_store">Play Store</string>
 
     <string name="bpm">%1$s BPM</string>
 
