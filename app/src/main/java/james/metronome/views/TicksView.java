@@ -51,51 +51,6 @@ public class TicksView extends LinearLayout {
     public TicksView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        colorAccentSubscription = Aesthetic.get()
-                .colorAccent()
-                .subscribe(new Action1<Integer>() {
-                    @Override
-                    public void call(Integer integer) {
-                        colorAccent = integer;
-                        for (int i = 0; i < getChildCount(); i++) {
-                            View v = getChildAt(i);
-                            v.findViewById(R.id.background).setBackgroundColor(integer);
-                            if (!isExpanded || tick != i)
-                                ((ImageView) v.findViewById(R.id.image)).setColorFilter(integer);
-                        }
-                    }
-                });
-
-        textColorPrimarySubscription = Aesthetic.get()
-                .textColorPrimary()
-                .subscribe(new Action1<Integer>() {
-                    @Override
-                    public void call(Integer integer) {
-                        textColorPrimary = integer;
-                        for (int i = 0; i < getChildCount(); i++) {
-                            View v = getChildAt(i);
-                            if (!isExpanded || tick != i)
-                                ((TextView) v.findViewById(R.id.name)).setTextColor(integer);
-                        }
-                    }
-                });
-
-        textColorPrimaryInverseSubscription = Aesthetic.get()
-                .textColorPrimaryInverse()
-                .subscribe(new Action1<Integer>() {
-                    @Override
-                    public void call(Integer integer) {
-                        textColorPrimaryInverse = integer;
-                        for (int i = 0; i < getChildCount(); i++) {
-                            View v = getChildAt(i);
-                            if (isExpanded && tick == i) {
-                                ((TextView) v.findViewById(R.id.name)).setTextColor(integer);
-                                ((ImageView) v.findViewById(R.id.image)).setColorFilter(integer);
-                            }
-                        }
-                    }
-                });
-
         LayoutInflater inflater = LayoutInflater.from(getContext());
         for (int i = 0; i < ticks.length; i++) {
             View v = inflater.inflate(R.layout.item_tick, this, false);
@@ -188,6 +143,59 @@ public class TicksView extends LinearLayout {
         }
     }
 
+    public void subscribe() {
+        colorAccentSubscription = Aesthetic.get()
+                .colorAccent()
+                .subscribe(new Action1<Integer>() {
+                    @Override
+                    public void call(Integer integer) {
+                        colorAccent = integer;
+                        for (int i = 0; i < getChildCount(); i++) {
+                            View v = getChildAt(i);
+                            v.findViewById(R.id.background).setBackgroundColor(integer);
+                            if (!isExpanded || tick != i)
+                                ((ImageView) v.findViewById(R.id.image)).setColorFilter(integer);
+                        }
+                    }
+                });
+
+        textColorPrimarySubscription = Aesthetic.get()
+                .textColorPrimary()
+                .subscribe(new Action1<Integer>() {
+                    @Override
+                    public void call(Integer integer) {
+                        textColorPrimary = integer;
+                        for (int i = 0; i < getChildCount(); i++) {
+                            View v = getChildAt(i);
+                            if (!isExpanded || tick != i)
+                                ((TextView) v.findViewById(R.id.name)).setTextColor(integer);
+                        }
+                    }
+                });
+
+        textColorPrimaryInverseSubscription = Aesthetic.get()
+                .textColorPrimaryInverse()
+                .subscribe(new Action1<Integer>() {
+                    @Override
+                    public void call(Integer integer) {
+                        textColorPrimaryInverse = integer;
+                        for (int i = 0; i < getChildCount(); i++) {
+                            View v = getChildAt(i);
+                            if (isExpanded && tick == i) {
+                                ((TextView) v.findViewById(R.id.name)).setTextColor(integer);
+                                ((ImageView) v.findViewById(R.id.image)).setColorFilter(integer);
+                            }
+                        }
+                    }
+                });
+    }
+
+    public void unsubscribe() {
+        colorAccentSubscription.unsubscribe();
+        textColorPrimarySubscription.unsubscribe();
+        textColorPrimaryInverseSubscription.unsubscribe();
+    }
+
     public void setTick(int tick) {
         this.tick = tick;
         for (int i = 0; i < getChildCount(); i++) {
@@ -204,11 +212,4 @@ public class TicksView extends LinearLayout {
         void onAboutViewColorChanged(int color);
     }
 
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        colorAccentSubscription.unsubscribe();
-        textColorPrimarySubscription.unsubscribe();
-        textColorPrimaryInverseSubscription.unsubscribe();
-    }
 }

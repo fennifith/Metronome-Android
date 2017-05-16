@@ -24,6 +24,8 @@ import james.metronome.utils.WhileHeldListener;
 import james.metronome.views.MetronomeView;
 import james.metronome.views.ThemesView;
 import james.metronome.views.TicksView;
+import rx.Subscription;
+import rx.functions.Action1;
 
 public class MainActivity extends AestheticActivity implements Runnable, TicksView.OnTickChangedListener {
 
@@ -43,6 +45,12 @@ public class MainActivity extends AestheticActivity implements Runnable, TicksVi
     private ImageView playView;
     private TextView bpmView;
     private ImageView aboutView;
+    private ImageView lessView;
+    private ImageView moreView;
+    private TicksView ticksView;
+
+    private Subscription colorBackgroundSubscription;
+    private Subscription textColorPrimarySubscription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,9 +64,9 @@ public class MainActivity extends AestheticActivity implements Runnable, TicksVi
         metronomeView = (MetronomeView) findViewById(R.id.metronome);
         playView = (ImageView) findViewById(R.id.play);
         bpmView = (TextView) findViewById(R.id.bpm);
-        View lessView = findViewById(R.id.less);
-        View moreView = findViewById(R.id.more);
-        TicksView ticksView = (TicksView) findViewById(R.id.ticks);
+        lessView = (ImageView) findViewById(R.id.less);
+        moreView = (ImageView) findViewById(R.id.more);
+        ticksView = (TicksView) findViewById(R.id.ticks);
         aboutView = (ImageView) findViewById(R.id.about);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -132,6 +140,7 @@ public class MainActivity extends AestheticActivity implements Runnable, TicksVi
         });
 
         ticksView.setListener(this);
+        subscribe();
     }
 
     private static int toBpm(long interval) {
@@ -176,9 +185,55 @@ public class MainActivity extends AestheticActivity implements Runnable, TicksVi
         aboutView.setColorFilter(color);
     }
 
+    public void subscribe() {
+        if (metronomeView != null && ticksView != null) {
+            metronomeView.subscribe();
+            ticksView.subscribe();
+        }
+
+        colorBackgroundSubscription = Aesthetic.get()
+                .colorWindowBackground()
+                .subscribe(new Action1<Integer>() {
+                    @Override
+                    public void call(Integer integer) {
+                        findViewById(R.id.topBar).setBackgroundColor(integer);
+                        findViewById(R.id.bottomBar).setBackgroundColor(integer);
+                    }
+                });
+
+        textColorPrimarySubscription = Aesthetic.get()
+                .textColorPrimary()
+                .subscribe(new Action1<Integer>() {
+                    @Override
+                    public void call(Integer integer) {
+                        playView.setColorFilter(integer);
+                        moreView.setColorFilter(integer);
+                        lessView.setColorFilter(integer);
+                        aboutView.setColorFilter(integer);
+                    }
+                });
+    }
+
+    public void unsubscribe() {
+        if (metronomeView != null && ticksView != null) {
+            metronomeView.unsubscribe();
+            ticksView.unsubscribe();
+        }
+
+        colorBackgroundSubscription.unsubscribe();
+        textColorPrimarySubscription.unsubscribe();
+    }
+
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
+        subscribe();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unsubscribe();
     }
 
     @Override

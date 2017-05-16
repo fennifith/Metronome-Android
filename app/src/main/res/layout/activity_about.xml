@@ -8,7 +8,8 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@drawable/border_bottom" />
+        android:background="@drawable/border_bottom"
+        android:tag=":aesthetic_ignore" />
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"

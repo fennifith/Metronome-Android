@@ -38,14 +38,22 @@ public class MetronomeView extends View {
         paint.setAntiAlias(true);
         paint.setColor(Color.BLACK);
 
+        subscribe();
+    }
+
+    public void subscribe() {
         subscription = Aesthetic.get()
-                .textColorSecondary()
+                .textColorPrimary()
                 .subscribe(new Action1<Integer>() {
                     @Override
                     public void call(Integer integer) {
                         paint.setColor(integer);
                     }
                 });
+    }
+
+    public void unsubscribe() {
+        subscription.unsubscribe();
     }
 
     public void setInterval(long interval) {
@@ -71,11 +79,5 @@ public class MetronomeView extends View {
         super.onDraw(canvas);
         paint.setAlpha((int) (255 * (1 - distance)));
         canvas.drawCircle(canvas.getWidth() / 2, canvas.getHeight() / 2, distance * Math.max(canvas.getWidth(), canvas.getHeight()) / 2, paint);
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        subscription.unsubscribe();
     }
 }

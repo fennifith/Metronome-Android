@@ -27,6 +27,8 @@ public class ThemesView extends LinearLayout {
             new ThemeData(R.string.title_theme_amoled, R.color.colorPrimaryAmoled, R.color.colorAccentDark, R.color.colorPrimaryAmoled)
     };
 
+    private OnThemeChangedListener listener;
+
     private boolean isExpanded;
     private int theme;
 
@@ -49,51 +51,6 @@ public class ThemesView extends LinearLayout {
     public ThemesView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        colorAccentSubscription = Aesthetic.get()
-                .colorAccent()
-                .subscribe(new Action1<Integer>() {
-                    @Override
-                    public void call(Integer integer) {
-                        colorAccent = integer;
-                        for (int i = 0; i < getChildCount(); i++) {
-                            View v = getChildAt(i);
-                            v.findViewById(R.id.background).setBackgroundColor(integer);
-                            if (!isExpanded || theme != i)
-                                ((ImageView) v.findViewById(R.id.image)).setColorFilter(integer);
-                        }
-                    }
-                });
-
-        textColorPrimarySubscription = Aesthetic.get()
-                .textColorPrimary()
-                .subscribe(new Action1<Integer>() {
-                    @Override
-                    public void call(Integer integer) {
-                        textColorPrimary = integer;
-                        for (int i = 0; i < getChildCount(); i++) {
-                            View v = getChildAt(i);
-                            if (!isExpanded || theme != i)
-                                ((TextView) v.findViewById(R.id.name)).setTextColor(integer);
-                        }
-                    }
-                });
-
-        textColorPrimaryInverseSubscription = Aesthetic.get()
-                .textColorPrimaryInverse()
-                .subscribe(new Action1<Integer>() {
-                    @Override
-                    public void call(Integer integer) {
-                        textColorPrimaryInverse = integer;
-                        for (int i = 0; i < getChildCount(); i++) {
-                            View v = getChildAt(i);
-                            if (isExpanded && theme == i) {
-                                ((TextView) v.findViewById(R.id.name)).setTextColor(integer);
-                                ((ImageView) v.findViewById(R.id.image)).setColorFilter(integer);
-                            }
-                        }
-                    }
-                });
-
         LayoutInflater inflater = LayoutInflater.from(getContext());
         for (int i = 0; i < themes.length; i++) {
             View v = inflater.inflate(R.layout.item_theme, this, false);
@@ -103,9 +60,10 @@ public class ThemesView extends LinearLayout {
                 public void onClick(View v) {
                     final int position = (int) v.getTag();
                     if (isExpanded) {
-                        if (theme != position) {
+                        if (theme != position && listener != null) {
                             theme = position;
                             themes[theme].apply(getContext());
+                            listener.onThemeChanged(position);
                         }
 
                         isExpanded = false;
@@ -174,6 +132,63 @@ public class ThemesView extends LinearLayout {
         }
     }
 
+    public void subscribe() {
+        colorAccentSubscription = Aesthetic.get()
+                .colorAccent()
+                .subscribe(new Action1<Integer>() {
+                    @Override
+                    public void call(Integer integer) {
+                        colorAccent = integer;
+                        for (int i = 0; i < getChildCount(); i++) {
+                            View v = getChildAt(i);
+                            v.findViewById(R.id.background).setBackgroundColor(integer);
+                            if (!isExpanded || theme != i)
+                                ((ImageView) v.findViewById(R.id.image)).setColorFilter(integer);
+                        }
+                    }
+                });
+
+        textColorPrimarySubscription = Aesthetic.get()
+                .textColorPrimary()
+                .subscribe(new Action1<Integer>() {
+                    @Override
+                    public void call(Integer integer) {
+                        textColorPrimary = integer;
+                        for (int i = 0; i < getChildCount(); i++) {
+                            View v = getChildAt(i);
+                            if (!isExpanded || theme != i)
+                                ((TextView) v.findViewById(R.id.name)).setTextColor(integer);
+                        }
+                    }
+                });
+
+        textColorPrimaryInverseSubscription = Aesthetic.get()
+                .textColorPrimaryInverse()
+                .subscribe(new Action1<Integer>() {
+                    @Override
+                    public void call(Integer integer) {
+                        textColorPrimaryInverse = integer;
+                        for (int i = 0; i < getChildCount(); i++) {
+                            View v = getChildAt(i);
+                            if (isExpanded && theme == i) {
+                                ((TextView) v.findViewById(R.id.name)).setTextColor(integer);
+                                ((ImageView) v.findViewById(R.id.image)).setColorFilter(integer);
+                            }
+                        }
+                    }
+                });
+    }
+
+    public void unsubscribe() {
+        colorAccentSubscription.unsubscribe();
+        textColorPrimarySubscription.unsubscribe();
+        textColorPrimaryInverseSubscription.unsubscribe();
+    }
+
+    public void setListener(OnThemeChangedListener listener) {
+        this.listener = listener;
+    }
+
     public void setTheme(int theme) {
         this.theme = theme;
         for (int i = 0; i < getChildCount(); i++) {
@@ -181,12 +196,8 @@ public class ThemesView extends LinearLayout {
         }
     }
 
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        colorAccentSubscription.unsubscribe();
-        textColorPrimarySubscription.unsubscribe();
-        textColorPrimaryInverseSubscription.unsubscribe();
+    public interface OnThemeChangedListener {
+        void onThemeChanged(int theme);
     }
 
 }
