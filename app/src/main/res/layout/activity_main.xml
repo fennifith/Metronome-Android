@@ -54,6 +54,14 @@
 
     </LinearLayout>
 
+    <android.support.v7.widget.AppCompatSeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:max="300"
+        android:layout_marginBottom="?attr/actionBarSize" />
+
     <FrameLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"

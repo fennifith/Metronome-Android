@@ -12,6 +12,7 @@ import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.afollestad.aesthetic.Aesthetic;
@@ -48,6 +49,7 @@ public class MainActivity extends AestheticActivity implements Runnable, TicksVi
     private ImageView lessView;
     private ImageView moreView;
     private TicksView ticksView;
+    private SeekBar seekBar;
 
     private Subscription colorBackgroundSubscription;
     private Subscription textColorPrimarySubscription;
@@ -68,6 +70,7 @@ public class MainActivity extends AestheticActivity implements Runnable, TicksVi
         moreView = (ImageView) findViewById(R.id.more);
         ticksView = (TicksView) findViewById(R.id.ticks);
         aboutView = (ImageView) findViewById(R.id.about);
+        seekBar = (SeekBar) findViewById(R.id.seekBar);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             soundPool = new SoundPool.Builder()
@@ -85,6 +88,8 @@ public class MainActivity extends AestheticActivity implements Runnable, TicksVi
         interval = prefs.getLong(PREF_INTERVAL, 500);
         bpm = toBpm(interval);
         metronomeView.setInterval(interval);
+        seekBar.setProgress(bpm);
+        seekBar.setPadding(0, 0, 0, 0);
         bpmView.setText(String.format(Locale.getDefault(), getString(R.string.bpm), String.valueOf(bpm)));
 
         handler = new Handler();
@@ -111,7 +116,7 @@ public class MainActivity extends AestheticActivity implements Runnable, TicksVi
             @Override
             public void onClick(View v) {
                 if (bpm < 300)
-                    setBpm(++bpm);
+                    seekBar.setProgress(++bpm);
             }
         });
 
@@ -119,7 +124,7 @@ public class MainActivity extends AestheticActivity implements Runnable, TicksVi
             @Override
             public void onHeld() {
                 if (bpm < 300)
-                    setBpm(++bpm);
+                    seekBar.setProgress(++bpm);
             }
         });
 
@@ -127,7 +132,7 @@ public class MainActivity extends AestheticActivity implements Runnable, TicksVi
             @Override
             public void onClick(View v) {
                 if (bpm > 1)
-                    setBpm(--bpm);
+                    seekBar.setProgress(--bpm);
             }
         });
 
@@ -135,7 +140,25 @@ public class MainActivity extends AestheticActivity implements Runnable, TicksVi
             @Override
             public void onHeld() {
                 if (bpm > 1)
-                    setBpm(--bpm);
+                    seekBar.setProgress(--bpm);
+            }
+        });
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (progress > 0) {
+                    bpm = progress;
+                    setBpm(progress);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
             }
         });
 
