@@ -14,41 +14,39 @@ import android.widget.TextView;
 import com.afollestad.aesthetic.Aesthetic;
 
 import james.metronome.R;
-import james.metronome.data.TickData;
+import james.metronome.data.ThemeData;
 import rx.Subscription;
 import rx.functions.Action1;
 
-public class TicksView extends LinearLayout {
+public class ThemesView extends LinearLayout {
 
-    public static final TickData[] ticks = new TickData[]{
-            new TickData(R.string.title_beep, R.raw.beep),
-            new TickData(R.string.title_click, R.raw.click),
-            new TickData(R.string.title_ding, R.raw.ding),
-            new TickData(R.string.title_wood, R.raw.wood)
+    public static final ThemeData[] themes = new ThemeData[]{
+            new ThemeData(R.string.title_theme_light, R.color.colorPrimary, R.color.colorAccent, R.color.colorBackground),
+            new ThemeData(R.string.title_theme_wood, R.color.colorPrimaryWood, R.color.colorAccentDark, R.color.colorPrimaryWood),
+            new ThemeData(R.string.title_theme_dark, R.color.colorPrimaryDark, R.color.colorAccentDark, R.color.colorBackgroundDark),
+            new ThemeData(R.string.title_theme_amoled, R.color.colorPrimaryAmoled, R.color.colorAccentDark, R.color.colorPrimaryAmoled)
     };
-    private OnTickChangedListener listener;
 
     private boolean isExpanded;
-    private int tick;
+    private int theme;
 
     private Integer colorAccent;
     private Integer textColorPrimary;
     private Integer textColorPrimaryInverse;
-    private int aboutViewColor;
 
     private Subscription colorAccentSubscription;
     private Subscription textColorPrimarySubscription;
     private Subscription textColorPrimaryInverseSubscription;
 
-    public TicksView(Context context) {
+    public ThemesView(Context context) {
         this(context, null);
     }
 
-    public TicksView(Context context, @Nullable AttributeSet attrs) {
+    public ThemesView(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public TicksView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public ThemesView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         colorAccentSubscription = Aesthetic.get()
@@ -60,7 +58,7 @@ public class TicksView extends LinearLayout {
                         for (int i = 0; i < getChildCount(); i++) {
                             View v = getChildAt(i);
                             v.findViewById(R.id.background).setBackgroundColor(integer);
-                            if (!isExpanded || tick != i)
+                            if (!isExpanded || theme != i)
                                 ((ImageView) v.findViewById(R.id.image)).setColorFilter(integer);
                         }
                     }
@@ -74,7 +72,7 @@ public class TicksView extends LinearLayout {
                         textColorPrimary = integer;
                         for (int i = 0; i < getChildCount(); i++) {
                             View v = getChildAt(i);
-                            if (!isExpanded || tick != i)
+                            if (!isExpanded || theme != i)
                                 ((TextView) v.findViewById(R.id.name)).setTextColor(integer);
                         }
                     }
@@ -88,7 +86,7 @@ public class TicksView extends LinearLayout {
                         textColorPrimaryInverse = integer;
                         for (int i = 0; i < getChildCount(); i++) {
                             View v = getChildAt(i);
-                            if (isExpanded && tick == i) {
+                            if (isExpanded && theme == i) {
                                 ((TextView) v.findViewById(R.id.name)).setTextColor(integer);
                                 ((ImageView) v.findViewById(R.id.image)).setColorFilter(integer);
                             }
@@ -97,17 +95,17 @@ public class TicksView extends LinearLayout {
                 });
 
         LayoutInflater inflater = LayoutInflater.from(getContext());
-        for (int i = 0; i < ticks.length; i++) {
-            View v = inflater.inflate(R.layout.item_tick, this, false);
+        for (int i = 0; i < themes.length; i++) {
+            View v = inflater.inflate(R.layout.item_theme, this, false);
             v.setTag(i);
-            v.setOnClickListener(new View.OnClickListener() {
+            v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     final int position = (int) v.getTag();
                     if (isExpanded) {
-                        if (tick != position && listener != null) {
-                            tick = position;
-                            listener.onTickChanged(tick);
+                        if (theme != position) {
+                            theme = position;
+                            themes[theme].apply(getContext());
                         }
 
                         isExpanded = false;
@@ -119,14 +117,8 @@ public class TicksView extends LinearLayout {
                                 animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                                     @Override
                                     public void onAnimationUpdate(ValueAnimator animation) {
-                                        int color = (int) animation.getAnimatedValue();
-
                                         view.findViewById(R.id.background).setAlpha(1 - animation.getAnimatedFraction());
-                                        ((TextView) view.findViewById(R.id.name)).setTextColor(color);
-                                        if (aboutViewColor != textColorPrimary && listener != null) {
-                                            listener.onAboutViewColorChanged(color);
-                                            aboutViewColor = color;
-                                        }
+                                        ((TextView) view.findViewById(R.id.name)).setTextColor((int) animation.getAnimatedValue());
                                     }
                                 });
                                 animator.start();
@@ -141,7 +133,7 @@ public class TicksView extends LinearLayout {
                                 animator2.start();
                             }
 
-                            if (tick != i)
+                            if (theme != i)
                                 view.setVisibility(View.GONE);
                         }
                     } else {
@@ -149,19 +141,13 @@ public class TicksView extends LinearLayout {
                         for (int i = 0; i < getChildCount(); i++) {
                             final View view = getChildAt(i);
                             view.setVisibility(View.VISIBLE);
-                            if (tick == i) {
+                            if (theme == i) {
                                 ValueAnimator animator = ValueAnimator.ofObject(new ArgbEvaluator(), textColorPrimary, textColorPrimaryInverse);
                                 animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                                     @Override
                                     public void onAnimationUpdate(ValueAnimator animation) {
-                                        int color = (int) animation.getAnimatedValue();
-
                                         view.findViewById(R.id.background).setAlpha(animation.getAnimatedFraction());
-                                        ((TextView) view.findViewById(R.id.name)).setTextColor(color);
-                                        if (position == 0 && listener != null) {
-                                            listener.onAboutViewColorChanged(color);
-                                            aboutViewColor = color;
-                                        }
+                                        ((TextView) view.findViewById(R.id.name)).setTextColor((int) animation.getAnimatedValue());
                                     }
                                 });
                                 animator.start();
@@ -180,28 +166,19 @@ public class TicksView extends LinearLayout {
                 }
             });
 
-            ((TextView) v.findViewById(R.id.name)).setText(ticks[i].getName(getContext()));
-            if (i != tick)
+            ((TextView) v.findViewById(R.id.name)).setText(themes[i].getName(getContext()));
+            if (i != theme)
                 v.setVisibility(View.GONE);
 
             addView(v);
         }
     }
 
-    public void setTick(int tick) {
-        this.tick = tick;
+    public void setTheme(int theme) {
+        this.theme = theme;
         for (int i = 0; i < getChildCount(); i++) {
-            getChildAt(i).setVisibility(i == tick ? View.VISIBLE : View.GONE);
+            getChildAt(i).setVisibility(i == theme ? View.VISIBLE : View.GONE);
         }
-    }
-
-    public void setListener(OnTickChangedListener listener) {
-        this.listener = listener;
-    }
-
-    public interface OnTickChangedListener {
-        void onTickChanged(int tick);
-        void onAboutViewColorChanged(int color);
     }
 
     @Override
@@ -211,4 +188,5 @@ public class TicksView extends LinearLayout {
         textColorPrimarySubscription.unsubscribe();
         textColorPrimaryInverseSubscription.unsubscribe();
     }
+
 }

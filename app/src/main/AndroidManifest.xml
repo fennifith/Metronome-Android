@@ -19,7 +19,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activities.AboutActivity" />
+        <activity
+            android:name=".activities.AboutActivity"
+            android:label="@string/title_about" />
     </application>
 
 </manifest>

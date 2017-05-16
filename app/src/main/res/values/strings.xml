@@ -7,4 +7,9 @@
     <string name="title_click">Click</string>
     <string name="title_ding">Ding</string>
     <string name="title_wood">Wood</string>
+    <string name="title_about">About</string>
+    <string name="title_theme_light">Light Theme</string>
+    <string name="title_theme_wood">Wooden Theme</string>
+    <string name="title_theme_dark">Dark Theme</string>
+    <string name="title_theme_amoled">Amoled Theme</string>
 </resources>

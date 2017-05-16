@@ -7,16 +7,16 @@ import android.support.annotation.StringRes;
 
 public class TickData {
 
-    private int name;
+    private int nameRes;
     private int soundRes;
 
-    public TickData(@StringRes int name, @RawRes int soundRes) {
-        this.name = name;
+    public TickData(@StringRes int nameRes, @RawRes int soundRes) {
+        this.nameRes = nameRes;
         this.soundRes = soundRes;
     }
 
     public String getName(Context context) {
-        return context.getString(name);
+        return context.getString(nameRes);
     }
 
     @RawRes

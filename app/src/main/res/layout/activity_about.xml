@@ -20,6 +20,13 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <james.metronome.views.ThemesView
+                android:id="@+id/themes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
+                android:background="@drawable/border_bottom"
+                android:orientation="vertical" />
 
         </LinearLayout>
 

@@ -22,6 +22,7 @@ import java.util.Locale;
 import james.metronome.R;
 import james.metronome.utils.WhileHeldListener;
 import james.metronome.views.MetronomeView;
+import james.metronome.views.ThemesView;
 import james.metronome.views.TicksView;
 
 public class MainActivity extends AestheticActivity implements Runnable, TicksView.OnTickChangedListener {
@@ -49,15 +50,8 @@ public class MainActivity extends AestheticActivity implements Runnable, TicksVi
         setContentView(R.layout.activity_main);
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        if (Aesthetic.isFirstTime()) {
-            Aesthetic.get()
-                    .colorPrimaryRes(R.color.colorPrimary)
-                    .colorAccentRes(R.color.colorAccent)
-                    .colorWindowBackgroundRes(R.color.colorBackground)
-                    .colorStatusBarAuto()
-                    .colorNavigationBarAuto()
-                    .apply();
-        }
+        if (Aesthetic.isFirstTime())
+            ThemesView.themes[0].apply(this);
 
         metronomeView = (MetronomeView) findViewById(R.id.metronome);
         playView = (ImageView) findViewById(R.id.play);
