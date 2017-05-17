@@ -14,6 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:scaleType="centerInside"
         app:srcCompat="@drawable/ic_play" />
 
@@ -29,7 +30,9 @@
             android:id="@+id/less"
             android:layout_width="56dp"
             android:layout_height="56dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="centerInside"
+            android:tint="?android:textColorPrimary"
             app:srcCompat="@drawable/ic_less" />
 
         <TextView
@@ -37,13 +40,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="120 BPM"
+            android:textColor="?android:textColorPrimary"
             android:textSize="16sp" />
 
         <ImageView
             android:id="@+id/more"
             android:layout_width="56dp"
             android:layout_height="56dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="centerInside"
+            android:tint="?android:textColorPrimary"
             app:srcCompat="@drawable/ic_more" />
 
     </LinearLayout>
@@ -70,7 +76,9 @@
         android:layout_width="?attr/actionBarSize"
         android:layout_height="?attr/actionBarSize"
         android:layout_gravity="top|end"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:scaleType="centerInside"
+        android:tint="?android:textColorPrimary"
         app:srcCompat="@drawable/ic_info" />
 
     <james.metronome.views.CenteredSeekBar

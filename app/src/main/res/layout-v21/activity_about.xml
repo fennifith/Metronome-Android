@@ -43,6 +43,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:text="@string/app_name"
+                android:textColor="?android:textColorPrimary"
                 android:textSize="24sp" />
 
             <TextView
@@ -54,6 +55,7 @@
                 android:layout_marginBottom="8dp"
                 android:textAlignment="center"
                 android:text="@string/app_desc"
+                android:textColor="?android:textColorSecondary"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:textSize="14sp" />
@@ -104,6 +106,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:text="@string/title_libraries"
+                android:textColor="?android:textColorPrimary"
                 android:textSize="24sp" />
 
             <LinearLayout
@@ -112,7 +115,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:background="?attr/selectableItemBackground">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -120,6 +124,7 @@
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
                     android:text="@string/library_aesthetic"
+                    android:textColor="?android:textColorPrimary"
                     android:textSize="16sp" />
 
                 <TextView
@@ -128,6 +133,7 @@
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
                     android:text="@string/library_aesthetic_desc"
+                    android:textColor="?android:textColorSecondary"
                     android:textSize="14sp" />
 
             </LinearLayout>

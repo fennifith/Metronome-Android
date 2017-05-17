@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -109,7 +110,7 @@ public class AboutActivity extends AestheticActivity implements ThemesView.OnThe
                         }
 
                         ActionBar actionBar = getSupportActionBar();
-                        if (actionBar != null) {
+                        if (actionBar != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             Drawable drawable = ContextCompat.getDrawable(AboutActivity.this, R.drawable.ic_back);
                             DrawableCompat.setTint(drawable, integer);
                             actionBar.setHomeAsUpIndicator(drawable);
