@@ -36,13 +36,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:gravity="center"
-                android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:textAlignment="center"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
                 android:text="@string/app_name"
+                android:textAlignment="center"
                 android:textColor="?android:textColorPrimary"
                 android:textSize="24sp" />
 
@@ -50,14 +50,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:gravity="center"
-                android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:textAlignment="center"
-                android:text="@string/app_desc"
-                android:textColor="?android:textColorSecondary"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="@string/app_desc"
+                android:textAlignment="center"
+                android:textColor="?android:textColorSecondary"
                 android:textSize="14sp" />
 
             <View
@@ -71,10 +71,10 @@
                 android:id="@+id/buttons"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:background="@drawable/border_bottom"
                 android:gravity="center_horizontal"
                 android:orientation="horizontal"
-                android:layout_marginBottom="8dp"
                 android:paddingBottom="8dp"
                 android:paddingTop="8dp">
 
@@ -98,13 +98,49 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/tewtwenteyonepx"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:orientation="vertical"
+                android:paddingBottom="8dp"
+                android:paddingTop="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:text="@string/tewtwenteyonepx"
+                    android:textColor="?android:textColorPrimary"
+                    android:textSize="24sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:text="@string/tewtwenteyonepx_desc"
+                    android:textColor="?android:textColorSecondary"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <View
+                android:id="@+id/credits"
+                android:layout_width="match_parent"
+                android:layout_height="1dip"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/border_bottom" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
+                android:layout_marginTop="8dp"
                 android:text="@string/title_libraries"
                 android:textColor="?android:textColorPrimary"
                 android:textSize="24sp" />
@@ -113,10 +149,10 @@
                 android:id="@+id/aesthetic"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
+                android:background="?attr/selectableItemBackground"
                 android:orientation="vertical"
-                android:background="?attr/selectableItemBackground">
+                android:paddingBottom="8dp"
+                android:paddingTop="8dp">
 
                 <TextView
                     android:layout_width="wrap_content"

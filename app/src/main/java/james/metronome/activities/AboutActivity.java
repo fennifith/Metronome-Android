@@ -31,6 +31,7 @@ public class AboutActivity extends AestheticActivity implements ThemesView.OnThe
     private View iconView;
     private ThemesView themesView;
     private View buttonsView;
+    private View creditsView;
     private View librariesView;
 
     private Subscription textColorPrimarySubscription;
@@ -50,8 +51,10 @@ public class AboutActivity extends AestheticActivity implements ThemesView.OnThe
         View donateView = findViewById(R.id.donate);
         View githubView = findViewById(R.id.github);
         View playView = findViewById(R.id.play);
-        librariesView = findViewById(R.id.libraries);
+        View tewtwenteyonepxView = findViewById(R.id.tewtwenteyonepx);
+        creditsView = findViewById(R.id.credits);
         View aesthetic = findViewById(R.id.aesthetic);
+        librariesView = findViewById(R.id.libraries);
 
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -82,6 +85,13 @@ public class AboutActivity extends AestheticActivity implements ThemesView.OnThe
             }
         });
 
+        tewtwenteyonepxView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.221pixels.com/")));
+            }
+        });
+
         aesthetic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -106,6 +116,7 @@ public class AboutActivity extends AestheticActivity implements ThemesView.OnThe
                             DrawableCompat.setTint(toolbar.getBackground(), integer);
                             DrawableCompat.setTint(iconView.getBackground(), integer);
                             DrawableCompat.setTint(buttonsView.getBackground(), integer);
+                            DrawableCompat.setTint(creditsView.getBackground(), integer);
                             DrawableCompat.setTint(librariesView.getBackground(), integer);
                         }
 
