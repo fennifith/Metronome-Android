@@ -25,7 +25,8 @@ public class TicksView extends LinearLayout {
             new TickData(R.string.title_beep, R.raw.beep),
             new TickData(R.string.title_click, R.raw.click),
             new TickData(R.string.title_ding, R.raw.ding),
-            new TickData(R.string.title_wood, R.raw.wood)
+            new TickData(R.string.title_wood, R.raw.wood),
+            new TickData(R.string.title_vibrate)
     };
     private OnTickChangedListener listener;
 

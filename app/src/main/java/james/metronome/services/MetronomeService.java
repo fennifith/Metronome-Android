@@ -2,6 +2,7 @@ package james.metronome.services;
 
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioAttributes;
@@ -11,6 +12,8 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
@@ -36,12 +39,16 @@ public class MetronomeService extends Service implements Runnable {
     private int soundId = -1;
     private boolean isPlaying;
 
+    private Vibrator vibrator;
+
     private TickListener listener;
 
     @Override
     public void onCreate() {
         super.onCreate();
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             soundPool = new SoundPool.Builder()
@@ -53,7 +60,8 @@ public class MetronomeService extends Service implements Runnable {
         } else soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
 
         int tick = prefs.getInt(PREF_TICK, 0);
-        soundId = TicksView.ticks[tick].getSoundId(this, soundPool);
+        if (!TicksView.ticks[tick].isVibration())
+            soundId = TicksView.ticks[tick].getSoundId(this, soundPool);
 
         interval = prefs.getLong(PREF_INTERVAL, 500);
         bpm = toBpm(interval);
@@ -116,11 +124,13 @@ public class MetronomeService extends Service implements Runnable {
     }
 
     public void setTick(int tick) {
-        soundId = TicksView.ticks[tick].getSoundId(this, soundPool);
-        prefs.edit().putInt(PREF_TICK, tick).apply();
+        if (!TicksView.ticks[tick].isVibration()) {
+            soundId = TicksView.ticks[tick].getSoundId(this, soundPool);
+            if (!isPlaying)
+                soundPool.play(soundId, 1.0f, 1.0f, 0, 0, 1.0f);
+        } else soundId = -1;
 
-        if (!isPlaying)
-            soundPool.play(soundId, 1.0f, 1.0f, 0, 0, 1.0f);
+        prefs.edit().putInt(PREF_TICK, tick).apply();
     }
 
     public boolean isPlaying() {
@@ -164,7 +174,13 @@ public class MetronomeService extends Service implements Runnable {
     @Override
     public void run() {
         if (isPlaying) {
-            soundPool.play(soundId, 1.0f, 1.0f, 0, 0, 1.0f);
+            if (soundId != -1)
+                soundPool.play(soundId, 1.0f, 1.0f, 0, 0, 1.0f);
+            else if (Build.VERSION.SDK_INT >= 26)
+                vibrator.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE));
+            else vibrator.vibrate(50);
+
+
             handler.postDelayed(this, interval);
             if (listener != null)
                 listener.onTick();

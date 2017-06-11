@@ -9,6 +9,12 @@ public class TickData {
 
     private int nameRes;
     private int soundRes;
+    private boolean isVibration;
+
+    public TickData(@StringRes int nameRes) {
+        this.nameRes = nameRes;
+        isVibration = true;
+    }
 
     public TickData(@StringRes int nameRes, @RawRes int soundRes) {
         this.nameRes = nameRes;
@@ -17,6 +23,10 @@ public class TickData {
 
     public String getName(Context context) {
         return context.getString(nameRes);
+    }
+
+    public boolean isVibration() {
+        return isVibration;
     }
 
     @RawRes
