@@ -22,6 +22,8 @@
         <activity
             android:name=".activities.AboutActivity"
             android:label="@string/title_about" />
+
+        <service android:name=".services.MetronomeService" />
     </application>
 
 </manifest>

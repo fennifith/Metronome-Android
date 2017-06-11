@@ -1,14 +1,11 @@
 package james.metronome.activities;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.media.AudioAttributes;
-import android.media.AudioManager;
-import android.media.SoundPool;
-import android.os.Build;
+import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.Handler;
-import android.preference.PreferenceManager;
+import android.os.IBinder;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.view.View;
 import android.view.WindowManager;
@@ -22,6 +19,7 @@ import com.afollestad.aesthetic.AestheticActivity;
 import java.util.Locale;
 
 import james.metronome.R;
+import james.metronome.services.MetronomeService;
 import james.metronome.utils.WhileHeldListener;
 import james.metronome.views.MetronomeView;
 import james.metronome.views.ThemesView;
@@ -29,19 +27,10 @@ import james.metronome.views.TicksView;
 import rx.Subscription;
 import rx.functions.Action1;
 
-public class MainActivity extends AestheticActivity implements Runnable, TicksView.OnTickChangedListener {
+public class MainActivity extends AestheticActivity implements TicksView.OnTickChangedListener, ServiceConnection, MetronomeService.TickListener {
 
-    public static final String PREF_TICK = "tick";
-    public static final String PREF_INTERVAL = "interval";
-
-    private SoundPool soundPool;
-    private Handler handler;
-    private int soundId = -1;
-    private boolean isPlaying;
-
-    private SharedPreferences prefs;
-    private int bpm;
-    private long interval;
+    private boolean isBound;
+    private MetronomeService service;
 
     private MetronomeView metronomeView;
     private ImageView playView;
@@ -59,7 +48,6 @@ public class MainActivity extends AestheticActivity implements Runnable, TicksVi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         if (Aesthetic.isFirstTime())
             ThemesView.themes[0].apply(this);
@@ -73,36 +61,26 @@ public class MainActivity extends AestheticActivity implements Runnable, TicksVi
         aboutView = (ImageView) findViewById(R.id.about);
         seekBar = (SeekBar) findViewById(R.id.seekBar);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            soundPool = new SoundPool.Builder()
-                    .setMaxStreams(1)
-                    .setAudioAttributes(new AudioAttributes.Builder()
-                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                            .build())
-                    .build();
-        } else soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
-
-        int tick = prefs.getInt(PREF_TICK, 0);
-        soundId = TicksView.ticks[tick].getSoundId(this, soundPool);
-        ticksView.setTick(tick);
-
-        interval = prefs.getLong(PREF_INTERVAL, 500);
-        bpm = toBpm(interval);
-        metronomeView.setInterval(interval);
-        seekBar.setProgress(bpm);
         seekBar.setPadding(0, 0, 0, 0);
-        bpmView.setText(String.format(Locale.getDefault(), getString(R.string.bpm), String.valueOf(bpm)));
 
-        handler = new Handler();
+        if (isBound()) {
+            ticksView.setTick(service.getTick());
+            metronomeView.setInterval(service.getInterval());
+            seekBar.setProgress(service.getBpm());
+            bpmView.setText(String.format(Locale.getDefault(), getString(R.string.bpm), String.valueOf(service.getBpm())));
+            playView.setImageResource(service.isPlaying() ? R.drawable.ic_pause : R.drawable.ic_play);
+        }
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         playView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isPlaying)
-                    pause();
-                else play();
+                if (isBound && service != null) {
+                    if (service.isPlaying())
+                        service.pause();
+                    else service.play();
+                }
             }
         });
 
@@ -116,42 +94,40 @@ public class MainActivity extends AestheticActivity implements Runnable, TicksVi
         moreView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (bpm < 300)
-                    seekBar.setProgress(++bpm);
+                if (isBound() && service.getBpm() < 300)
+                    seekBar.setProgress(service.getBpm() + 1);
             }
         });
 
         moreView.setOnTouchListener(new WhileHeldListener() {
             @Override
             public void onHeld() {
-                if (bpm < 300)
-                    seekBar.setProgress(++bpm);
+                if (isBound() && service.getBpm() < 300)
+                    seekBar.setProgress(service.getBpm() + 1);
             }
         });
 
         lessView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (bpm > 1)
-                    seekBar.setProgress(--bpm);
+                if (isBound() && service.getBpm() > 1)
+                    seekBar.setProgress(service.getBpm() - 1);
             }
         });
 
         lessView.setOnTouchListener(new WhileHeldListener() {
             @Override
             public void onHeld() {
-                if (bpm > 1)
-                    seekBar.setProgress(--bpm);
+                if (isBound() && service.getBpm() > 1)
+                    seekBar.setProgress(service.getBpm() - 1);
             }
         });
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (progress > 0) {
-                    bpm = progress;
+                if (progress > 0)
                     setBpm(progress);
-                }
             }
 
             @Override
@@ -167,41 +143,22 @@ public class MainActivity extends AestheticActivity implements Runnable, TicksVi
         subscribe();
     }
 
-    private static int toBpm(long interval) {
-        return (int) (60000 / interval);
-    }
-
-    private static long toInterval(int bpm) {
-        return (long) 60000 / bpm;
-    }
-
-    private void play() {
-        handler.post(this);
-        playView.setImageResource(R.drawable.ic_pause);
-        isPlaying = true;
-    }
-
-    private void pause() {
-        handler.removeCallbacks(this);
-        playView.setImageResource(R.drawable.ic_play);
-        isPlaying = false;
-    }
-
     private void setBpm(int bpm) {
-        interval = toInterval(bpm);
-        metronomeView.setInterval(interval);
-        bpmView.setText(String.format(Locale.getDefault(), getString(R.string.bpm), String.valueOf(bpm)));
+        if (isBound()) {
+            service.setBpm(bpm);
+            metronomeView.setInterval(service.getInterval());
+            bpmView.setText(String.format(Locale.getDefault(), getString(R.string.bpm), String.valueOf(bpm)));
+        }
+    }
 
-        prefs.edit().putLong(PREF_INTERVAL, interval).apply();
+    private boolean isBound() {
+        return isBound && service != null;
     }
 
     @Override
     public void onTickChanged(int tick) {
-        soundId = TicksView.ticks[tick].getSoundId(MainActivity.this, soundPool);
-        prefs.edit().putInt(MainActivity.PREF_TICK, tick).apply();
-
-        if (!isPlaying)
-            soundPool.play(soundId, 1.0f, 1.0f, 0, 0, 1.0f);
+        if (isBound())
+            service.setTick(tick);
     }
 
     @Override
@@ -250,6 +207,15 @@ public class MainActivity extends AestheticActivity implements Runnable, TicksVi
     }
 
     @Override
+    protected void onStart() {
+        Intent intent = new Intent(this, MetronomeService.class);
+        startService(intent);
+        bindService(intent, this, Context.BIND_AUTO_CREATE);
+
+        super.onStart();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         subscribe();
@@ -263,16 +229,53 @@ public class MainActivity extends AestheticActivity implements Runnable, TicksVi
 
     @Override
     protected void onStop() {
-        pause();
+        if (isBound) {
+            unbindService(this);
+            isBound = false;
+        }
         super.onStop();
     }
 
     @Override
-    public void run() {
-        if (isPlaying) {
-            soundPool.play(soundId, 1.0f, 1.0f, 0, 0, 1.0f);
-            handler.postDelayed(this, interval);
-            metronomeView.onTick();
-        }
+    public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+        MetronomeService.LocalBinder binder = (MetronomeService.LocalBinder) iBinder;
+        service = binder.getService();
+        service.setTickListener(this);
+        isBound = true;
+
+        if (ticksView != null)
+            ticksView.setTick(service.getTick());
+
+        if (metronomeView != null)
+            metronomeView.setInterval(service.getInterval());
+
+        if (seekBar != null)
+            seekBar.setProgress(service.getBpm());
+
+        if (bpmView != null)
+            bpmView.setText(String.format(Locale.getDefault(), getString(R.string.bpm), String.valueOf(service.getBpm())));
+
+        if (playView != null)
+            playView.setImageResource(service.isPlaying() ? R.drawable.ic_pause : R.drawable.ic_play);
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName componentName) {
+        isBound = false;
+    }
+
+    @Override
+    public void onStartTicks() {
+        playView.setImageResource(R.drawable.ic_pause);
+    }
+
+    @Override
+    public void onTick() {
+        metronomeView.onTick();
+    }
+
+    @Override
+    public void onStopTicks() {
+        playView.setImageResource(R.drawable.ic_play);
     }
 }

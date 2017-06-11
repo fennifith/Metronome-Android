@@ -25,4 +25,7 @@
     <string name="library_aesthetic">Aesthetic - Aidan Follestad</string>
     <string name="library_aesthetic_desc">A fast and easy to use plug-and-play dynamic theme engine. Powered by Rx, for Android apps.</string>
     <string name="title_libraries">Libraries</string>
+
+    <string name="notification_title">Metronome is running…</string>
+    <string name="notification_desc">Touch to stop.</string>
 </resources>
