@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Metronome</string>
+
+    <string name="bpm">%1$s BPM</string>
+
+    <string name="notification_title">Metronome is running…</string>
+    <string name="notification_desc">Touch to stop.</string>
+</resources>

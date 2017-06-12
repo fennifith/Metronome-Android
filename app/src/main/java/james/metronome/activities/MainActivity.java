@@ -77,7 +77,7 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
         playView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isBound && service != null) {
+                if (isBound()) {
                     if (service.isPlaying())
                         service.pause();
                     else service.play();
@@ -208,15 +208,6 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
     }
 
     @Override
-    protected void onStart() {
-        Intent intent = new Intent(this, MetronomeService.class);
-        startService(intent);
-        bindService(intent, this, Context.BIND_AUTO_CREATE);
-
-        super.onStart();
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
         subscribe();
@@ -226,6 +217,15 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
     protected void onPause() {
         super.onPause();
         unsubscribe();
+    }
+
+    @Override
+    protected void onStart() {
+        Intent intent = new Intent(this, MetronomeService.class);
+        startService(intent);
+        bindService(intent, this, Context.BIND_AUTO_CREATE);
+
+        super.onStart();
     }
 
     @Override
