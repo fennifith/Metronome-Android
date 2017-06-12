@@ -14,10 +14,11 @@ import android.widget.TextView;
 
 import com.afollestad.aesthetic.Aesthetic;
 
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import james.metronome.R;
 import james.metronome.data.ThemeData;
-import rx.Subscription;
-import rx.functions.Action1;
 
 public class ThemesView extends LinearLayout {
 
@@ -37,9 +38,9 @@ public class ThemesView extends LinearLayout {
     private Integer textColorPrimary;
     private Integer textColorPrimaryInverse;
 
-    private Subscription colorAccentSubscription;
-    private Subscription textColorPrimarySubscription;
-    private Subscription textColorPrimaryInverseSubscription;
+    private Disposable colorAccentSubscription;
+    private Disposable textColorPrimarySubscription;
+    private Disposable textColorPrimaryInverseSubscription;
 
     public ThemesView(Context context) {
         this(context, null);
@@ -136,9 +137,9 @@ public class ThemesView extends LinearLayout {
     public void subscribe() {
         colorAccentSubscription = Aesthetic.get()
                 .colorAccent()
-                .subscribe(new Action1<Integer>() {
+                .subscribe(new Consumer<Integer>() {
                     @Override
-                    public void call(Integer integer) {
+                    public void accept(@NonNull Integer integer) throws Exception {
                         colorAccent = integer;
                         for (int i = 0; i < getChildCount(); i++) {
                             View v = getChildAt(i);
@@ -151,9 +152,9 @@ public class ThemesView extends LinearLayout {
 
         textColorPrimarySubscription = Aesthetic.get()
                 .textColorPrimary()
-                .subscribe(new Action1<Integer>() {
+                .subscribe(new Consumer<Integer>() {
                     @Override
-                    public void call(Integer integer) {
+                    public void accept(@NonNull Integer integer) throws Exception {
                         textColorPrimary = integer;
                         DrawableCompat.setTint(getBackground(), integer);
                         for (int i = 0; i < getChildCount(); i++) {
@@ -166,9 +167,9 @@ public class ThemesView extends LinearLayout {
 
         textColorPrimaryInverseSubscription = Aesthetic.get()
                 .textColorPrimaryInverse()
-                .subscribe(new Action1<Integer>() {
+                .subscribe(new Consumer<Integer>() {
                     @Override
-                    public void call(Integer integer) {
+                    public void accept(@NonNull Integer integer) throws Exception {
                         textColorPrimaryInverse = integer;
                         for (int i = 0; i < getChildCount(); i++) {
                             View v = getChildAt(i);
@@ -182,9 +183,9 @@ public class ThemesView extends LinearLayout {
     }
 
     public void unsubscribe() {
-        colorAccentSubscription.unsubscribe();
-        textColorPrimarySubscription.unsubscribe();
-        textColorPrimaryInverseSubscription.unsubscribe();
+        colorAccentSubscription.dispose();
+        textColorPrimarySubscription.dispose();
+        textColorPrimaryInverseSubscription.dispose();
     }
 
     public void setListener(OnThemeChangedListener listener) {

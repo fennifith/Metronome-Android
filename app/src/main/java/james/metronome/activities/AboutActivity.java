@@ -18,10 +18,11 @@ import android.view.View;
 import com.afollestad.aesthetic.Aesthetic;
 import com.afollestad.aesthetic.AestheticActivity;
 
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import james.metronome.R;
 import james.metronome.views.ThemesView;
-import rx.Subscription;
-import rx.functions.Action1;
 
 public class AboutActivity extends AestheticActivity implements ThemesView.OnThemeChangedListener {
 
@@ -34,7 +35,7 @@ public class AboutActivity extends AestheticActivity implements ThemesView.OnThe
     private View creditsView;
     private View librariesView;
 
-    private Subscription textColorPrimarySubscription;
+    private Disposable textColorPrimarySubscription;
 
     private SharedPreferences prefs;
 
@@ -108,9 +109,9 @@ public class AboutActivity extends AestheticActivity implements ThemesView.OnThe
 
         textColorPrimarySubscription = Aesthetic.get()
                 .textColorPrimary()
-                .subscribe(new Action1<Integer>() {
+                .subscribe(new Consumer<Integer>() {
                     @Override
-                    public void call(Integer integer) {
+                    public void accept(@NonNull Integer integer) throws Exception {
                         if (toolbar != null && iconView != null && buttonsView != null && librariesView != null) {
                             toolbar.setTitleTextColor(integer);
                             DrawableCompat.setTint(toolbar.getBackground(), integer);
@@ -134,7 +135,7 @@ public class AboutActivity extends AestheticActivity implements ThemesView.OnThe
         if (themesView != null)
             themesView.unsubscribe();
 
-        textColorPrimarySubscription.unsubscribe();
+        textColorPrimarySubscription.dispose();
     }
 
     @Override

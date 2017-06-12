@@ -18,14 +18,15 @@ import com.afollestad.aesthetic.AestheticActivity;
 
 import java.util.Locale;
 
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import james.metronome.R;
 import james.metronome.services.MetronomeService;
 import james.metronome.utils.WhileHeldListener;
 import james.metronome.views.MetronomeView;
 import james.metronome.views.ThemesView;
 import james.metronome.views.TicksView;
-import rx.Subscription;
-import rx.functions.Action1;
 
 public class MainActivity extends AestheticActivity implements TicksView.OnTickChangedListener, ServiceConnection, MetronomeService.TickListener {
 
@@ -41,8 +42,8 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
     private TicksView ticksView;
     private SeekBar seekBar;
 
-    private Subscription colorBackgroundSubscription;
-    private Subscription textColorPrimarySubscription;
+    private Disposable colorBackgroundSubscription;
+    private Disposable textColorPrimarySubscription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -174,9 +175,9 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
 
         colorBackgroundSubscription = Aesthetic.get()
                 .colorWindowBackground()
-                .subscribe(new Action1<Integer>() {
+                .subscribe(new Consumer<Integer>() {
                     @Override
-                    public void call(Integer integer) {
+                    public void accept(@NonNull Integer integer) throws Exception {
                         findViewById(R.id.topBar).setBackgroundColor(integer);
                         findViewById(R.id.bottomBar).setBackgroundColor(integer);
                     }
@@ -184,9 +185,9 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
 
         textColorPrimarySubscription = Aesthetic.get()
                 .textColorPrimary()
-                .subscribe(new Action1<Integer>() {
+                .subscribe(new Consumer<Integer>() {
                     @Override
-                    public void call(Integer integer) {
+                    public void accept(@NonNull Integer integer) throws Exception {
                         DrawableCompat.setTint(seekBar.getProgressDrawable(), integer);
                         playView.setColorFilter(integer);
                         moreView.setColorFilter(integer);
@@ -202,8 +203,8 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
             ticksView.unsubscribe();
         }
 
-        colorBackgroundSubscription.unsubscribe();
-        textColorPrimarySubscription.unsubscribe();
+        colorBackgroundSubscription.dispose();
+        textColorPrimarySubscription.dispose();
     }
 
     @Override

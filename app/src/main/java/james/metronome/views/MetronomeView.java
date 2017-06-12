@@ -11,8 +11,9 @@ import android.view.animation.DecelerateInterpolator;
 
 import com.afollestad.aesthetic.Aesthetic;
 
-import rx.Subscription;
-import rx.functions.Action1;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 
 public class MetronomeView extends View {
 
@@ -20,7 +21,7 @@ public class MetronomeView extends View {
     private long interval = 500;
     private float distance;
 
-    private Subscription subscription;
+    private Disposable subscription;
 
     public MetronomeView(Context context) {
         this(context, null);
@@ -44,16 +45,16 @@ public class MetronomeView extends View {
     public void subscribe() {
         subscription = Aesthetic.get()
                 .textColorPrimary()
-                .subscribe(new Action1<Integer>() {
+                .subscribe(new Consumer<Integer>() {
                     @Override
-                    public void call(Integer integer) {
+                    public void accept(@NonNull Integer integer) {
                         paint.setColor(integer);
                     }
                 });
     }
 
     public void unsubscribe() {
-        subscription.unsubscribe();
+        subscription.dispose();
     }
 
     public void setInterval(long interval) {
