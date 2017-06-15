@@ -1,5 +1,7 @@
 package james.metronome.services;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -95,9 +97,18 @@ public class MetronomeService extends Service implements Runnable {
         Intent intent = new Intent(this, MetronomeService.class);
         intent.setAction(ACTION_PAUSE);
 
+        NotificationCompat.Builder builder;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE))
+                    .createNotificationChannel(new NotificationChannel("metronome", getString(R.string.app_name), NotificationManager.IMPORTANCE_DEFAULT));
+
+            builder = new NotificationCompat.Builder(this, "metronome");
+        } else
+            builder = new NotificationCompat.Builder(this);
+
         startForeground(530,
-                new NotificationCompat.Builder(this)
-                        .setContentTitle(getString(R.string.notification_title))
+                builder.setContentTitle(getString(R.string.notification_title))
                         .setContentText(getString(R.string.notification_desc))
                         .setSmallIcon(R.drawable.ic_notification)
                         .setContentIntent(PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_ONE_SHOT))
