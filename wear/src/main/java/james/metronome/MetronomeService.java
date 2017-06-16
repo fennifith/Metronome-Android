@@ -59,7 +59,7 @@ public class MetronomeService extends Service implements Runnable {
 
         isVibration = prefs.getBoolean(PREF_VIBRATION, true);
         if (!isVibration)
-            soundId = soundPool.load(this, james.metronome.wear.R.raw.click, 1);
+            soundId = soundPool.load(this, R.raw.click, 1);
 
         interval = prefs.getLong(PREF_INTERVAL, 500);
         bpm = toBpm(interval);
@@ -95,9 +95,9 @@ public class MetronomeService extends Service implements Runnable {
 
         startForeground(530,
                 new NotificationCompat.Builder(this)
-                        .setContentTitle(getString(james.metronome.wear.R.string.notification_title))
-                        .setContentText(getString(james.metronome.wear.R.string.notification_desc))
-                        .setSmallIcon(james.metronome.wear.R.drawable.ic_notification)
+                        .setContentTitle(getString(R.string.notification_title))
+                        .setContentText(getString(R.string.notification_desc))
+                        .setSmallIcon(R.drawable.ic_notification)
                         .setContentIntent(PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_ONE_SHOT))
                         .build()
         );
@@ -124,7 +124,7 @@ public class MetronomeService extends Service implements Runnable {
     public void setVibration(boolean vibration) {
         isVibration = vibration;
         if (!isVibration)
-            soundId = soundPool.load(this, james.metronome.wear.R.raw.click, 1);
+            soundId = soundPool.load(this, R.raw.click, 1);
         else soundId = -1;
 
         prefs.edit().putBoolean(PREF_VIBRATION, isVibration).apply();
