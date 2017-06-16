@@ -1,4 +1,4 @@
-package james.metronome.wear;
+package james.metronome;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -30,19 +30,19 @@ public class MainActivity extends WearableActivity implements ServiceConnection,
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(james.metronome.wear.R.layout.activity_main);
         setAmbientEnabled();
 
-        container = findViewById(R.id.container);
-        vibrationView = findViewById(R.id.vibration);
-        playView = findViewById(R.id.play);
-        bpmView = findViewById(R.id.bpm);
-        seekBar = findViewById(R.id.seekBar);
+        container = findViewById(james.metronome.wear.R.id.container);
+        vibrationView = findViewById(james.metronome.wear.R.id.vibration);
+        playView = findViewById(james.metronome.wear.R.id.play);
+        bpmView = findViewById(james.metronome.wear.R.id.bpm);
+        seekBar = findViewById(james.metronome.wear.R.id.seekBar);
 
         if (isBound()) {
-            vibrationView.setImageResource(service.isVibration() ? R.drawable.ic_vibration : R.drawable.ic_sound);
-            playView.setImageResource(service.isPlaying() ? R.drawable.ic_pause : R.drawable.ic_play);
-            bpmView.setText(String.format(Locale.getDefault(), getString(R.string.bpm), String.valueOf(service.getBpm())));
+            vibrationView.setImageResource(service.isVibration() ? james.metronome.wear.R.drawable.ic_vibration : james.metronome.wear.R.drawable.ic_sound);
+            playView.setImageResource(service.isPlaying() ? james.metronome.wear.R.drawable.ic_pause : james.metronome.wear.R.drawable.ic_play);
+            bpmView.setText(String.format(Locale.getDefault(), getString(james.metronome.wear.R.string.bpm), String.valueOf(service.getBpm())));
             seekBar.setProgress(service.getBpm());
         }
 
@@ -50,7 +50,7 @@ public class MainActivity extends WearableActivity implements ServiceConnection,
             @Override
             public void onClick(View view) {
                 service.setVibration(!service.isVibration());
-                vibrationView.setImageResource(service.isVibration() ? R.drawable.ic_vibration : R.drawable.ic_sound);
+                vibrationView.setImageResource(service.isVibration() ? james.metronome.wear.R.drawable.ic_vibration : james.metronome.wear.R.drawable.ic_sound);
             }
         });
 
@@ -86,7 +86,7 @@ public class MainActivity extends WearableActivity implements ServiceConnection,
     private void setBpm(int bpm) {
         if (isBound()) {
             service.setBpm(bpm);
-            bpmView.setText(String.format(Locale.getDefault(), getString(R.string.bpm), String.valueOf(bpm)));
+            bpmView.setText(String.format(Locale.getDefault(), getString(james.metronome.wear.R.string.bpm), String.valueOf(bpm)));
         }
     }
 
@@ -144,13 +144,13 @@ public class MainActivity extends WearableActivity implements ServiceConnection,
         isBound = true;
 
         if (vibrationView != null)
-            vibrationView.setImageResource(service.isVibration() ? R.drawable.ic_vibration : R.drawable.ic_sound);
+            vibrationView.setImageResource(service.isVibration() ? james.metronome.wear.R.drawable.ic_vibration : james.metronome.wear.R.drawable.ic_sound);
 
         if (playView != null)
-            playView.setImageResource(service.isPlaying() ? R.drawable.ic_pause : R.drawable.ic_play);
+            playView.setImageResource(service.isPlaying() ? james.metronome.wear.R.drawable.ic_pause : james.metronome.wear.R.drawable.ic_play);
 
         if (bpmView != null)
-            bpmView.setText(String.format(Locale.getDefault(), getString(R.string.bpm), String.valueOf(service.getBpm())));
+            bpmView.setText(String.format(Locale.getDefault(), getString(james.metronome.wear.R.string.bpm), String.valueOf(service.getBpm())));
 
         if (seekBar != null)
             seekBar.setProgress(service.getBpm());
@@ -163,11 +163,11 @@ public class MainActivity extends WearableActivity implements ServiceConnection,
 
     @Override
     public void onStartTicks() {
-        playView.setImageResource(R.drawable.ic_pause);
+        playView.setImageResource(james.metronome.wear.R.drawable.ic_pause);
     }
 
     @Override
     public void onStopTicks() {
-        playView.setImageResource(R.drawable.ic_play);
+        playView.setImageResource(james.metronome.wear.R.drawable.ic_play);
     }
 }
