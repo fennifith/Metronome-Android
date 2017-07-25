@@ -10,12 +10,15 @@ import android.support.v4.graphics.drawable.DrawableCompat;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.afollestad.aesthetic.Aesthetic;
 import com.afollestad.aesthetic.AestheticActivity;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import io.reactivex.annotations.NonNull;
@@ -24,21 +27,25 @@ import io.reactivex.functions.Consumer;
 import james.metronome.R;
 import james.metronome.services.MetronomeService;
 import james.metronome.utils.WhileHeldListener;
+import james.metronome.views.EmphasisSwitch;
 import james.metronome.views.MetronomeView;
 import james.metronome.views.ThemesView;
 import james.metronome.views.TicksView;
 
-public class MainActivity extends AestheticActivity implements TicksView.OnTickChangedListener, ServiceConnection, MetronomeService.TickListener {
+public class MainActivity extends AestheticActivity implements TicksView.OnTickChangedListener, ServiceConnection, MetronomeService.TickListener, EmphasisSwitch.OnCheckedChangeListener {
 
     private boolean isBound;
     private MetronomeService service;
 
     private MetronomeView metronomeView;
     private ImageView playView;
+    private LinearLayout emphasisLayout;
     private TextView bpmView;
     private ImageView aboutView;
     private ImageView lessView;
     private ImageView moreView;
+    private ImageView addEmphasisView;
+    private ImageView removeEmphasisView;
     private TicksView ticksView;
     private SeekBar seekBar;
 
@@ -53,14 +60,17 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
         if (Aesthetic.isFirstTime())
             ThemesView.themes[0].apply(this);
 
-        metronomeView = (MetronomeView) findViewById(R.id.metronome);
-        playView = (ImageView) findViewById(R.id.play);
-        bpmView = (TextView) findViewById(R.id.bpm);
-        lessView = (ImageView) findViewById(R.id.less);
-        moreView = (ImageView) findViewById(R.id.more);
-        ticksView = (TicksView) findViewById(R.id.ticks);
-        aboutView = (ImageView) findViewById(R.id.about);
-        seekBar = (SeekBar) findViewById(R.id.seekBar);
+        metronomeView = findViewById(R.id.metronome);
+        playView = findViewById(R.id.play);
+        emphasisLayout = findViewById(R.id.emphasis);
+        addEmphasisView = findViewById(R.id.add);
+        removeEmphasisView = findViewById(R.id.remove);
+        bpmView = findViewById(R.id.bpm);
+        lessView = findViewById(R.id.less);
+        moreView = findViewById(R.id.more);
+        ticksView = findViewById(R.id.ticks);
+        aboutView = findViewById(R.id.about);
+        seekBar = findViewById(R.id.seekBar);
 
         seekBar.setPadding(0, 0, 0, 0);
 
@@ -70,6 +80,10 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
             seekBar.setProgress(service.getBpm());
             bpmView.setText(String.format(Locale.getDefault(), getString(R.string.bpm), String.valueOf(service.getBpm())));
             playView.setImageResource(service.isPlaying() ? R.drawable.ic_pause : R.drawable.ic_play);
+            emphasisLayout.removeAllViews();
+            for (boolean isEmphasis : service.getEmphasisList()) {
+                emphasisLayout.addView(getEmphasisSwitch(isEmphasis, false));
+            }
         }
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -89,6 +103,37 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, AboutActivity.class));
+            }
+        });
+
+        addEmphasisView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isBound()) {
+                    if (service.getEmphasisList().size() < 6) {
+                        emphasisLayout.addView(getEmphasisSwitch(false, true));
+
+                        List<Boolean> emphasisList = service.getEmphasisList();
+                        emphasisList.add(false);
+                        service.setEmphasisList(emphasisList);
+                    }
+                }
+            }
+        });
+
+        removeEmphasisView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isBound()) {
+                    if (service.getEmphasisList().size() > 2) {
+                        List<Boolean> emphasisList = service.getEmphasisList();
+                        int position = emphasisList.size() - 1;
+                        emphasisList.remove(position);
+                        service.setEmphasisList(emphasisList);
+
+                        emphasisLayout.removeViewAt(position);
+                    }
+                }
             }
         });
 
@@ -173,6 +218,12 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
             ticksView.subscribe();
         }
 
+        if (emphasisLayout != null) {
+            for (int i = 0; i < emphasisLayout.getChildCount(); i++) {
+                ((EmphasisSwitch) emphasisLayout.getChildAt(i)).subscribe();
+            }
+        }
+
         colorBackgroundSubscription = Aesthetic.get()
                 .colorWindowBackground()
                 .subscribe(new Consumer<Integer>() {
@@ -203,8 +254,25 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
             ticksView.unsubscribe();
         }
 
+        if (emphasisLayout != null) {
+            for (int i = 0; i < emphasisLayout.getChildCount(); i++) {
+                ((EmphasisSwitch) emphasisLayout.getChildAt(i)).unsubscribe();
+            }
+        }
+
         colorBackgroundSubscription.dispose();
         textColorPrimarySubscription.dispose();
+    }
+
+    private EmphasisSwitch getEmphasisSwitch(boolean isChecked, boolean subscribe) {
+        EmphasisSwitch emphasisSwitch = new EmphasisSwitch(this);
+        emphasisSwitch.setChecked(isChecked);
+        emphasisSwitch.setOnCheckedChangeListener(this);
+
+        if (subscribe)
+            emphasisSwitch.subscribe();
+
+        return emphasisSwitch;
     }
 
     @Override
@@ -258,6 +326,13 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
 
         if (playView != null)
             playView.setImageResource(service.isPlaying() ? R.drawable.ic_pause : R.drawable.ic_play);
+
+        if (emphasisLayout != null) {
+            emphasisLayout.removeAllViews();
+            for (boolean isEmphasis : service.getEmphasisList()) {
+                emphasisLayout.addView(getEmphasisSwitch(isEmphasis, true));
+            }
+        }
     }
 
     @Override
@@ -271,12 +346,32 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
     }
 
     @Override
-    public void onTick() {
+    public void onTick(int index) {
         metronomeView.onTick();
+
+        for (int i = 0; i < emphasisLayout.getChildCount(); i++) {
+            ((EmphasisSwitch) emphasisLayout.getChildAt(i)).setOutlined(i == index);
+        }
     }
 
     @Override
     public void onStopTicks() {
         playView.setImageResource(R.drawable.ic_play);
+
+        for (int i = 0; i < emphasisLayout.getChildCount(); i++) {
+            ((EmphasisSwitch) emphasisLayout.getChildAt(i)).setOutlined(false);
+        }
+    }
+
+    @Override
+    public void onCheckedChanged(EmphasisSwitch emphasisSwitch, boolean b) {
+        if (isBound()) {
+            List<Boolean> emphasisList = new ArrayList<>();
+            for (int i = 0; i < emphasisLayout.getChildCount(); i++) {
+                emphasisList.add(((EmphasisSwitch) emphasisLayout.getChildAt(i)).isChecked());
+            }
+
+            service.setEmphasisList(emphasisList);
+        }
     }
 }

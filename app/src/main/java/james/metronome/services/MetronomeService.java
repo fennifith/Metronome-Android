@@ -20,6 +20,10 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import james.metronome.R;
 import james.metronome.views.TicksView;
 
@@ -29,6 +33,8 @@ public class MetronomeService extends Service implements Runnable {
 
     public static final String PREF_TICK = "tick";
     public static final String PREF_INTERVAL = "interval";
+    public static final String PREF_EMPHASIS_SIZE = "emphasisSize";
+    public static final String PREF_EMPHASIS = "emphasis";
 
     private final IBinder binder = new LocalBinder();
 
@@ -40,6 +46,9 @@ public class MetronomeService extends Service implements Runnable {
     private Handler handler;
     private int soundId = -1;
     private boolean isPlaying;
+
+    private List<Boolean> emphasisList = new ArrayList<>(Arrays.asList(new Boolean[]{true, true, true, true}));
+    private int emphasisIndex;
 
     private Vibrator vibrator;
 
@@ -68,6 +77,12 @@ public class MetronomeService extends Service implements Runnable {
         interval = prefs.getLong(PREF_INTERVAL, 500);
         bpm = toBpm(interval);
 
+        emphasisList = new ArrayList<>();
+        int emphasisSize = prefs.getInt(PREF_EMPHASIS_SIZE, 4);
+        for (int i = 0; i < emphasisSize; i++) {
+            emphasisList.add(prefs.getBoolean(PREF_EMPHASIS + i, true));
+        }
+
         handler = new Handler();
     }
 
@@ -93,6 +108,7 @@ public class MetronomeService extends Service implements Runnable {
     public void play() {
         handler.post(this);
         isPlaying = true;
+        emphasisIndex = 0;
 
         Intent intent = new Intent(this, MetronomeService.class);
         intent.setAction(ACTION_PAUSE);
@@ -128,6 +144,18 @@ public class MetronomeService extends Service implements Runnable {
             listener.onStopTicks();
     }
 
+    public void setEmphasisList(List<Boolean> emphasisList) {
+        this.emphasisList = emphasisList;
+        emphasisIndex = 0;
+
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(PREF_EMPHASIS_SIZE, emphasisList.size());
+        for (int i = 0; i < emphasisList.size(); i++) {
+            editor.putBoolean(PREF_EMPHASIS + i, emphasisList.get(i));
+        }
+        editor.apply();
+    }
+
     public void setBpm(int bpm) {
         this.bpm = bpm;
         interval = toInterval(bpm);
@@ -150,6 +178,10 @@ public class MetronomeService extends Service implements Runnable {
 
     public long getInterval() {
         return interval;
+    }
+
+    public List<Boolean> getEmphasisList() {
+        return emphasisList;
     }
 
     public int getBpm() {
@@ -185,16 +217,21 @@ public class MetronomeService extends Service implements Runnable {
     @Override
     public void run() {
         if (isPlaying) {
+            if (emphasisIndex >= emphasisList.size())
+                emphasisIndex = 0;
+            boolean isEmphasis = emphasisList.get(emphasisIndex);
+            emphasisIndex++;
+
             if (soundId != -1)
-                soundPool.play(soundId, 1.0f, 1.0f, 0, 0, 1.0f);
+                soundPool.play(soundId, isEmphasis ? 1.0f : 0.2f, isEmphasis ? 1.0f : 0.2f, 0, 0, 1.0f);
             else if (Build.VERSION.SDK_INT >= 26)
-                vibrator.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE));
-            else vibrator.vibrate(50);
+                vibrator.vibrate(VibrationEffect.createOneShot(isEmphasis ? 50 : 20, VibrationEffect.DEFAULT_AMPLITUDE));
+            else vibrator.vibrate(isEmphasis ? 50 : 20);
 
 
             handler.postDelayed(this, interval);
             if (listener != null)
-                listener.onTick();
+                listener.onTick(emphasisIndex - 1);
         }
     }
 
@@ -207,7 +244,7 @@ public class MetronomeService extends Service implements Runnable {
     public interface TickListener {
         void onStartTicks();
 
-        void onTick();
+        void onTick(int index);
 
         void onStopTicks();
     }
