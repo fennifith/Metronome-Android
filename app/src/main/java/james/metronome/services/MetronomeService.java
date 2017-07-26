@@ -217,9 +217,13 @@ public class MetronomeService extends Service implements Runnable {
     @Override
     public void run() {
         if (isPlaying) {
+            handler.postDelayed(this, interval);
+
             if (emphasisIndex >= emphasisList.size())
                 emphasisIndex = 0;
             boolean isEmphasis = emphasisList.get(emphasisIndex);
+            if (listener != null)
+                listener.onTick(emphasisIndex);
             emphasisIndex++;
 
             if (soundId != -1)
@@ -227,11 +231,6 @@ public class MetronomeService extends Service implements Runnable {
             else if (Build.VERSION.SDK_INT >= 26)
                 vibrator.vibrate(VibrationEffect.createOneShot(isEmphasis ? 50 : 20, VibrationEffect.DEFAULT_AMPLITUDE));
             else vibrator.vibrate(isEmphasis ? 50 : 20);
-
-
-            handler.postDelayed(this, interval);
-            if (listener != null)
-                listener.onTick(emphasisIndex - 1);
         }
     }
 

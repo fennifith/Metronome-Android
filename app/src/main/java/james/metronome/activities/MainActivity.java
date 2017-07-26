@@ -241,6 +241,8 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
                     public void accept(@NonNull Integer integer) throws Exception {
                         DrawableCompat.setTint(seekBar.getProgressDrawable(), integer);
                         playView.setColorFilter(integer);
+                        addEmphasisView.setColorFilter(integer);
+                        removeEmphasisView.setColorFilter(integer);
                         moreView.setColorFilter(integer);
                         lessView.setColorFilter(integer);
                         aboutView.setColorFilter(integer);
