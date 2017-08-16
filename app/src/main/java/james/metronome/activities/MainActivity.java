@@ -349,7 +349,7 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
         metronomeView.onTick();
 
         for (int i = 0; i < emphasisLayout.getChildCount(); i++) {
-            ((EmphasisSwitch) emphasisLayout.getChildAt(i)).setOutlined(i == index);
+            ((EmphasisSwitch) emphasisLayout.getChildAt(i)).setAccented(i == index);
         }
     }
 
@@ -358,7 +358,7 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
         playView.setImageResource(R.drawable.ic_play);
 
         for (int i = 0; i < emphasisLayout.getChildCount(); i++) {
-            ((EmphasisSwitch) emphasisLayout.getChildAt(i)).setOutlined(false);
+            ((EmphasisSwitch) emphasisLayout.getChildAt(i)).setAccented(false);
         }
     }
 

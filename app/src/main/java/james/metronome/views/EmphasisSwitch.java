@@ -20,15 +20,17 @@ import james.metronome.utils.ConversionUtils;
 public class EmphasisSwitch extends View implements View.OnClickListener {
 
     private Paint paint;
-    private Paint bgPaint;
     private Paint outlinePaint;
+    private Paint accentPaint;
+    private Paint accentOutlinePaint;
 
     private Disposable colorAccentSubscription;
     private Disposable textColorPrimarySubscription;
+    private Disposable textColorSecondarySubscription;
 
     private float checked;
     private boolean isChecked;
-    private boolean isOutlined;
+    private boolean isAccented;
     private OnCheckedChangeListener listener;
 
     private final int margin = ConversionUtils.getPixelsFromDp(8);
@@ -50,19 +52,26 @@ public class EmphasisSwitch extends View implements View.OnClickListener {
         paint.setStyle(Paint.Style.FILL);
         paint.setAntiAlias(true);
 
-        bgPaint = new Paint();
-        bgPaint.setColor(Color.BLACK);
-        bgPaint.setStyle(Paint.Style.STROKE);
-        bgPaint.setAntiAlias(true);
-
         outlinePaint = new Paint();
         outlinePaint.setColor(Color.BLACK);
         outlinePaint.setStyle(Paint.Style.STROKE);
+        outlinePaint.setStrokeWidth(2);
         outlinePaint.setAntiAlias(true);
+
+        accentPaint = new Paint();
+        accentPaint.setColor(Color.BLACK);
+        accentPaint.setStyle(Paint.Style.FILL);
+        accentPaint.setAntiAlias(true);
+
+        accentOutlinePaint = new Paint();
+        accentOutlinePaint.setColor(Color.BLACK);
+        accentOutlinePaint.setStyle(Paint.Style.STROKE);
+        accentOutlinePaint.setStrokeWidth(2);
+        accentOutlinePaint.setAntiAlias(true);
     }
 
-    public void setOutlined(boolean isOutlined) {
-        this.isOutlined = isOutlined;
+    public void setAccented(boolean isOutlined) {
+        this.isAccented = isOutlined;
         invalidate();
     }
 
@@ -97,8 +106,8 @@ public class EmphasisSwitch extends View implements View.OnClickListener {
                 .subscribe(new Consumer<Integer>() {
                     @Override
                     public void accept(@NonNull Integer integer) throws Exception {
-                        paint.setColor(integer);
-                        outlinePaint.setColor(integer);
+                        accentPaint.setColor(integer);
+                        accentOutlinePaint.setColor(integer);
                         invalidate();
                     }
                 });
@@ -108,7 +117,16 @@ public class EmphasisSwitch extends View implements View.OnClickListener {
                 .subscribe(new Consumer<Integer>() {
                     @Override
                     public void accept(Integer integer) throws Exception {
-                        bgPaint.setColor(integer);
+                        paint.setColor(integer);
+                    }
+                });
+
+        textColorSecondarySubscription = Aesthetic.get()
+                .textColorSecondary()
+                .subscribe(new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer integer) throws Exception {
+                        outlinePaint.setColor(integer);
                     }
                 });
     }
@@ -116,16 +134,15 @@ public class EmphasisSwitch extends View implements View.OnClickListener {
     public void unsubscribe() {
         colorAccentSubscription.dispose();
         textColorPrimarySubscription.dispose();
+        textColorSecondarySubscription.dispose();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawRect(margin + 1, margin + 1, canvas.getWidth() - margin - 1, canvas.getHeight() - margin - 1, bgPaint);
-        canvas.drawRect(margin, ((canvas.getHeight() - (margin * 2)) * (1 - checked)) + margin, (float) canvas.getWidth() - margin, (float) canvas.getHeight() - margin, paint);
-
-        if (isOutlined)
-            canvas.drawRect(margin / 2, margin / 2, canvas.getWidth() - (margin / 2), canvas.getHeight() - (margin / 2), outlinePaint);
+        int size = ConversionUtils.getPixelsFromDp(12);
+        canvas.drawCircle(canvas.getWidth() / 2, canvas.getHeight() / 2, size, isAccented ? accentOutlinePaint : outlinePaint);
+        canvas.drawCircle(canvas.getWidth() / 2, canvas.getHeight() / 2, checked * size, isAccented ? accentPaint : paint);
     }
 
     @Override
