@@ -2,6 +2,7 @@ package james.metronome.views;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -11,16 +12,21 @@ import com.afollestad.aesthetic.Aesthetic;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import james.metronome.utils.ConversionUtils;
 
 public class SeekBar extends View implements View.OnTouchListener {
 
     private Paint paint;
+    private Paint secondaryPaint;
+    private Paint accentPaint;
 
     private OnProgressChangeListener listener;
     private int progress;
     private int maxProgress = 100;
 
-    private Disposable subscription;
+    private Disposable textColorPrimarySubscription;
+    private Disposable textColorSecondarySubscription;
+    private Disposable colorAccentSubscription;
 
     public SeekBar(Context context) {
         this(context, null);
@@ -33,7 +39,16 @@ public class SeekBar extends View implements View.OnTouchListener {
     public SeekBar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         paint = new Paint();
+        paint.setColor(Color.BLACK);
         paint.setAntiAlias(true);
+
+        secondaryPaint = new Paint();
+        secondaryPaint.setColor(Color.BLACK);
+        secondaryPaint.setAntiAlias(true);
+
+        accentPaint = new Paint();
+        accentPaint.setColor(Color.BLACK);
+        accentPaint.setAntiAlias(true);
 
         setOnTouchListener(this);
         setClickable(true);
@@ -42,7 +57,7 @@ public class SeekBar extends View implements View.OnTouchListener {
     }
 
     public void subscribe() {
-        subscription = Aesthetic.get()
+        textColorPrimarySubscription = Aesthetic.get()
                 .textColorPrimary()
                 .subscribe(new Consumer<Integer>() {
                     @Override
@@ -51,10 +66,32 @@ public class SeekBar extends View implements View.OnTouchListener {
                         invalidate();
                     }
                 });
+
+        textColorSecondarySubscription = Aesthetic.get()
+                .textColorSecondary()
+                .subscribe(new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer integer) throws Exception {
+                        secondaryPaint.setColor(integer);
+                        invalidate();
+                    }
+                });
+
+        colorAccentSubscription = Aesthetic.get()
+                .colorAccent()
+                .subscribe(new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer integer) throws Exception {
+                        accentPaint.setColor(integer);
+                        invalidate();
+                    }
+                });
     }
 
     public void unsubscribe() {
-        subscription.dispose();
+        textColorPrimarySubscription.dispose();
+        textColorSecondarySubscription.dispose();
+        colorAccentSubscription.dispose();
     }
 
     public void setProgress(int progress) {
@@ -92,9 +129,17 @@ public class SeekBar extends View implements View.OnTouchListener {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        paint.setAlpha(50);
-        canvas.drawRect(0, 0, canvas.getWidth(), 2, paint);
-        paint.setAlpha(255);
-        canvas.drawRect(0, 0, (int) (canvas.getWidth() * ((float) progress / maxProgress)), 2, paint);
+        secondaryPaint.setAlpha(255);
+        canvas.drawRect(0, 0, canvas.getWidth(), 2, secondaryPaint);
+
+        int currentWidth = (int) (canvas.getWidth() * ((float) progress / maxProgress));
+        for (int i = 0; i < maxProgress; i += 10) {
+            int width = (int) (canvas.getWidth() * ((float) i / maxProgress));
+            secondaryPaint.setAlpha(Math.max(255 - (int) ((float) Math.abs(width - currentWidth) * 1000 / canvas.getWidth()), 0));
+            canvas.drawRect(width - 1, 0, width + 1, ConversionUtils.getPixelsFromDp(i % 20 == 0 ? 6 : 4), secondaryPaint);
+        }
+
+        canvas.drawRect(0, 0, currentWidth, 2, accentPaint);
+        canvas.drawRect(currentWidth - 1, 0, currentWidth + 1, ConversionUtils.getPixelsFromDp(10), accentPaint);
     }
 }

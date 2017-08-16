@@ -118,6 +118,7 @@ public class EmphasisSwitch extends View implements View.OnClickListener {
                     @Override
                     public void accept(Integer integer) throws Exception {
                         paint.setColor(integer);
+                        invalidate();
                     }
                 });
 
@@ -127,6 +128,7 @@ public class EmphasisSwitch extends View implements View.OnClickListener {
                     @Override
                     public void accept(Integer integer) throws Exception {
                         outlinePaint.setColor(integer);
+                        invalidate();
                     }
                 });
     }
