@@ -5,18 +5,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
-import android.support.v4.graphics.drawable.DrawableCompat;
+import android.os.Looper;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.afollestad.aesthetic.Aesthetic;
 import com.afollestad.aesthetic.AestheticActivity;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -29,6 +30,7 @@ import james.metronome.services.MetronomeService;
 import james.metronome.utils.WhileHeldListener;
 import james.metronome.views.EmphasisSwitch;
 import james.metronome.views.MetronomeView;
+import james.metronome.views.SeekBar;
 import james.metronome.views.ThemesView;
 import james.metronome.views.TicksView;
 
@@ -72,7 +74,7 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
         aboutView = findViewById(R.id.about);
         seekBar = findViewById(R.id.seekBar);
 
-        seekBar.setPadding(0, 0, 0, 0);
+        seekBar.setMaxProgress(300);
 
         if (isBound()) {
             ticksView.setTick(service.getTick());
@@ -169,24 +171,18 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
             }
         });
 
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        seekBar.setOnProgressChangeListener(new SeekBar.OnProgressChangeListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            public void onProgressChange(int progress) {
                 if (progress > 0)
                     setBpm(progress);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
             }
         });
 
         ticksView.setListener(this);
         subscribe();
+
+        new SplashThread(this).start();
     }
 
     private void setBpm(int bpm) {
@@ -216,6 +212,7 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
         if (metronomeView != null && ticksView != null) {
             metronomeView.subscribe();
             ticksView.subscribe();
+            seekBar.subscribe();
         }
 
         if (emphasisLayout != null) {
@@ -239,7 +236,6 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
                 .subscribe(new Consumer<Integer>() {
                     @Override
                     public void accept(@NonNull Integer integer) throws Exception {
-                        DrawableCompat.setTint(seekBar.getProgressDrawable(), integer);
                         playView.setColorFilter(integer);
                         addEmphasisView.setColorFilter(integer);
                         removeEmphasisView.setColorFilter(integer);
@@ -254,6 +250,7 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
         if (metronomeView != null && ticksView != null) {
             metronomeView.unsubscribe();
             ticksView.unsubscribe();
+            seekBar.unsubscribe();
         }
 
         if (emphasisLayout != null) {
@@ -374,6 +371,33 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
             }
 
             service.setEmphasisList(emphasisList);
+        }
+    }
+
+    private class SplashThread extends Thread {
+
+        private WeakReference<MainActivity> activityReference;
+
+        public SplashThread(MainActivity activity) {
+            activityReference = new WeakReference<>(activity);
+        }
+
+        @Override
+        public void run() {
+            try {
+                sleep(3000);
+            } catch (InterruptedException e) {
+                return;
+            }
+
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    MainActivity activity = activityReference.get();
+                    if (activity != null)
+                        activity.findViewById(R.id.icon).setVisibility(View.GONE);
+                }
+            });
         }
     }
 }
