@@ -23,7 +23,7 @@
             android:layout_height="?attr/actionBarSize"
             android:scaleType="centerInside"
             android:tint="@color/colorAccent"
-            app:srcCompat="@drawable/ic_theme" />
+            app:srcCompat="@drawable/ic_expand" />
 
         <TextView
             android:id="@+id/name"
