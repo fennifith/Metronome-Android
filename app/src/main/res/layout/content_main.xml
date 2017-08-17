@@ -68,36 +68,51 @@
 
     </HorizontalScrollView>
 
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/bottomBar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:layout_gravity="bottom"
-        android:background="?android:colorBackground"
-        android:gravity="center">
+        android:background="?android:colorBackground">
 
-        <ImageView
-            android:id="@+id/less"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:scaleType="centerInside"
-            app:srcCompat="@drawable/ic_less" />
+        <james.metronome.views.SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
-        <TextView
-            android:id="@+id/bpm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="120 BPM"
-            android:textSize="16sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center">
 
-        <ImageView
-            android:id="@+id/more"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:scaleType="centerInside"
-            app:srcCompat="@drawable/ic_more" />
+            <ImageView
+                android:id="@+id/less"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:scaleType="centerInside"
+                android:tint="?android:textColorPrimary"
+                app:srcCompat="@drawable/ic_less" />
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/bpm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="120 BPM"
+                android:textColor="?android:textColorPrimary"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/more"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:scaleType="centerInside"
+                android:tint="?android:textColorPrimary"
+                app:srcCompat="@drawable/ic_more" />
+
+        </LinearLayout>
+
+
+    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/topBar"
@@ -133,14 +148,5 @@
         android:scaleType="centerInside"
         android:tint="?android:textColorPrimary"
         app:srcCompat="@drawable/ic_info" />
-
-    <james.metronome.views.SeekBar
-        android:id="@+id/seekBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="?attr/actionBarSize"
-        android:max="300"
-        android:progressDrawable="@drawable/progress" />
 
 </FrameLayout>
