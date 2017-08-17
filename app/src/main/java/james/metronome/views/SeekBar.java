@@ -103,6 +103,10 @@ public class SeekBar extends View implements View.OnTouchListener {
             listener.onProgressChange(progress);
     }
 
+    public int getProgress() {
+        return progress;
+    }
+
     public void setMaxProgress(int maxProgress) {
         this.maxProgress = maxProgress;
         invalidate();

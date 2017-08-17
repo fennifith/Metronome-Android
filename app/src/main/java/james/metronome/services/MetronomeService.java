@@ -29,7 +29,9 @@ import james.metronome.views.TicksView;
 
 public class MetronomeService extends Service implements Runnable {
 
+    public static final String ACTION_START = "james.metronome.ACTION_START";
     public static final String ACTION_PAUSE = "james.metronome.ACTION_PAUSE";
+    public static final String EXTRA_BPM = "james.metronome.EXTRA_BPM";
 
     public static final String PREF_TICK = "tick";
     public static final String PREF_INTERVAL = "interval";
@@ -90,8 +92,14 @@ public class MetronomeService extends Service implements Runnable {
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null && intent.getAction() != null) {
             switch (intent.getAction()) {
+                case ACTION_START:
+                    setBpm(intent.getIntExtra(EXTRA_BPM, bpm));
+                    pause();
+                    play();
+                    break;
                 case ACTION_PAUSE:
                     pause();
+                    break;
             }
         }
         return START_STICKY;
@@ -160,6 +168,8 @@ public class MetronomeService extends Service implements Runnable {
         this.bpm = bpm;
         interval = toInterval(bpm);
         prefs.edit().putLong(PREF_INTERVAL, interval).apply();
+        if (listener != null)
+            listener.onBpmChanged(bpm);
     }
 
     public void setTick(int tick) {
@@ -244,6 +254,8 @@ public class MetronomeService extends Service implements Runnable {
         void onStartTicks();
 
         void onTick(int index);
+
+        void onBpmChanged(int bpm);
 
         void onStopTicks();
     }

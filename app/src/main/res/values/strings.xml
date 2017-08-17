@@ -29,4 +29,6 @@
 
     <string name="notification_title">Metronome is running…</string>
     <string name="notification_desc">Touch to stop.</string>
+    <string name="msg_add_shortcut">Do you want to add this shortcut to your home screen?</string>
+    <string name="title_add_shortcut">Add To Home Screen</string>
 </resources>

@@ -1,13 +1,25 @@
 package james.metronome.activities;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
+import android.content.pm.ShortcutInfo;
+import android.content.pm.ShortcutManager;
+import android.graphics.drawable.Icon;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.preference.PreferenceManager;
+import android.support.v7.app.AlertDialog;
+import android.view.HapticFeedbackConstants;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -19,6 +31,8 @@ import com.afollestad.aesthetic.AestheticActivity;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -34,7 +48,10 @@ import james.metronome.views.SeekBar;
 import james.metronome.views.ThemesView;
 import james.metronome.views.TicksView;
 
-public class MainActivity extends AestheticActivity implements TicksView.OnTickChangedListener, ServiceConnection, MetronomeService.TickListener, EmphasisSwitch.OnCheckedChangeListener {
+public class MainActivity extends AestheticActivity implements TicksView.OnTickChangedListener, ServiceConnection, MetronomeService.TickListener, EmphasisSwitch.OnCheckedChangeListener, SeekBar.OnProgressChangeListener {
+
+    private static final String PREF_BOOKMARKS_LENGTH = "bookmarksLength";
+    private static final String PREF_BOOKMARK = "bookmark";
 
     private boolean isBound;
     private MetronomeService service;
@@ -42,8 +59,10 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
     private MetronomeView metronomeView;
     private ImageView playView;
     private LinearLayout emphasisLayout;
+    private LinearLayout bookmarkLayout;
     private TextView bpmView;
     private ImageView aboutView;
+    private ImageView bookmarkView;
     private ImageView lessView;
     private ImageView moreView;
     private ImageView addEmphasisView;
@@ -51,8 +70,15 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
     private TicksView ticksView;
     private SeekBar seekBar;
 
+    private Disposable colorAccentSubscription;
     private Disposable colorBackgroundSubscription;
     private Disposable textColorPrimarySubscription;
+
+    private int colorAccent;
+    private int textColorPrimary;
+
+    private SharedPreferences prefs;
+    private List<Integer> bookmarks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +91,7 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
         metronomeView = findViewById(R.id.metronome);
         playView = findViewById(R.id.play);
         emphasisLayout = findViewById(R.id.emphasis);
+        bookmarkLayout = findViewById(R.id.bookmarks);
         addEmphasisView = findViewById(R.id.add);
         removeEmphasisView = findViewById(R.id.remove);
         bpmView = findViewById(R.id.bpm);
@@ -72,6 +99,7 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
         moreView = findViewById(R.id.more);
         ticksView = findViewById(R.id.ticks);
         aboutView = findViewById(R.id.about);
+        bookmarkView = findViewById(R.id.bookmark);
         seekBar = findViewById(R.id.seekBar);
 
         seekBar.setMaxProgress(300);
@@ -87,6 +115,14 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
                 emphasisLayout.addView(getEmphasisSwitch(isEmphasis, false));
             }
         }
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        bookmarks = new ArrayList<>();
+        int bookmarksLength = prefs.getInt(PREF_BOOKMARKS_LENGTH, 0);
+        for (int i = 0; i < bookmarksLength; i++) {
+            bookmarks.add(prefs.getInt(PREF_BOOKMARK + i, -1));
+        }
+        updateBookmarks(true);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -105,6 +141,18 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, AboutActivity.class));
+            }
+        });
+
+        bookmarkView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isBound()) {
+                    int bpm = service.getBpm();
+                    if (bookmarks.contains(bpm))
+                        removeBookmark(bpm);
+                    else addBookmark(bpm);
+                }
             }
         });
 
@@ -171,13 +219,7 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
             }
         });
 
-        seekBar.setOnProgressChangeListener(new SeekBar.OnProgressChangeListener() {
-            @Override
-            public void onProgressChange(int progress) {
-                if (progress > 0)
-                    setBpm(progress);
-            }
-        });
+        seekBar.setOnProgressChangeListener(this);
 
         ticksView.setListener(this);
         subscribe();
@@ -185,12 +227,176 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
         new SplashThread(this).start();
     }
 
-    private void setBpm(int bpm) {
-        if (isBound()) {
+    private void addBookmark(int bpm) {
+        if (bookmarks.contains(bpm))
+            return;
+
+        bookmarks.add(bpm);
+        saveBookmarks();
+        if (isBound())
             service.setBpm(bpm);
-            metronomeView.setInterval(service.getInterval());
-            bpmView.setText(String.format(Locale.getDefault(), getString(R.string.bpm), String.valueOf(bpm)));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            ShortcutManager manager = (ShortcutManager) getSystemService(Context.SHORTCUT_SERVICE);
+            List<ShortcutInfo> shortcuts = manager.getDynamicShortcuts();
+            shortcuts.add(
+                    new ShortcutInfo.Builder(this, String.valueOf(bpm))
+                            .setShortLabel(getString(R.string.bpm, String.valueOf(bpm)))
+                            .setIcon(Icon.createWithResource(this, R.drawable.ic_note))
+                            .setIntent(getBookmarkIntent(bpm))
+                            .build()
+            );
+            manager.setDynamicShortcuts(shortcuts);
         }
+    }
+
+    private void removeBookmark(int bpm) {
+        if (isBound()) {
+            if (!bookmarks.contains(bpm))
+                return;
+
+            bookmarks.remove((Object) bpm);
+            saveBookmarks();
+            if (service.getBpm() == bpm)
+                service.setBpm(bpm);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+                ((ShortcutManager) getSystemService(Context.SHORTCUT_SERVICE))
+                        .removeDynamicShortcuts(Arrays.asList(String.valueOf(bpm)));
+            }
+        }
+    }
+
+    private void saveBookmarks() {
+        SharedPreferences.Editor editor = prefs.edit();
+        for (int i = 0; i < bookmarks.size(); i++) {
+            editor.putInt(PREF_BOOKMARK + i, bookmarks.get(i));
+        }
+        editor.putInt(PREF_BOOKMARKS_LENGTH, bookmarks.size());
+        editor.apply();
+
+        updateBookmarks(true);
+    }
+
+    private void updateBookmarks(boolean contentChanged) {
+        if (contentChanged) {
+            Collections.sort(bookmarks);
+
+            for (int i = 0; i < bookmarks.size(); i++) {
+                if (!isBookmark(bookmarks.get(i))) {
+                    int bpm = bookmarks.get(i);
+                    boolean isSelected = false;
+                    if (isBound())
+                        isSelected = bpm == service.getBpm();
+
+                    View view = LayoutInflater.from(this).inflate(R.layout.item_bookmark, bookmarkLayout, false);
+                    view.setTag(bpm);
+                    view.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (isBound() && view.getTag() != null && view.getTag() instanceof Integer)
+                                service.setBpm((Integer) view.getTag());
+                        }
+                    });
+                    view.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View view) {
+                            view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+                            if (view.getTag() != null && view.getTag() instanceof Integer) {
+                                final int bpm = (Integer) view.getTag();
+
+                                new AlertDialog.Builder(MainActivity.this)
+                                        .setTitle(R.string.title_add_shortcut)
+                                        .setMessage(R.string.msg_add_shortcut)
+                                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                Intent intent = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
+                                                intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, getBookmarkIntent(bpm));
+                                                intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, getString(R.string.bpm, String.valueOf(bpm)));
+                                                intent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.mipmap.ic_launcher));
+                                                intent.putExtra("duplicate", false);
+                                                sendBroadcast(intent);
+
+                                                startActivity(new Intent(Intent.ACTION_MAIN)
+                                                        .addCategory(Intent.CATEGORY_HOME)
+                                                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+
+                                                dialogInterface.dismiss();
+                                            }
+                                        })
+                                        .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                dialogInterface.dismiss();
+                                            }
+                                        })
+                                        .show();
+                            }
+                            return false;
+                        }
+                    });
+
+                    bookmarkLayout.addView(view, i);
+
+                    ImageView imageView = view.findViewById(R.id.image);
+                    imageView.setColorFilter(isSelected ? colorAccent : textColorPrimary);
+                    imageView.invalidate();
+                    TextView titleView = view.findViewById(R.id.title);
+                    titleView.setText(getString(R.string.bpm, String.valueOf(bpm)));
+                    titleView.setTextColor(isSelected ? colorAccent : textColorPrimary);
+                }
+            }
+
+            for (int i = 0; i < bookmarkLayout.getChildCount(); i++) {
+                View view = bookmarkLayout.getChildAt(i);
+                if (!isBookmark(view))
+                    bookmarkLayout.removeViewAt(i);
+            }
+        } else if (isBound()) {
+            for (int i = 0; i < bookmarkLayout.getChildCount(); i++) {
+                View view = bookmarkLayout.getChildAt(i);
+                if (view.getTag() != null && view.getTag() instanceof Integer) {
+                    boolean isSelected = service.getBpm() == (Integer) view.getTag();
+
+                    final ImageView imageView = view.findViewById(R.id.image);
+                    final TextView titleView = view.findViewById(R.id.title);
+
+                    ValueAnimator animator = ValueAnimator.ofObject(new ArgbEvaluator(), titleView.getCurrentTextColor(), isSelected ? colorAccent : textColorPrimary);
+                    animator.setDuration(250);
+                    animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                        @Override
+                        public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                            int color = (int) valueAnimator.getAnimatedValue();
+                            imageView.setColorFilter(color);
+                            titleView.setTextColor(color);
+                        }
+                    });
+                    animator.start();
+                }
+            }
+        }
+    }
+
+    private boolean isBookmark(int bpm) {
+        for (int i = 0; i < bookmarkLayout.getChildCount(); i++) {
+            View view = bookmarkLayout.getChildAt(i);
+            if (view.getTag() != null && view.getTag() instanceof Integer && bpm == (Integer) view.getTag())
+                return true;
+        }
+
+        return false;
+    }
+
+    private boolean isBookmark(View view) {
+        return view.getTag() != null && view.getTag() instanceof Integer && bookmarks.contains(view.getTag());
+    }
+
+    private Intent getBookmarkIntent(int bpm) {
+        return new Intent(this, DummyShortcutActivity.class)
+                .setAction(MetronomeService.ACTION_START)
+                .putExtra(MetronomeService.EXTRA_BPM, bpm)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     }
 
     private boolean isBound() {
@@ -221,6 +427,16 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
             }
         }
 
+        colorAccentSubscription = Aesthetic.get()
+                .colorAccent()
+                .subscribe(new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer integer) throws Exception {
+                        colorAccent = integer;
+                        updateBookmarks(false);
+                    }
+                });
+
         colorBackgroundSubscription = Aesthetic.get()
                 .colorWindowBackground()
                 .subscribe(new Consumer<Integer>() {
@@ -242,6 +458,9 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
                         moreView.setColorFilter(integer);
                         lessView.setColorFilter(integer);
                         aboutView.setColorFilter(integer);
+                        bookmarkView.setColorFilter(integer);
+                        textColorPrimary = integer;
+                        updateBookmarks(false);
                     }
                 });
     }
@@ -259,6 +478,7 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
             }
         }
 
+        colorAccentSubscription.dispose();
         colorBackgroundSubscription.dispose();
         textColorPrimarySubscription.dispose();
     }
@@ -354,6 +574,22 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
     }
 
     @Override
+    public void onBpmChanged(int bpm) {
+        if (isBound()) {
+            metronomeView.setInterval(service.getInterval());
+            bpmView.setText(String.format(Locale.getDefault(), getString(R.string.bpm), String.valueOf(bpm)));
+            bookmarkView.setImageResource(bookmarks.contains(bpm) ? R.drawable.ic_bookmark : R.drawable.ic_bookmark_border);
+            updateBookmarks(false);
+
+            if (seekBar.getProgress() != bpm) {
+                seekBar.setOnProgressChangeListener(null);
+                seekBar.setProgress(bpm);
+                seekBar.setOnProgressChangeListener(this);
+            }
+        }
+    }
+
+    @Override
     public void onStopTicks() {
         playView.setImageResource(R.drawable.ic_play);
 
@@ -372,6 +608,12 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
 
             service.setEmphasisList(emphasisList);
         }
+    }
+
+    @Override
+    public void onProgressChange(int progress) {
+        if (progress > 0 && isBound())
+            service.setBpm(progress);
     }
 
     private class SplashThread extends Thread {
