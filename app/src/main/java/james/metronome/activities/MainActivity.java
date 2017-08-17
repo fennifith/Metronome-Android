@@ -31,7 +31,6 @@ import com.afollestad.aesthetic.AestheticActivity;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -235,19 +234,6 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
         saveBookmarks();
         if (isBound())
             service.setBpm(bpm);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-            ShortcutManager manager = (ShortcutManager) getSystemService(Context.SHORTCUT_SERVICE);
-            List<ShortcutInfo> shortcuts = manager.getDynamicShortcuts();
-            shortcuts.add(
-                    new ShortcutInfo.Builder(this, String.valueOf(bpm))
-                            .setShortLabel(getString(R.string.bpm, String.valueOf(bpm)))
-                            .setIcon(Icon.createWithResource(this, R.drawable.ic_note))
-                            .setIntent(getBookmarkIntent(bpm))
-                            .build()
-            );
-            manager.setDynamicShortcuts(shortcuts);
-        }
     }
 
     private void removeBookmark(int bpm) {
@@ -259,11 +245,6 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
             saveBookmarks();
             if (service.getBpm() == bpm)
                 service.setBpm(bpm);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-                ((ShortcutManager) getSystemService(Context.SHORTCUT_SERVICE))
-                        .removeDynamicShortcuts(Arrays.asList(String.valueOf(bpm)));
-            }
         }
     }
 
@@ -274,6 +255,25 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
         }
         editor.putInt(PREF_BOOKMARKS_LENGTH, bookmarks.size());
         editor.apply();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            Collections.sort(bookmarks);
+            ShortcutManager manager = (ShortcutManager) getSystemService(Context.SHORTCUT_SERVICE);
+            if (manager != null) {
+                List<ShortcutInfo> shortcuts = new ArrayList<>();
+                for (int bpm : bookmarks) {
+                    shortcuts.add(
+                            new ShortcutInfo.Builder(this, String.valueOf(bpm))
+                                    .setShortLabel(getString(R.string.bpm, String.valueOf(bpm)))
+                                    .setIcon(Icon.createWithResource(this, R.drawable.ic_note))
+                                    .setIntent(getBookmarkIntent(bpm))
+                                    .build()
+                    );
+                }
+
+                manager.setDynamicShortcuts(shortcuts);
+            }
+        }
 
         updateBookmarks(true);
     }
@@ -298,44 +298,47 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
                                 service.setBpm((Integer) view.getTag());
                         }
                     });
-                    view.setOnLongClickListener(new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(View view) {
-                            view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-                            if (view.getTag() != null && view.getTag() instanceof Integer) {
-                                final int bpm = (Integer) view.getTag();
 
-                                new AlertDialog.Builder(MainActivity.this)
-                                        .setTitle(R.string.title_add_shortcut)
-                                        .setMessage(R.string.msg_add_shortcut)
-                                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialogInterface, int i) {
-                                                Intent intent = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
-                                                intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, getBookmarkIntent(bpm));
-                                                intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, getString(R.string.bpm, String.valueOf(bpm)));
-                                                intent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.mipmap.ic_launcher));
-                                                intent.putExtra("duplicate", false);
-                                                sendBroadcast(intent);
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) {
+                        view.setOnLongClickListener(new View.OnLongClickListener() {
+                            @Override
+                            public boolean onLongClick(View view) {
+                                view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+                                if (view.getTag() != null && view.getTag() instanceof Integer) {
+                                    final int bpm = (Integer) view.getTag();
 
-                                                startActivity(new Intent(Intent.ACTION_MAIN)
-                                                        .addCategory(Intent.CATEGORY_HOME)
-                                                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                                    new AlertDialog.Builder(MainActivity.this)
+                                            .setTitle(R.string.title_add_shortcut)
+                                            .setMessage(R.string.msg_add_shortcut)
+                                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    Intent intent = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
+                                                    intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, getBookmarkIntent(bpm));
+                                                    intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, getString(R.string.bpm, String.valueOf(bpm)));
+                                                    intent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.mipmap.ic_launcher));
+                                                    intent.putExtra("duplicate", false);
+                                                    sendBroadcast(intent);
 
-                                                dialogInterface.dismiss();
-                                            }
-                                        })
-                                        .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialogInterface, int i) {
-                                                dialogInterface.dismiss();
-                                            }
-                                        })
-                                        .show();
+                                                    startActivity(new Intent(Intent.ACTION_MAIN)
+                                                            .addCategory(Intent.CATEGORY_HOME)
+                                                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+
+                                                    dialogInterface.dismiss();
+                                                }
+                                            })
+                                            .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    dialogInterface.dismiss();
+                                                }
+                                            })
+                                            .show();
+                                }
+                                return false;
                             }
-                            return false;
-                        }
-                    });
+                        });
+                    }
 
                     bookmarkLayout.addView(view, i);
 
