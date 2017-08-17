@@ -90,7 +90,6 @@
                 android:layout_width="56dp"
                 android:layout_height="56dp"
                 android:scaleType="centerInside"
-                android:tint="?android:textColorPrimary"
                 app:srcCompat="@drawable/ic_less" />
 
             <TextView
@@ -98,7 +97,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="120 BPM"
-                android:textColor="?android:textColorPrimary"
                 android:textSize="16sp" />
 
             <ImageView
@@ -106,7 +104,6 @@
                 android:layout_width="56dp"
                 android:layout_height="56dp"
                 android:scaleType="centerInside"
-                android:tint="?android:textColorPrimary"
                 app:srcCompat="@drawable/ic_more" />
 
         </LinearLayout>
@@ -137,7 +134,6 @@
         android:layout_height="?attr/actionBarSize"
         android:layout_gravity="bottom|end"
         android:scaleType="centerInside"
-        android:tint="?android:textColorPrimary"
         app:srcCompat="@drawable/ic_bookmark_border" />
 
     <ImageView
@@ -146,7 +142,6 @@
         android:layout_height="?attr/actionBarSize"
         android:layout_gravity="top|end"
         android:scaleType="centerInside"
-        android:tint="?android:textColorPrimary"
         app:srcCompat="@drawable/ic_info" />
 
 </FrameLayout>
