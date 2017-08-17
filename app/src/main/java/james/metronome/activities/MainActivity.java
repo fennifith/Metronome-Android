@@ -568,8 +568,8 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
     }
 
     @Override
-    public void onTick(int index) {
-        metronomeView.onTick();
+    public void onTick(boolean isEmphasis, int index) {
+        metronomeView.onTick(isEmphasis);
 
         for (int i = 0; i < emphasisLayout.getChildCount(); i++) {
             ((EmphasisSwitch) emphasisLayout.getChildAt(i)).setAccented(i == index);

@@ -82,7 +82,7 @@ public class MetronomeService extends Service implements Runnable {
         emphasisList = new ArrayList<>();
         int emphasisSize = prefs.getInt(PREF_EMPHASIS_SIZE, 4);
         for (int i = 0; i < emphasisSize; i++) {
-            emphasisList.add(prefs.getBoolean(PREF_EMPHASIS + i, true));
+            emphasisList.add(prefs.getBoolean(PREF_EMPHASIS + i, false));
         }
 
         handler = new Handler();
@@ -233,7 +233,7 @@ public class MetronomeService extends Service implements Runnable {
                 emphasisIndex = 0;
             boolean isEmphasis = emphasisList.get(emphasisIndex);
             if (listener != null)
-                listener.onTick(emphasisIndex);
+                listener.onTick(isEmphasis, emphasisIndex);
             emphasisIndex++;
 
             if (soundId != -1)
@@ -253,7 +253,7 @@ public class MetronomeService extends Service implements Runnable {
     public interface TickListener {
         void onStartTicks();
 
-        void onTick(int index);
+        void onTick(boolean isEmphasis, int index);
 
         void onBpmChanged(int bpm);
 

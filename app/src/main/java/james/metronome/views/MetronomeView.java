@@ -18,10 +18,13 @@ import io.reactivex.functions.Consumer;
 public class MetronomeView extends View {
 
     private Paint paint;
+    private Paint accentPaint;
     private long interval = 500;
     private float distance;
+    private boolean isEmphasis;
 
-    private Disposable subscription;
+    private Disposable colorAccentSubscription;
+    private Disposable textColorPrimarySubscription;
 
     public MetronomeView(Context context) {
         this(context, null);
@@ -35,15 +38,30 @@ public class MetronomeView extends View {
         super(context, attrs, defStyleAttr);
         paint = new Paint();
         paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(1);
+        paint.setStrokeWidth(2);
         paint.setAntiAlias(true);
         paint.setColor(Color.BLACK);
+
+        accentPaint = new Paint();
+        accentPaint.setStyle(Paint.Style.STROKE);
+        accentPaint.setStrokeWidth(8);
+        accentPaint.setAntiAlias(true);
+        accentPaint.setColor(Color.BLACK);
 
         subscribe();
     }
 
     public void subscribe() {
-        subscription = Aesthetic.get()
+        colorAccentSubscription = Aesthetic.get()
+                .colorAccent()
+                .subscribe(new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer integer) throws Exception {
+                        accentPaint.setColor(integer);
+                    }
+                });
+
+        textColorPrimarySubscription = Aesthetic.get()
                 .textColorPrimary()
                 .subscribe(new Consumer<Integer>() {
                     @Override
@@ -54,14 +72,17 @@ public class MetronomeView extends View {
     }
 
     public void unsubscribe() {
-        subscription.dispose();
+        colorAccentSubscription.dispose();
+        textColorPrimarySubscription.dispose();
     }
 
     public void setInterval(long interval) {
         this.interval = interval;
     }
 
-    public void onTick() {
+    public void onTick(boolean isEmphasis) {
+        this.isEmphasis = isEmphasis;
+
         ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
         animator.setDuration(interval);
         animator.setInterpolator(new DecelerateInterpolator());
@@ -79,6 +100,7 @@ public class MetronomeView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         paint.setAlpha((int) (255 * (1 - distance)));
-        canvas.drawCircle(canvas.getWidth() / 2, canvas.getHeight() / 2, distance * Math.max(canvas.getWidth(), canvas.getHeight()) / 2, paint);
+        accentPaint.setAlpha((int) (255 * (1 - distance)));
+        canvas.drawCircle(canvas.getWidth() / 2, canvas.getHeight() / 2, distance * Math.max(canvas.getWidth(), canvas.getHeight()) / 2, isEmphasis ? accentPaint : paint);
     }
 }
