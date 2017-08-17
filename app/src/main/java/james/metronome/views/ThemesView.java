@@ -95,12 +95,15 @@ public class ThemesView extends LinearLayout {
 
                             if (theme != i)
                                 view.setVisibility(View.GONE);
+                            else
+                                ((ImageView) view.findViewById(R.id.image)).setImageResource(R.drawable.ic_expand);
                         }
                     } else {
                         isExpanded = true;
                         for (int i = 0; i < getChildCount(); i++) {
                             final View view = getChildAt(i);
                             view.setVisibility(View.VISIBLE);
+                            ((ImageView) view.findViewById(R.id.image)).setImageResource(R.drawable.ic_theme);
                             if (theme == i) {
                                 ValueAnimator animator = ValueAnimator.ofObject(new ArgbEvaluator(), textColorPrimary, textColorPrimaryInverse);
                                 animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {

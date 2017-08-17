@@ -101,12 +101,15 @@ public class TicksView extends LinearLayout {
 
                             if (tick != i)
                                 view.setVisibility(View.GONE);
+                            else
+                                ((ImageView) view.findViewById(R.id.image)).setImageResource(R.drawable.ic_expand);
                         }
                     } else {
                         isExpanded = true;
                         for (int i = 0; i < getChildCount(); i++) {
                             final View view = getChildAt(i);
                             view.setVisibility(View.VISIBLE);
+                            ((ImageView) view.findViewById(R.id.image)).setImageResource(R.drawable.ic_note);
                             if (tick == i) {
                                 ValueAnimator animator = ValueAnimator.ofObject(new ArgbEvaluator(), textColorPrimary, textColorPrimaryInverse);
                                 animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
