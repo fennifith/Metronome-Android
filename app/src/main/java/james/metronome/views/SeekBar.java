@@ -23,6 +23,7 @@ public class SeekBar extends View implements View.OnTouchListener {
     private OnProgressChangeListener listener;
     private int progress;
     private int maxProgress = 100;
+    private float touchDiff;
 
     private Disposable textColorPrimarySubscription;
     private Disposable textColorSecondarySubscription;
@@ -116,8 +117,15 @@ public class SeekBar extends View implements View.OnTouchListener {
         float x = event.getX();
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                touchDiff = x - (((float) progress / maxProgress) * view.getMeasuredWidth());
             case MotionEvent.ACTION_MOVE:
-                setProgress((int) (maxProgress * (x / view.getMeasuredWidth())));
+                int progress = (int) (maxProgress * ((x - touchDiff) / view.getMeasuredWidth()));
+                if (progress < 0)
+                    progress = 0;
+                else if (progress > maxProgress)
+                    progress = maxProgress;
+
+                setProgress(progress);
         }
         return false;
     }
