@@ -38,6 +38,7 @@ import java.util.Locale;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import james.metronome.Metronome;
 import james.metronome.R;
 import james.metronome.services.MetronomeService;
 import james.metronome.utils.WhileHeldListener;
@@ -79,10 +80,14 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
     private SharedPreferences prefs;
     private List<Integer> bookmarks;
 
+    private Metronome metronome;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        metronome = (Metronome) getApplicationContext();
+        metronome.onCreateActivity();
 
         if (Aesthetic.isFirstTime())
             ThemesView.themes[0].apply(this);
@@ -150,7 +155,10 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
                     int bpm = service.getBpm();
                     if (bookmarks.contains(bpm))
                         removeBookmark(bpm);
-                    else addBookmark(bpm);
+                    else {
+                        metronome.onPremium(MainActivity.this);
+                        addBookmark(bpm);
+                    }
                 }
             }
         });
@@ -294,8 +302,10 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
                     view.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            if (isBound() && view.getTag() != null && view.getTag() instanceof Integer)
+                            if (isBound() && view.getTag() != null && view.getTag() instanceof Integer) {
+                                metronome.onPremium(MainActivity.this);
                                 service.setBpm((Integer) view.getTag());
+                            }
                         }
                     });
 
@@ -528,6 +538,13 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
     }
 
     @Override
+    protected void onDestroy() {
+        if (metronome != null)
+            metronome.onDestroyActivity();
+        super.onDestroy();
+    }
+
+    @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
         MetronomeService.LocalBinder binder = (MetronomeService.LocalBinder) iBinder;
         service = binder.getService();
@@ -617,6 +634,13 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
     public void onProgressChange(int progress) {
         if (progress > 0 && isBound())
             service.setBpm(progress);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (metronome != null && requestCode == Metronome.REQUEST_PURCHASE)
+            metronome.onPremiumBought(resultCode, data);
     }
 
     private class SplashThread extends Thread {

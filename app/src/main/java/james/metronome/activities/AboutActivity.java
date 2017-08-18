@@ -21,6 +21,7 @@ import com.afollestad.aesthetic.AestheticActivity;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import james.metronome.Metronome;
 import james.metronome.R;
 import james.metronome.views.ThemesView;
 
@@ -38,16 +39,18 @@ public class AboutActivity extends AestheticActivity implements ThemesView.OnThe
     private Disposable textColorPrimarySubscription;
 
     private SharedPreferences prefs;
+    private Metronome metronome;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
+        metronome = (Metronome) getApplicationContext();
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         iconView = findViewById(R.id.icon);
-        themesView = (ThemesView) findViewById(R.id.themes);
+        themesView = findViewById(R.id.themes);
         buttonsView = findViewById(R.id.buttons);
         View donateView = findViewById(R.id.donate);
         View githubView = findViewById(R.id.github);
@@ -55,6 +58,8 @@ public class AboutActivity extends AestheticActivity implements ThemesView.OnThe
         View tewtwenteyonepxView = findViewById(R.id.tewtwenteyonepx);
         creditsView = findViewById(R.id.credits);
         View aesthetic = findViewById(R.id.aesthetic);
+        View dialogs = findViewById(R.id.dialogs);
+        View glide = findViewById(R.id.glide);
         librariesView = findViewById(R.id.libraries);
 
         setSupportActionBar(toolbar);
@@ -97,6 +102,20 @@ public class AboutActivity extends AestheticActivity implements ThemesView.OnThe
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/afollestad/aesthetic")));
+            }
+        });
+
+        dialogs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/afollestad/material-dialogs")));
+            }
+        });
+
+        glide.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/bumptech/glide")));
             }
         });
 
@@ -151,6 +170,13 @@ public class AboutActivity extends AestheticActivity implements ThemesView.OnThe
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (metronome != null && requestCode == Metronome.REQUEST_PURCHASE)
+            metronome.onPremiumBought(resultCode, data);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -162,6 +188,7 @@ public class AboutActivity extends AestheticActivity implements ThemesView.OnThe
 
     @Override
     public void onThemeChanged(int theme) {
+        metronome.onPremium(this);
         prefs.edit().putInt(PREF_THEME, theme).apply();
     }
 }

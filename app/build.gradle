@@ -31,5 +31,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:26.0.1'
     compile 'com.android.support:design:26.0.1'
     compile 'com.github.afollestad:aesthetic:-SNAPSHOT'
+    compile 'com.afollestad.material-dialogs:core:0.9.4.7'
+    compile 'com.github.bumptech.glide:glide:4.0.0'
     testCompile 'junit:junit:4.12'
 }
