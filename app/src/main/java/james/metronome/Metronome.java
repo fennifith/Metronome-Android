@@ -86,7 +86,7 @@ public class Metronome extends Application {
     }
 
     public void onPremium(final Activity activity) {
-        if (!isPremium() || true) {
+        if (!isPremium()) {
             View view = LayoutInflater.from(activity).inflate(R.layout.dialog_premium, null);
             Glide.with(this).load("https://theandroidmaster.github.io/images/headers/metronomePremium.png").into((ImageView) view.findViewById(R.id.image));
 
