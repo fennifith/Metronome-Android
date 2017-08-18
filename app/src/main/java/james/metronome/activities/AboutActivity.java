@@ -23,6 +23,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import james.metronome.Metronome;
 import james.metronome.R;
+import james.metronome.views.AppIconView;
 import james.metronome.views.ThemesView;
 
 public class AboutActivity extends AestheticActivity implements ThemesView.OnThemeChangedListener {
@@ -30,6 +31,7 @@ public class AboutActivity extends AestheticActivity implements ThemesView.OnThe
     private static final String PREF_THEME = "theme";
 
     private Toolbar toolbar;
+    private AppIconView appIcon;
     private View iconView;
     private ThemesView themesView;
     private View buttonsView;
@@ -49,6 +51,7 @@ public class AboutActivity extends AestheticActivity implements ThemesView.OnThe
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         toolbar = findViewById(R.id.toolbar);
+        appIcon = findViewById(R.id.appIcon);
         iconView = findViewById(R.id.icon);
         themesView = findViewById(R.id.themes);
         buttonsView = findViewById(R.id.buttons);
@@ -123,8 +126,10 @@ public class AboutActivity extends AestheticActivity implements ThemesView.OnThe
     }
 
     private void subscribe() {
-        if (themesView != null)
+        if (themesView != null && appIcon != null) {
             themesView.subscribe();
+            appIcon.subscribe();
+        }
 
         textColorPrimarySubscription = Aesthetic.get()
                 .textColorPrimary()
@@ -151,8 +156,10 @@ public class AboutActivity extends AestheticActivity implements ThemesView.OnThe
     }
 
     private void unsubscribe() {
-        if (themesView != null)
+        if (themesView != null && appIcon != null) {
             themesView.unsubscribe();
+            appIcon.unsubscribe();
+        }
 
         textColorPrimarySubscription.dispose();
     }

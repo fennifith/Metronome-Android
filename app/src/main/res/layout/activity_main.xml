@@ -11,6 +11,7 @@
         android:layout_height="match_parent">
 
         <james.metronome.views.AppIconView
+            android:id="@+id/appIcon"
             android:layout_width="128dp"
             android:layout_height="128dp"
             android:layout_gravity="center" />

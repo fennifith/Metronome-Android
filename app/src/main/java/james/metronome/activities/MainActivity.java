@@ -42,6 +42,7 @@ import james.metronome.Metronome;
 import james.metronome.R;
 import james.metronome.services.MetronomeService;
 import james.metronome.utils.WhileHeldListener;
+import james.metronome.views.AppIconView;
 import james.metronome.views.EmphasisSwitch;
 import james.metronome.views.MetronomeView;
 import james.metronome.views.SeekBar;
@@ -56,6 +57,7 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
     private boolean isBound;
     private MetronomeService service;
 
+    private AppIconView appIcon;
     private MetronomeView metronomeView;
     private ImageView playView;
     private LinearLayout emphasisLayout;
@@ -92,6 +94,7 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
         if (Aesthetic.isFirstTime())
             ThemesView.themes[0].apply(this);
 
+        appIcon = findViewById(R.id.appIcon);
         metronomeView = findViewById(R.id.metronome);
         playView = findViewById(R.id.play);
         emphasisLayout = findViewById(R.id.emphasis);
@@ -428,10 +431,11 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
     }
 
     public void subscribe() {
-        if (metronomeView != null && ticksView != null) {
+        if (metronomeView != null && ticksView != null && seekBar != null && appIcon != null) {
             metronomeView.subscribe();
             ticksView.subscribe();
             seekBar.subscribe();
+            appIcon.subscribe();
         }
 
         if (emphasisLayout != null) {
@@ -479,10 +483,11 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
     }
 
     public void unsubscribe() {
-        if (metronomeView != null && ticksView != null) {
+        if (metronomeView != null && ticksView != null && seekBar != null && appIcon != null) {
             metronomeView.unsubscribe();
             ticksView.unsubscribe();
             seekBar.unsubscribe();
+            appIcon.unsubscribe();
         }
 
         if (emphasisLayout != null) {

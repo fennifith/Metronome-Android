@@ -4,8 +4,11 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.LightingColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.media.ThumbnailUtils;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
@@ -18,6 +21,10 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 
+import com.afollestad.aesthetic.Aesthetic;
+
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import james.metronome.R;
 import james.metronome.utils.ImageUtils;
 
@@ -26,10 +33,16 @@ public class AppIconView extends View {
     private Bitmap fgBitmap;
     private Bitmap mgBitmap;
     private Bitmap bgBitmap;
-    private Paint paint;
+    private Paint fgPaint;
+    private Paint mgPaint;
+    private Paint bgPaint;
     private int size;
     private float rotation;
     private float fgScale, bgScale;
+
+    private ValueAnimator animator;
+
+    private Disposable colorAccentSubscription;
 
     public AppIconView(Context context) {
         this(context, null);
@@ -41,8 +54,14 @@ public class AppIconView extends View {
 
     public AppIconView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        paint = new Paint();
-        paint.setAntiAlias(true);
+        fgPaint = new Paint();
+        fgPaint.setAntiAlias(true);
+
+        mgPaint = new Paint();
+        mgPaint.setAntiAlias(true);
+
+        bgPaint = new Paint();
+        bgPaint.setAntiAlias(true);
 
         ValueAnimator animator = ValueAnimator.ofFloat(0, 0.8f);
         animator.setInterpolator(new OvershootInterpolator());
@@ -68,19 +87,37 @@ public class AppIconView extends View {
         });
         animator.start();
 
-        animator = ValueAnimator.ofFloat(0, -48);
-        animator.setInterpolator(new AccelerateDecelerateInterpolator());
-        animator.setDuration(1500);
-        animator.setRepeatMode(ValueAnimator.REVERSE);
-        animator.setRepeatCount(ValueAnimator.INFINITE);
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        this.animator = ValueAnimator.ofFloat(0, -48);
+        this.animator.setInterpolator(new AccelerateDecelerateInterpolator());
+        this.animator.setDuration(1500);
+        this.animator.setRepeatMode(ValueAnimator.REVERSE);
+        this.animator.setRepeatCount(ValueAnimator.INFINITE);
+        this.animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animator) {
                 rotation = (float) animator.getAnimatedValue();
                 invalidate();
             }
         });
-        animator.start();
+        this.animator.start();
+
+        subscribe();
+    }
+
+    public void subscribe() {
+        colorAccentSubscription = Aesthetic.get()
+                .colorAccent()
+                .subscribe(new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer integer) throws Exception {
+                        fgPaint.setColorFilter(new LightingColorFilter(integer, 1));
+                        bgPaint.setColorFilter(new PorterDuffColorFilter(integer, PorterDuff.Mode.MULTIPLY));
+                    }
+                });
+    }
+
+    public void unsubscribe() {
+        colorAccentSubscription.dispose();
     }
 
     private Bitmap getRoundBitmap(@DrawableRes int drawable, int size) {
@@ -111,20 +148,20 @@ public class AppIconView extends View {
         matrix.postScale(bgScale, bgScale);
         matrix.postTranslate(0, 0);
         matrix.postTranslate(fgBitmap.getWidth() / 2, fgBitmap.getHeight() / 2);
-        canvas.drawBitmap(bgBitmap, matrix, paint);
+        canvas.drawBitmap(bgBitmap, matrix, bgPaint);
 
         matrix = new Matrix();
         matrix.postTranslate(-bgBitmap.getWidth() / 2, (int) (-bgBitmap.getHeight() / 1.25));
         matrix.postRotate(rotation);
         matrix.postScale(fgScale, fgScale);
         matrix.postTranslate(bgBitmap.getWidth() / 2, (int) (bgBitmap.getHeight() / 1.5));
-        canvas.drawBitmap(mgBitmap, matrix, paint);
+        canvas.drawBitmap(mgBitmap, matrix, mgPaint);
 
         matrix = new Matrix();
         matrix.postTranslate(-fgBitmap.getWidth() / 2, -fgBitmap.getHeight() / 2);
         matrix.postScale(bgScale, bgScale);
         matrix.postTranslate(0, 0);
         matrix.postTranslate(fgBitmap.getWidth() / 2, fgBitmap.getHeight() / 2);
-        canvas.drawBitmap(fgBitmap, matrix, paint);
+        canvas.drawBitmap(fgBitmap, matrix, fgPaint);
     }
 }
