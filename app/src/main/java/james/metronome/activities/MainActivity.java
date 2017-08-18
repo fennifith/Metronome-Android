@@ -305,10 +305,8 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
                     view.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            if (isBound() && view.getTag() != null && view.getTag() instanceof Integer) {
-                                metronome.onPremium(MainActivity.this);
+                            if (isBound() && view.getTag() != null && view.getTag() instanceof Integer)
                                 service.setBpm((Integer) view.getTag());
-                            }
                         }
                     });
 
