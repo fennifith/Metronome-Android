@@ -7,13 +7,17 @@ android {
         applicationId "james.metronome"
         minSdkVersion 19
         targetSdkVersion 26
-        versionCode 5
-        versionName "1.4"
+        versionCode 10
+        versionName "1.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
+            lintOptions {
+                checkReleaseBuilds false
+                abortOnError false
+            }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
