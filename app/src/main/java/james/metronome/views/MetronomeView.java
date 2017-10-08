@@ -102,5 +102,6 @@ public class MetronomeView extends View {
         paint.setAlpha((int) (255 * (1 - distance)));
         accentPaint.setAlpha((int) (255 * (1 - distance)));
         canvas.drawCircle(canvas.getWidth() / 2, canvas.getHeight() / 2, distance * Math.max(canvas.getWidth(), canvas.getHeight()) / 2, isEmphasis ? accentPaint : paint);
+        //this probably draws a circle or something idk
     }
 }

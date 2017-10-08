@@ -12,10 +12,10 @@ import james.metronome.utils.ColorUtils;
 
 public class ThemeData {
 
-    public int nameRes;
-    public int colorPrimaryRes;
-    public int colorAccentRes;
-    public int colorBackgroundRes;
+    private int nameRes;
+    private int colorPrimaryRes;
+    private int colorAccentRes;
+    private int colorBackgroundRes;
 
     public ThemeData(@StringRes int nameRes, @ColorRes int colorPrimaryRes, @ColorRes int colorAccentRes, @ColorRes int colorBackgroundRes) {
         this.nameRes = nameRes;

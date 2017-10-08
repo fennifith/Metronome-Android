@@ -253,7 +253,7 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
             if (!bookmarks.contains(bpm))
                 return;
 
-            bookmarks.remove((Object) bpm);
+            bookmarks.remove((Object) bpm); //yes, you are a thing
             saveBookmarks();
             if (service.getBpm() == bpm)
                 service.setBpm(bpm);

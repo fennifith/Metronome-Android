@@ -187,7 +187,7 @@ public class AboutActivity extends AestheticActivity implements ThemesView.OnThe
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                finish();
+                finish(); //IT ALL RETURNS TO NOTHING
                 break;
         }
         return super.onOptionsItemSelected(item);
