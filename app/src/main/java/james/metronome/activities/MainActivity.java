@@ -41,6 +41,7 @@ import io.reactivex.functions.Consumer;
 import james.metronome.Metronome;
 import james.metronome.R;
 import james.metronome.services.MetronomeService;
+import james.metronome.utils.ConversionUtils;
 import james.metronome.utils.WhileHeldListener;
 import james.metronome.views.AppIconView;
 import james.metronome.views.EmphasisSwitch;
@@ -170,7 +171,7 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
             @Override
             public void onClick(View view) {
                 if (isBound()) {
-                    if (service.getEmphasisList().size() < 6) {
+                    if (service.getEmphasisList().size() < 50) {
                         emphasisLayout.addView(getEmphasisSwitch(false, true));
 
                         List<Boolean> emphasisList = service.getEmphasisList();
@@ -503,6 +504,7 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
         EmphasisSwitch emphasisSwitch = new EmphasisSwitch(this);
         emphasisSwitch.setChecked(isChecked);
         emphasisSwitch.setOnCheckedChangeListener(this);
+        emphasisSwitch.setLayoutParams(new LinearLayout.LayoutParams(ConversionUtils.getPixelsFromDp(40), ConversionUtils.getPixelsFromDp(40)));
 
         if (subscribe)
             emphasisSwitch.subscribe();

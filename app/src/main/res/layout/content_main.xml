@@ -17,7 +17,7 @@
         android:scaleType="centerInside"
         app:srcCompat="@drawable/ic_play" />
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:layout_gravity="top"
@@ -28,28 +28,37 @@
             android:id="@+id/remove"
             android:layout_width="?attr/actionBarSize"
             android:layout_height="match_parent"
+            android:layout_gravity="start"
             android:scaleType="centerInside"
             app:srcCompat="@drawable/ic_remove" />
 
-        <LinearLayout
-            android:id="@+id/emphasis"
-            android:layout_width="0dp"
+        <HorizontalScrollView
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:animateLayoutChanges="true"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:paddingBottom="8dp"
-            android:paddingTop="8dp" />
+            android:layout_marginLeft="?attr/actionBarSize"
+            android:layout_marginRight="?attr/actionBarSize"
+            android:scrollbars="horizontal">
+
+            <james.metronome.views.EmphasesLayout
+                android:id="@+id/emphasis"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:animateLayoutChanges="true"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="horizontal" />
+
+        </HorizontalScrollView>
 
         <ImageView
             android:id="@+id/add"
             android:layout_width="?attr/actionBarSize"
             android:layout_height="match_parent"
+            android:layout_gravity="end"
             android:scaleType="centerInside"
             app:srcCompat="@drawable/ic_add" />
 
-    </LinearLayout>
+    </FrameLayout>
 
     <HorizontalScrollView
         android:layout_width="match_parent"
