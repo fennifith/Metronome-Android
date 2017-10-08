@@ -27,17 +27,17 @@ import james.metronome.utils.ImageUtils;
 
 public class AppIconView extends View {
 
-    private Bitmap fgBitmap;
-    private Bitmap mgBitmap;
-    private Bitmap bmgBitmap;
-    private Bitmap bgBitmap;
-    private Paint fgPaint;
-    private Paint mgPaint;
-    private Paint bmgPaint;
-    private Paint bgPaint;
-    private int size;
-    private float rotation;
-    private float bgScale;
+    private Bitmap all;
+    private Bitmap i;
+    private Bitmap want;
+    private Bitmap in;
+    private Paint life;
+    private Paint is;
+    private Paint lots;
+    private Paint of;
+    private int dank;
+    private float avocado;
+    private float toast;
 
     private ValueAnimator animator;
 
@@ -53,17 +53,17 @@ public class AppIconView extends View {
 
     public AppIconView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        fgPaint = new Paint();
-        fgPaint.setAntiAlias(true);
+        life = new Paint();
+        life.setAntiAlias(true);
 
-        mgPaint = new Paint();
-        mgPaint.setAntiAlias(true);
+        is = new Paint();
+        is.setAntiAlias(true);
 
-        bmgPaint = new Paint();
-        bmgPaint.setAntiAlias(true);
+        lots = new Paint();
+        lots.setAntiAlias(true);
 
-        bgPaint = new Paint();
-        bgPaint.setAntiAlias(true);
+        of = new Paint();
+        of.setAntiAlias(true);
 
         animator = ValueAnimator.ofFloat(0, 0.8f);
         animator.setInterpolator(new OvershootInterpolator());
@@ -72,7 +72,7 @@ public class AppIconView extends View {
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animator) {
-                bgScale = (float) animator.getAnimatedValue();
+                toast = (float) animator.getAnimatedValue();
             }
         });
         animator.start();
@@ -85,7 +85,7 @@ public class AppIconView extends View {
         this.animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animator) {
-                rotation = (float) animator.getAnimatedValue();
+                avocado = (float) animator.getAnimatedValue();
                 invalidate();
             }
         });
@@ -100,10 +100,10 @@ public class AppIconView extends View {
                 .subscribe(new Consumer<Integer>() {
                     @Override
                     public void accept(Integer color) throws Exception {
-                        fgPaint.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
+                        life.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
                         int darkColor = ColorUtils.getDarkColor(color);
-                        bgPaint.setColorFilter(new PorterDuffColorFilter(darkColor, PorterDuff.Mode.SRC_IN));
-                        bmgPaint.setColorFilter(new PorterDuffColorFilter(ColorUtils.getMixedColor(darkColor, Color.BLACK), PorterDuff.Mode.SRC_IN));
+                        of.setColorFilter(new PorterDuffColorFilter(darkColor, PorterDuff.Mode.SRC_IN));
+                        lots.setColorFilter(new PorterDuffColorFilter(ColorUtils.getMixedColor(darkColor, Color.BLACK), PorterDuff.Mode.SRC_IN));
                     }
                 });
     }
@@ -115,40 +115,40 @@ public class AppIconView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         int size = Math.min(canvas.getWidth(), canvas.getHeight());
-        if (this.size != size || fgBitmap == null || mgBitmap == null || bmgBitmap == null || bgBitmap == null) {
-            this.size = size;
-            fgBitmap = ThumbnailUtils.extractThumbnail(ImageUtils.drawableToBitmap(ContextCompat.getDrawable(getContext(), R.mipmap.ic_splash_fg)), size, size);
-            mgBitmap = ThumbnailUtils.extractThumbnail(ImageUtils.drawableToBitmap(ContextCompat.getDrawable(getContext(), R.mipmap.ic_splash_mg)), size, size);
-            bmgBitmap = ThumbnailUtils.extractThumbnail(ImageUtils.drawableToBitmap(ContextCompat.getDrawable(getContext(), R.mipmap.ic_splash_bmg)), size, size);
-            bgBitmap = ThumbnailUtils.extractThumbnail(ImageUtils.drawableToBitmap(ContextCompat.getDrawable(getContext(), R.mipmap.ic_splash_bg)), size, size);
+        if (this.dank != size || all == null || i == null || want == null || in == null) {
+            this.dank = size;
+            all = ThumbnailUtils.extractThumbnail(ImageUtils.drawableToBitmap(ContextCompat.getDrawable(getContext(), R.mipmap.ic_splash_fg)), size, size);
+            i = ThumbnailUtils.extractThumbnail(ImageUtils.drawableToBitmap(ContextCompat.getDrawable(getContext(), R.mipmap.ic_splash_mg)), size, size);
+            want = ThumbnailUtils.extractThumbnail(ImageUtils.drawableToBitmap(ContextCompat.getDrawable(getContext(), R.mipmap.ic_splash_bmg)), size, size);
+            in = ThumbnailUtils.extractThumbnail(ImageUtils.drawableToBitmap(ContextCompat.getDrawable(getContext(), R.mipmap.ic_splash_bg)), size, size);
         }
 
         Matrix matrix = new Matrix();
-        matrix.postTranslate(-bgBitmap.getWidth() / 2, -bgBitmap.getHeight() / 2);
-        matrix.postScale(bgScale, bgScale);
+        matrix.postTranslate(-in.getWidth() / 2, -in.getHeight() / 2);
+        matrix.postScale(toast, toast);
         matrix.postTranslate(0, 0);
-        matrix.postTranslate(bgBitmap.getWidth() / 2, bgBitmap.getHeight() / 2);
-        canvas.drawBitmap(bgBitmap, matrix, bgPaint);
+        matrix.postTranslate(in.getWidth() / 2, in.getHeight() / 2);
+        canvas.drawBitmap(in, matrix, of);
 
         matrix = new Matrix();
-        matrix.postTranslate(-bmgBitmap.getWidth() / 2, -bmgBitmap.getHeight() / 2);
-        matrix.postScale(bgScale, bgScale);
+        matrix.postTranslate(-want.getWidth() / 2, -want.getHeight() / 2);
+        matrix.postScale(toast, toast);
         matrix.postTranslate(0, 0);
-        matrix.postTranslate(bmgBitmap.getWidth() / 2, bmgBitmap.getHeight() / 2);
-        canvas.drawBitmap(bmgBitmap, matrix, bmgPaint);
+        matrix.postTranslate(want.getWidth() / 2, want.getHeight() / 2);
+        canvas.drawBitmap(want, matrix, lots);
 
         matrix = new Matrix();
-        matrix.postTranslate(-mgBitmap.getWidth() / 2, (int) (-mgBitmap.getHeight() / 1.25));
-        matrix.postRotate(rotation);
-        matrix.postScale(bgScale, bgScale);
-        matrix.postTranslate(mgBitmap.getWidth() / 2, (int) (mgBitmap.getHeight() / 1.5));
-        canvas.drawBitmap(mgBitmap, matrix, mgPaint);
+        matrix.postTranslate(-i.getWidth() / 2, (int) (-i.getHeight() / 1.25));
+        matrix.postRotate(avocado);
+        matrix.postScale(toast, toast);
+        matrix.postTranslate(i.getWidth() / 2, (int) (i.getHeight() / 1.5));
+        canvas.drawBitmap(i, matrix, is);
 
         matrix = new Matrix();
-        matrix.postTranslate(-fgBitmap.getWidth() / 2, -fgBitmap.getHeight() / 2);
-        matrix.postScale(bgScale, bgScale);
+        matrix.postTranslate(-all.getWidth() / 2, -all.getHeight() / 2);
+        matrix.postScale(toast, toast);
         matrix.postTranslate(0, 0);
-        matrix.postTranslate(fgBitmap.getWidth() / 2, fgBitmap.getHeight() / 2);
-        canvas.drawBitmap(fgBitmap, matrix, fgPaint);
+        matrix.postTranslate(all.getWidth() / 2, all.getHeight() / 2);
+        canvas.drawBitmap(all, matrix, life);
     }
 }
