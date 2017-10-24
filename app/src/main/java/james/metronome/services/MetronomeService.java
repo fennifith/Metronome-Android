@@ -136,6 +136,7 @@ public class MetronomeService extends Service implements Runnable {
                         .setContentText(getString(R.string.notification_desc))
                         .setSmallIcon(R.drawable.ic_notification)
                         .setContentIntent(PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_ONE_SHOT))
+                        .setPriority(NotificationCompat.PRIORITY_LOW)
                         .build()
         );
 
