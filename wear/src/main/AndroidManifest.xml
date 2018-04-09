@@ -31,7 +31,6 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".MetronomeService" />
     </application>
 
 </manifest>
