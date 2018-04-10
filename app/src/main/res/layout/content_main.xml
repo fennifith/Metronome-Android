@@ -146,6 +146,14 @@
         app:srcCompat="@drawable/ic_bookmark_border" />
 
     <ImageView
+        android:id="@+id/touch"
+        android:layout_width="?attr/actionBarSize"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_gravity="bottom|start"
+        android:scaleType="centerInside"
+        app:srcCompat="@drawable/ic_touch" />
+
+    <ImageView
         android:id="@+id/about"
         android:layout_width="?attr/actionBarSize"
         android:layout_height="?attr/actionBarSize"

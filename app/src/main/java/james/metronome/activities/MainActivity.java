@@ -66,6 +66,7 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
     private TextView bpmView;
     private ImageView aboutView;
     private ImageView bookmarkView;
+    private ImageView touchView;
     private ImageView lessView;
     private ImageView moreView;
     private ImageView addEmphasisView;
@@ -82,6 +83,9 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
 
     private SharedPreferences prefs;
     private List<Integer> bookmarks;
+
+    private long prevTouchInterval;
+    private long prevTouchTime;
 
     private Metronome metronome;
 
@@ -108,6 +112,7 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
         ticksView = findViewById(R.id.ticks);
         aboutView = findViewById(R.id.about);
         bookmarkView = findViewById(R.id.bookmark);
+        touchView = findViewById(R.id.touch);
         seekBar = findViewById(R.id.seekBar);
 
         seekBar.setMaxProgress(300);
@@ -163,6 +168,24 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
                         metronome.onPremium(MainActivity.this);
                         addBookmark(bpm);
                     }
+                }
+            }
+        });
+
+        touchView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isBound()) {
+                    if (prevTouchTime > 0) {
+                        long interval = System.currentTimeMillis() - prevTouchTime;
+                        if (interval > 200 && interval < 20000) {
+                            if (prevTouchInterval == -1)
+                                prevTouchInterval = interval;
+                            else prevTouchInterval = (prevTouchInterval + interval) / 2;
+                        }
+
+                        seekBar.setProgress((int) (60000 / prevTouchInterval));
+                    } else prevTouchTime = System.currentTimeMillis();
                 }
             }
         });
