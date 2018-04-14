@@ -178,14 +178,18 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
                 if (isBound()) {
                     if (prevTouchTime > 0) {
                         long interval = System.currentTimeMillis() - prevTouchTime;
-                        if (interval > 200 && interval < 20000) {
-                            if (prevTouchInterval == -1)
-                                prevTouchInterval = interval;
-                            else prevTouchInterval = (prevTouchInterval + interval) / 2;
+                        if (interval > 200) {
+                            if (interval < 20000) {
+                                if (prevTouchInterval == -1)
+                                    prevTouchInterval = interval;
+                                else prevTouchInterval = (prevTouchInterval + interval) / 2;
+                            } else prevTouchInterval = -1;
                         }
 
                         seekBar.setProgress((int) (60000 / prevTouchInterval));
-                    } else prevTouchTime = System.currentTimeMillis();
+                    }
+
+                    prevTouchTime = System.currentTimeMillis();
                 }
             }
         });
