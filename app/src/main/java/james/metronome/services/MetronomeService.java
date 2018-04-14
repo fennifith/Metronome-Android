@@ -238,7 +238,7 @@ public class MetronomeService extends Service implements Runnable {
             emphasisIndex++;
 
             if (soundId != -1)
-                soundPool.play(soundId, isEmphasis ? 1.0f : 0.2f, isEmphasis ? 1.0f : 0.2f, 0, 0, 1.0f);
+                soundPool.play(soundId, 1, 1, 0, 0, isEmphasis ? 1.5f : 1);
             else if (Build.VERSION.SDK_INT >= 26)
                 vibrator.vibrate(VibrationEffect.createOneShot(isEmphasis ? 50 : 20, VibrationEffect.DEFAULT_AMPLITUDE));
             else vibrator.vibrate(isEmphasis ? 50 : 20);
