@@ -7,8 +7,8 @@ android {
         applicationId "james.metronome"
         minSdkVersion 19
         targetSdkVersion 26
-        versionCode 12
-        versionName "1.6"
+        versionCode 13
+        versionName "1.7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }

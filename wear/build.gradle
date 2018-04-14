@@ -9,8 +9,8 @@ android {
         applicationId "james.metronome"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 6
-        versionName "1.4"
+        versionCode 14
+        versionName "1.7"
     }
     buildTypes {
         release {
