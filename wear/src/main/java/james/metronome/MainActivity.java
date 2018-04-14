@@ -14,7 +14,6 @@ import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.support.wearable.activity.WearableActivity;
-import android.support.wearable.view.BoxInsetLayout;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -27,7 +26,7 @@ public class MainActivity extends WearableActivity implements Runnable {
     public static final String PREF_VIBRATION = "vibration";
     public static final String PREF_INTERVAL = "interval";
 
-    private BoxInsetLayout container;
+    private View container;
     private ImageView vibrationView;
     private ImageView playView;
     private TextView bpmView;
@@ -48,7 +47,7 @@ public class MainActivity extends WearableActivity implements Runnable {
     private Vibrator vibrator;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setAmbientEnabled();
@@ -92,7 +91,7 @@ public class MainActivity extends WearableActivity implements Runnable {
         bpmView.setText(String.format(Locale.getDefault(), getString(R.string.bpm), String.valueOf(bpm)));
         seekBar.setProgress(bpm);
 
-        vibrationView.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.vibrationButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 isVibration = !isVibration;
@@ -106,7 +105,7 @@ public class MainActivity extends WearableActivity implements Runnable {
             }
         });
 
-        playView.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.playButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 isPlaying = !isPlaying;
@@ -117,6 +116,22 @@ public class MainActivity extends WearableActivity implements Runnable {
                     handler.removeCallbacks(MainActivity.this);
                     playView.setImageResource(R.drawable.ic_play);
                 }
+            }
+        });
+
+        findViewById(R.id.moreButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (seekBar.getProgress() < 300)
+                    seekBar.setProgress(seekBar.getProgress() + 1);
+            }
+        });
+
+        findViewById(R.id.lessButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (seekBar.getProgress() > 1)
+                    seekBar.setProgress(seekBar.getProgress() - 1);
             }
         });
 
