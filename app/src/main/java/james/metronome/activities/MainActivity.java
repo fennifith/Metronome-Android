@@ -502,6 +502,7 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
                         lessView.setColorFilter(integer);
                         aboutView.setColorFilter(integer);
                         bookmarkView.setColorFilter(integer);
+                        touchView.setColorFilter(integer);
                         textColorPrimary = integer;
                         updateBookmarks(false);
                     }
