@@ -83,7 +83,7 @@ public class AboutActivity extends AestheticActivity implements ThemesView.OnThe
         githubView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/TheAndroidMaster/Metronome-Android")));
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://jfenn.me/redirects/?t=github&d=Metronome-Android")));
             }
         });
 
