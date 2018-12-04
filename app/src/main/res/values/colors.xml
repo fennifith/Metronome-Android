@@ -18,4 +18,5 @@
     <color name="textColorPrimaryInverse">#DE000000</color>
     <color name="textColorSecondaryInverse">#8A000000</color>
     <color name="textColorTertiaryInverse">#26000000</color>
+    <color name="cardColor">#ffebee</color>
 </resources>

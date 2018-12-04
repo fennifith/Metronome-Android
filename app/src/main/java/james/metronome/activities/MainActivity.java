@@ -49,6 +49,7 @@ import james.metronome.views.ThemesView;
 import james.metronome.views.TicksView;
 import me.jfenn.androidutils.DimenUtils;
 import me.jfenn.androidutils.touch.WhileHeldListener;
+import me.jfenn.attribouter.Attribouter;
 
 public class MainActivity extends AestheticActivity implements TicksView.OnTickChangedListener, ServiceConnection, MetronomeService.TickListener, EmphasisSwitch.OnCheckedChangeListener, SeekBar.OnProgressChangeListener {
 
@@ -153,7 +154,7 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
         aboutView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, AboutActivity.class));
+                Attribouter.from(v.getContext()).show();
             }
         });
 
