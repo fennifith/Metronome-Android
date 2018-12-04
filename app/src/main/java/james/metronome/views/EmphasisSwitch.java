@@ -5,17 +5,17 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 
 import com.afollestad.aesthetic.Aesthetic;
 
+import androidx.annotation.Nullable;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
-import james.metronome.utils.ConversionUtils;
+import me.jfenn.androidutils.DimenUtils;
 
 public class EmphasisSwitch extends View implements View.OnClickListener {
 
@@ -33,7 +33,7 @@ public class EmphasisSwitch extends View implements View.OnClickListener {
     private boolean isAccented;
     private OnCheckedChangeListener listener;
 
-    private final int margin = ConversionUtils.getPixelsFromDp(8);
+    private final int margin = DimenUtils.dpToPx(8);
 
     public EmphasisSwitch(Context context) {
         this(context, null);
@@ -101,7 +101,7 @@ public class EmphasisSwitch extends View implements View.OnClickListener {
     }
 
     public void subscribe() {
-        colorAccentSubscription = Aesthetic.get()
+        colorAccentSubscription = Aesthetic.Companion.get()
                 .colorAccent()
                 .subscribe(new Consumer<Integer>() {
                     @Override
@@ -112,7 +112,7 @@ public class EmphasisSwitch extends View implements View.OnClickListener {
                     }
                 });
 
-        textColorPrimarySubscription = Aesthetic.get()
+        textColorPrimarySubscription = Aesthetic.Companion.get()
                 .textColorPrimary()
                 .subscribe(new Consumer<Integer>() {
                     @Override
@@ -122,7 +122,7 @@ public class EmphasisSwitch extends View implements View.OnClickListener {
                     }
                 });
 
-        textColorSecondarySubscription = Aesthetic.get()
+        textColorSecondarySubscription = Aesthetic.Companion.get()
                 .textColorSecondary()
                 .subscribe(new Consumer<Integer>() {
                     @Override
@@ -142,7 +142,7 @@ public class EmphasisSwitch extends View implements View.OnClickListener {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        int size = ConversionUtils.getPixelsFromDp(12);
+        int size = DimenUtils.dpToPx(12);
         canvas.drawCircle(canvas.getWidth() / 2, canvas.getHeight() / 2, size, isAccented ? accentOutlinePaint : outlinePaint);
         canvas.drawCircle(canvas.getWidth() / 2, canvas.getHeight() / 2, checked * size, isAccented ? accentPaint : paint);
     }

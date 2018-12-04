@@ -12,7 +12,7 @@ import com.afollestad.aesthetic.Aesthetic;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
-import james.metronome.utils.ConversionUtils;
+import me.jfenn.androidutils.DimenUtils;
 
 public class SeekBar extends View implements View.OnTouchListener {
 
@@ -58,7 +58,7 @@ public class SeekBar extends View implements View.OnTouchListener {
     }
 
     public void subscribe() {
-        textColorPrimarySubscription = Aesthetic.get()
+        textColorPrimarySubscription = Aesthetic.Companion.get()
                 .textColorPrimary()
                 .subscribe(new Consumer<Integer>() {
                     @Override
@@ -68,7 +68,7 @@ public class SeekBar extends View implements View.OnTouchListener {
                     }
                 });
 
-        textColorSecondarySubscription = Aesthetic.get()
+        textColorSecondarySubscription = Aesthetic.Companion.get()
                 .textColorSecondary()
                 .subscribe(new Consumer<Integer>() {
                     @Override
@@ -78,7 +78,7 @@ public class SeekBar extends View implements View.OnTouchListener {
                     }
                 });
 
-        colorAccentSubscription = Aesthetic.get()
+        colorAccentSubscription = Aesthetic.Companion.get()
                 .colorAccent()
                 .subscribe(new Consumer<Integer>() {
                     @Override
@@ -148,10 +148,10 @@ public class SeekBar extends View implements View.OnTouchListener {
         for (int i = 0; i < maxProgress; i += 10) {
             int width = (int) (canvas.getWidth() * ((float) i / maxProgress));
             secondaryPaint.setAlpha(Math.max(255 - (int) ((float) Math.abs(width - currentWidth) * 1000 / canvas.getWidth()), 0));
-            canvas.drawRect(width - 1, 0, width + 1, ConversionUtils.getPixelsFromDp(i % 20 == 0 ? 6 : 4), secondaryPaint);
+            canvas.drawRect(width - 1, 0, width + 1, DimenUtils.dpToPx(i % 20 == 0 ? 6 : 4), secondaryPaint);
         }
 
         canvas.drawRect(0, 0, currentWidth, 2, accentPaint);
-        canvas.drawRect(currentWidth - 1, 0, currentWidth + 1, ConversionUtils.getPixelsFromDp(10), accentPaint);
+        canvas.drawRect(currentWidth - 1, 0, currentWidth + 1, DimenUtils.dpToPx(10), accentPaint);
     }
 }

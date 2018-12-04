@@ -14,8 +14,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.RemoteException;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -31,8 +29,12 @@ import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 public class Metronome extends Application {
 
@@ -88,7 +90,7 @@ public class Metronome extends Application {
     public void onPremium(final Activity activity) {
         if (!isPremium()) {
             View view = LayoutInflater.from(activity).inflate(R.layout.dialog_premium, null);
-            Glide.with(this).load("https://theandroidmaster.github.io/images/headers/metronomePremium.png").into((ImageView) view.findViewById(R.id.image));
+            Glide.with(this).load("https://jfenn.me/images/headers/metronomePremium.png").into((ImageView) view.findViewById(R.id.image));
 
             new MaterialDialog.Builder(activity)
                     .customView(view, false)
@@ -119,8 +121,8 @@ public class Metronome extends Application {
         if (service != null) {
             Bundle buyIntentBundle;
             try {
-                buyIntentBundle = service.getBuyIntent(VERSION_BILLING_API, getPackageName(), getString(R.string.sku), "inapp", null);
-            } catch (RemoteException e) {
+                buyIntentBundle = service.getBuyIntent(VERSION_BILLING_API, getPackageName(), getSku(), "inapp", null);
+            } catch (RemoteException | NullPointerException e) {
                 e.printStackTrace();
                 return;
             }
@@ -140,7 +142,8 @@ public class Metronome extends Application {
         if (resultCode == Activity.RESULT_OK && data.hasExtra("INAPP_PURCHASE_DATA")) {
             try {
                 JSONObject object = new JSONObject(data.getStringExtra("INAPP_PURCHASE_DATA"));
-                if (getString(R.string.sku).equals(object.getString("productId")))
+                String sku = getSku();
+                if (sku != null && sku.equals(object.getString("productId")))
                     isPremium = true;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -148,11 +151,22 @@ public class Metronome extends Application {
         }
     }
 
+    @Nullable
+    private String getSku() {
+        int skuRes = getResources().getIdentifier("sku", "string", getPackageName());
+        if (skuRes != 0)
+            return getString(skuRes);
+
+        return null;
+    }
+
     private static class GetPurchaseThread extends Thread {
 
         private WeakReference<Metronome> metronomeReference;
         private IInAppBillingService service;
         private String packageName;
+
+        @Nullable
         private String sku;
 
         private String price;
@@ -161,13 +175,16 @@ public class Metronome extends Application {
             metronomeReference = new WeakReference<>(metronome);
             this.service = service;
             packageName = metronome.getPackageName();
-            sku = metronome.getString(R.string.sku);
+            sku = metronome.getSku();
         }
 
         @Override
         public void run() {
+            if (sku == null)
+                return;
+
             Bundle querySkus = new Bundle();
-            querySkus.putStringArrayList("ITEM_ID_LIST", new ArrayList<>(Arrays.asList(sku)));
+            querySkus.putStringArrayList("ITEM_ID_LIST", new ArrayList<>(Collections.singletonList(sku)));
 
             Bundle skuDetails;
             try {

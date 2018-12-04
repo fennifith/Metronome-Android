@@ -1,14 +1,14 @@
 package james.metronome.data;
 
 import android.content.Context;
-import android.support.annotation.ColorRes;
-import android.support.annotation.StringRes;
-import android.support.v4.content.ContextCompat;
 
 import com.afollestad.aesthetic.Aesthetic;
 
+import androidx.annotation.ColorRes;
+import androidx.annotation.StringRes;
+import androidx.core.content.ContextCompat;
 import james.metronome.R;
-import james.metronome.utils.ColorUtils;
+import me.jfenn.androidutils.ColorUtils;
 
 public class ThemeData {
 
@@ -32,7 +32,7 @@ public class ThemeData {
         int backgroundColor = ContextCompat.getColor(context, colorBackgroundRes);
         boolean isBackgroundDark = ColorUtils.isColorDark(backgroundColor);
 
-        Aesthetic.get()
+        Aesthetic.Companion.get()
                 .colorPrimary(ContextCompat.getColor(context, colorPrimaryRes))
                 .colorAccent(ContextCompat.getColor(context, colorAccentRes))
                 .colorWindowBackground(backgroundColor)

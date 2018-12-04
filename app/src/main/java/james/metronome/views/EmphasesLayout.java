@@ -1,15 +1,15 @@
 package james.metronome.views;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
-import android.support.v4.view.GravityCompat;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 
-import james.metronome.utils.ConversionUtils;
+import androidx.annotation.Nullable;
+import androidx.core.view.GravityCompat;
+import me.jfenn.androidutils.DimenUtils;
 
 public class EmphasesLayout extends LinearLayout {
 
@@ -28,7 +28,7 @@ public class EmphasesLayout extends LinearLayout {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        int width = ConversionUtils.getPixelsFromDp(40) * getChildCount(), height = getMeasuredHeight();
+        int width = DimenUtils.dpToPx(40) * getChildCount(), height = getMeasuredHeight();
         setMeasuredDimension(width, height);
 
         HorizontalScrollView.LayoutParams layoutParams = (HorizontalScrollView.LayoutParams) getLayoutParams();

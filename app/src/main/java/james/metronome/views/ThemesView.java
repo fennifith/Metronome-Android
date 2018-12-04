@@ -3,8 +3,6 @@ package james.metronome.views;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.support.annotation.Nullable;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +12,8 @@ import android.widget.TextView;
 
 import com.afollestad.aesthetic.Aesthetic;
 
+import androidx.annotation.Nullable;
+import androidx.core.graphics.drawable.DrawableCompat;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -138,7 +138,7 @@ public class ThemesView extends LinearLayout {
     }
 
     public void subscribe() {
-        colorAccentSubscription = Aesthetic.get()
+        colorAccentSubscription = Aesthetic.Companion.get()
                 .colorAccent()
                 .subscribe(new Consumer<Integer>() {
                     @Override
@@ -153,7 +153,7 @@ public class ThemesView extends LinearLayout {
                     }
                 });
 
-        textColorPrimarySubscription = Aesthetic.get()
+        textColorPrimarySubscription = Aesthetic.Companion.get()
                 .textColorPrimary()
                 .subscribe(new Consumer<Integer>() {
                     @Override
@@ -168,7 +168,7 @@ public class ThemesView extends LinearLayout {
                     }
                 });
 
-        textColorPrimaryInverseSubscription = Aesthetic.get()
+        textColorPrimaryInverseSubscription = Aesthetic.Companion.get()
                 .textColorPrimaryInverse()
                 .subscribe(new Consumer<Integer>() {
                     @Override

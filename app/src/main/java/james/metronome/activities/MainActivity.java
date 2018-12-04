@@ -17,7 +17,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.preference.PreferenceManager;
-import android.support.v7.app.AlertDialog;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,20 +34,21 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.appcompat.app.AlertDialog;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import james.metronome.Metronome;
 import james.metronome.R;
 import james.metronome.services.MetronomeService;
-import james.metronome.utils.ConversionUtils;
-import james.metronome.utils.WhileHeldListener;
 import james.metronome.views.AppIconView;
 import james.metronome.views.EmphasisSwitch;
 import james.metronome.views.MetronomeView;
 import james.metronome.views.SeekBar;
 import james.metronome.views.ThemesView;
 import james.metronome.views.TicksView;
+import me.jfenn.androidutils.DimenUtils;
+import me.jfenn.androidutils.touch.WhileHeldListener;
 
 public class MainActivity extends AestheticActivity implements TicksView.OnTickChangedListener, ServiceConnection, MetronomeService.TickListener, EmphasisSwitch.OnCheckedChangeListener, SeekBar.OnProgressChangeListener {
 
@@ -96,7 +96,7 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
         metronome = (Metronome) getApplicationContext();
         metronome.onCreateActivity();
 
-        if (Aesthetic.isFirstTime())
+        if (Aesthetic.Companion.isFirstTime())
             ThemesView.themes[0].apply(this);
 
         appIcon = findViewById(R.id.appIcon);
@@ -470,7 +470,7 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
             }
         }
 
-        colorAccentSubscription = Aesthetic.get()
+        colorAccentSubscription = Aesthetic.Companion.get()
                 .colorAccent()
                 .subscribe(new Consumer<Integer>() {
                     @Override
@@ -480,7 +480,7 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
                     }
                 });
 
-        colorBackgroundSubscription = Aesthetic.get()
+        colorBackgroundSubscription = Aesthetic.Companion.get()
                 .colorWindowBackground()
                 .subscribe(new Consumer<Integer>() {
                     @Override
@@ -490,7 +490,7 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
                     }
                 });
 
-        textColorPrimarySubscription = Aesthetic.get()
+        textColorPrimarySubscription = Aesthetic.Companion.get()
                 .textColorPrimary()
                 .subscribe(new Consumer<Integer>() {
                     @Override
@@ -532,7 +532,7 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
         EmphasisSwitch emphasisSwitch = new EmphasisSwitch(this);
         emphasisSwitch.setChecked(isChecked);
         emphasisSwitch.setOnCheckedChangeListener(this);
-        emphasisSwitch.setLayoutParams(new LinearLayout.LayoutParams(ConversionUtils.getPixelsFromDp(40), ConversionUtils.getPixelsFromDp(40)));
+        emphasisSwitch.setLayoutParams(new LinearLayout.LayoutParams(DimenUtils.dpToPx(40), DimenUtils.dpToPx(40)));
 
         if (subscribe)
             emphasisSwitch.subscribe();

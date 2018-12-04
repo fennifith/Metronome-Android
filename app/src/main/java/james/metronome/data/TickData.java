@@ -2,8 +2,9 @@ package james.metronome.data;
 
 import android.content.Context;
 import android.media.SoundPool;
-import android.support.annotation.RawRes;
-import android.support.annotation.StringRes;
+
+import androidx.annotation.RawRes;
+import androidx.annotation.StringRes;
 
 public class TickData {
 
