@@ -46,9 +46,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="6dp"
                 android:layout_marginLeft="6dp"
-                android:background="@drawable/bg_attribouter_emphasized"
                 android:textColor="?android:textColorSecondary"
                 android:textSize="14sp"
+                android:textStyle="bold"
                 tools:text="License" />
 
         </LinearLayout>

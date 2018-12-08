@@ -21,6 +21,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorButtonNormal">@color/colorAccent</item>
         <item name="android:windowBackground">@color/colorBackground</item>
+        <item name="android:statusBarColor">@color/colorAccent</item>
 
         <item name="android:textColorPrimary">@color/textColorPrimaryInverse</item>
         <item name="android:textColorSecondary">@color/textColorSecondaryInverse</item>
