@@ -15,8 +15,11 @@
     <color name="textColorPrimary">#ffffff</color>
     <color name="textColorSecondary">#B3ffffff</color>
     <color name="textColorTertiary">#80FFFFFF</color>
-    <color name="textColorPrimaryInverse">#7F0000</color>
-    <color name="textColorSecondaryInverse">#B71C1C</color>
-    <color name="textColorTertiaryInverse">#F05545</color>
+    <color name="textColorPrimaryInverse">#DE000000</color>
+    <color name="textColorSecondaryInverse">#8A000000</color>
+    <color name="textColorTertiaryInverse">#61000000</color>
+    <color name="textColorPrimaryInverseRed">#7F0000</color>
+    <color name="textColorSecondaryInverseRed">#B71C1C</color>
+    <color name="textColorTertiaryInverseRed">#F05545</color>
     <color name="cardColor">#ffebee</color>
 </resources>

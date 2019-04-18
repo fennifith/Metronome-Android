@@ -35,6 +35,7 @@ import java.util.Locale;
 
 import androidx.appcompat.app.AlertDialog;
 import io.reactivex.disposables.Disposable;
+import james.metronome.BuildConfig;
 import james.metronome.Metronome;
 import james.metronome.R;
 import james.metronome.billing.Billing;
@@ -146,7 +147,7 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
             }
         });
 
-        aboutView.setOnClickListener(v -> Attribouter.from(v.getContext()).show());
+        aboutView.setOnClickListener(v -> Attribouter.from(v.getContext()).withGitHubToken(BuildConfig.GITHUB_TOKEN).show());
 
         bookmarkView.setOnClickListener(view -> {
             if (isBound()) {
