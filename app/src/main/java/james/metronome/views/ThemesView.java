@@ -14,9 +14,7 @@ import com.afollestad.aesthetic.Aesthetic;
 
 import androidx.annotation.Nullable;
 import androidx.core.graphics.drawable.DrawableCompat;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import james.metronome.R;
 import james.metronome.data.ThemeData;
 
@@ -57,73 +55,54 @@ public class ThemesView extends LinearLayout {
         for (int i = 0; i < themes.length; i++) {
             View v = inflater.inflate(R.layout.item_theme, this, false);
             v.setTag(i);
-            v.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    final int position = (int) v.getTag();
-                    if (isExpanded) {
-                        if (theme != position && listener != null) {
-                            theme = position;
-                            themes[theme].apply(getContext());
-                            listener.onThemeChanged(position);
+            v.setOnClickListener(v1 -> {
+                final int position = (int) v1.getTag();
+                if (isExpanded) {
+                    if (theme != position && listener != null) {
+                        theme = position;
+                        themes[theme].apply(getContext());
+                        listener.onThemeChanged(position);
+                    }
+
+                    isExpanded = false;
+                    for (int i1 = 0; i1 < getChildCount(); i1++) {
+                        final View view = getChildAt(i1);
+
+                        if (view.findViewById(R.id.background).getAlpha() == 1) {
+                            ValueAnimator animator = ValueAnimator.ofObject(new ArgbEvaluator(), textColorPrimaryInverse, textColorPrimary);
+                            animator.addUpdateListener(animation -> {
+                                view.findViewById(R.id.background).setAlpha(1 - animation.getAnimatedFraction());
+                                ((TextView) view.findViewById(R.id.name)).setTextColor((int) animation.getAnimatedValue());
+                            });
+                            animator.start();
+
+                            ValueAnimator animator2 = ValueAnimator.ofObject(new ArgbEvaluator(), textColorPrimaryInverse, colorAccent);
+                            animator2.addUpdateListener(animation -> ((ImageView) view.findViewById(R.id.image)).setColorFilter((int) animation.getAnimatedValue()));
+                            animator2.start();
                         }
 
-                        isExpanded = false;
-                        for (int i = 0; i < getChildCount(); i++) {
-                            final View view = getChildAt(i);
+                        if (theme != i1)
+                            view.setVisibility(View.GONE);
+                        else
+                            ((ImageView) view.findViewById(R.id.image)).setImageResource(R.drawable.ic_expand);
+                    }
+                } else {
+                    isExpanded = true;
+                    for (int i1 = 0; i1 < getChildCount(); i1++) {
+                        final View view = getChildAt(i1);
+                        view.setVisibility(View.VISIBLE);
+                        ((ImageView) view.findViewById(R.id.image)).setImageResource(R.drawable.ic_theme);
+                        if (theme == i1) {
+                            ValueAnimator animator = ValueAnimator.ofObject(new ArgbEvaluator(), textColorPrimary, textColorPrimaryInverse);
+                            animator.addUpdateListener(animation -> {
+                                view.findViewById(R.id.background).setAlpha(animation.getAnimatedFraction());
+                                ((TextView) view.findViewById(R.id.name)).setTextColor((int) animation.getAnimatedValue());
+                            });
+                            animator.start();
 
-                            if (view.findViewById(R.id.background).getAlpha() == 1) {
-                                ValueAnimator animator = ValueAnimator.ofObject(new ArgbEvaluator(), textColorPrimaryInverse, textColorPrimary);
-                                animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                                    @Override
-                                    public void onAnimationUpdate(ValueAnimator animation) {
-                                        view.findViewById(R.id.background).setAlpha(1 - animation.getAnimatedFraction());
-                                        ((TextView) view.findViewById(R.id.name)).setTextColor((int) animation.getAnimatedValue());
-                                    }
-                                });
-                                animator.start();
-
-                                ValueAnimator animator2 = ValueAnimator.ofObject(new ArgbEvaluator(), textColorPrimaryInverse, colorAccent);
-                                animator2.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                                    @Override
-                                    public void onAnimationUpdate(ValueAnimator animation) {
-                                        ((ImageView) view.findViewById(R.id.image)).setColorFilter((int) animation.getAnimatedValue());
-                                    }
-                                });
-                                animator2.start();
-                            }
-
-                            if (theme != i)
-                                view.setVisibility(View.GONE);
-                            else
-                                ((ImageView) view.findViewById(R.id.image)).setImageResource(R.drawable.ic_expand);
-                        }
-                    } else {
-                        isExpanded = true;
-                        for (int i = 0; i < getChildCount(); i++) {
-                            final View view = getChildAt(i);
-                            view.setVisibility(View.VISIBLE);
-                            ((ImageView) view.findViewById(R.id.image)).setImageResource(R.drawable.ic_theme);
-                            if (theme == i) {
-                                ValueAnimator animator = ValueAnimator.ofObject(new ArgbEvaluator(), textColorPrimary, textColorPrimaryInverse);
-                                animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                                    @Override
-                                    public void onAnimationUpdate(ValueAnimator animation) {
-                                        view.findViewById(R.id.background).setAlpha(animation.getAnimatedFraction());
-                                        ((TextView) view.findViewById(R.id.name)).setTextColor((int) animation.getAnimatedValue());
-                                    }
-                                });
-                                animator.start();
-
-                                ValueAnimator animator2 = ValueAnimator.ofObject(new ArgbEvaluator(), colorAccent, textColorPrimaryInverse);
-                                animator2.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                                    @Override
-                                    public void onAnimationUpdate(ValueAnimator animation) {
-                                        ((ImageView) view.findViewById(R.id.image)).setColorFilter((int) animation.getAnimatedValue());
-                                    }
-                                });
-                                animator2.start();
-                            }
+                            ValueAnimator animator2 = ValueAnimator.ofObject(new ArgbEvaluator(), colorAccent, textColorPrimaryInverse);
+                            animator2.addUpdateListener(animation -> ((ImageView) view.findViewById(R.id.image)).setColorFilter((int) animation.getAnimatedValue()));
+                            animator2.start();
                         }
                     }
                 }
@@ -140,46 +119,37 @@ public class ThemesView extends LinearLayout {
     public void subscribe() {
         colorAccentSubscription = Aesthetic.Companion.get()
                 .colorAccent()
-                .subscribe(new Consumer<Integer>() {
-                    @Override
-                    public void accept(@NonNull Integer integer) throws Exception {
-                        colorAccent = integer;
-                        for (int i = 0; i < getChildCount(); i++) {
-                            View v = getChildAt(i);
-                            v.findViewById(R.id.background).setBackgroundColor(integer);
-                            if (!isExpanded || theme != i)
-                                ((ImageView) v.findViewById(R.id.image)).setColorFilter(integer);
-                        }
+                .subscribe(integer -> {
+                    colorAccent = integer;
+                    for (int i = 0; i < getChildCount(); i++) {
+                        View v = getChildAt(i);
+                        v.findViewById(R.id.background).setBackgroundColor(integer);
+                        if (!isExpanded || theme != i)
+                            ((ImageView) v.findViewById(R.id.image)).setColorFilter(integer);
                     }
                 });
 
         textColorPrimarySubscription = Aesthetic.Companion.get()
                 .textColorPrimary()
-                .subscribe(new Consumer<Integer>() {
-                    @Override
-                    public void accept(@NonNull Integer integer) throws Exception {
-                        textColorPrimary = integer;
-                        DrawableCompat.setTint(getBackground(), integer);
-                        for (int i = 0; i < getChildCount(); i++) {
-                            View v = getChildAt(i);
-                            if (!isExpanded || theme != i)
-                                ((TextView) v.findViewById(R.id.name)).setTextColor(integer);
-                        }
+                .subscribe(integer -> {
+                    textColorPrimary = integer;
+                    DrawableCompat.setTint(getBackground(), integer);
+                    for (int i = 0; i < getChildCount(); i++) {
+                        View v = getChildAt(i);
+                        if (!isExpanded || theme != i)
+                            ((TextView) v.findViewById(R.id.name)).setTextColor(integer);
                     }
                 });
 
         textColorPrimaryInverseSubscription = Aesthetic.Companion.get()
                 .textColorPrimaryInverse()
-                .subscribe(new Consumer<Integer>() {
-                    @Override
-                    public void accept(@NonNull Integer integer) throws Exception {
-                        textColorPrimaryInverse = integer;
-                        for (int i = 0; i < getChildCount(); i++) {
-                            View v = getChildAt(i);
-                            if (isExpanded && theme == i) {
-                                ((TextView) v.findViewById(R.id.name)).setTextColor(integer);
-                                ((ImageView) v.findViewById(R.id.image)).setColorFilter(integer);
-                            }
+                .subscribe(integer -> {
+                    textColorPrimaryInverse = integer;
+                    for (int i = 0; i < getChildCount(); i++) {
+                        View v = getChildAt(i);
+                        if (isExpanded && theme == i) {
+                            ((TextView) v.findViewById(R.id.name)).setTextColor(integer);
+                            ((ImageView) v.findViewById(R.id.image)).setColorFilter(integer);
                         }
                     }
                 });

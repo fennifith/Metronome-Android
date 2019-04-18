@@ -23,6 +23,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import james.metronome.Metronome;
 import james.metronome.R;
+import james.metronome.billing.Billing;
 import james.metronome.views.AppIconView;
 import james.metronome.views.ThemesView;
 
@@ -179,7 +180,7 @@ public class AboutActivity extends AestheticActivity implements ThemesView.OnThe
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (metronome != null && requestCode == Metronome.REQUEST_PURCHASE)
+        if (metronome != null && requestCode == Billing.REQUEST_PURCHASE)
             metronome.onPremiumBought(resultCode, data);
     }
 

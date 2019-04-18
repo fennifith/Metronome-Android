@@ -1,7 +1,6 @@
-package james.metronome;
+package james.metronome.billing;
 
 import android.app.Activity;
-import android.app.Application;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
@@ -35,28 +34,29 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import james.metronome.Metronome;
+import james.metronome.R;
 
-public class Metronome extends Application {
+public class GplayBillingProvider implements BillingInterface {
 
     private static final int VERSION_BILLING_API = 3;
-    public static final int REQUEST_PURCHASE = 614;
 
     private IInAppBillingService service;
     private ServiceConnection serviceConnection;
+    private Metronome metronome;
 
     private boolean isPremium;
     private boolean isNetworkError = true;
     private String price;
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
+    public GplayBillingProvider(Metronome metronome) {
+        this.metronome = metronome;
 
         serviceConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
                 service = IInAppBillingService.Stub.asInterface(iBinder);
-                new GetPurchaseThread(Metronome.this, service).start();
+                new GetPurchaseThread(GplayBillingProvider.this, service).start();
             }
 
             @Override
@@ -66,62 +66,70 @@ public class Metronome extends Application {
         };
     }
 
+    @Override
     public void onCreateActivity() {
         Intent serviceIntent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
         serviceIntent.setPackage("com.android.vending");
-        bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+        getContext().bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
+    @Override
     public void onDestroyActivity() {
         if (service != null)
-            unbindService(serviceConnection);
+            getContext().unbindService(serviceConnection);
     }
 
-    public String getPrice() {
-        return price != null ? price : getString(R.string.title_no_connection);
+    @Override
+    public String getPrice(Context context) {
+        return price != null ? price : context.getString(R.string.title_no_connection);
     }
 
-    public boolean isPremium() {
+    @Nullable
+    @Override
+    public String getSku(Context context) {
+        int skuRes = metronome.getResources().getIdentifier("sku", "string", context.getPackageName());
+        if (skuRes != 0)
+            return context.getString(skuRes);
+
+        return null;
+    }
+
+    @Override
+    public boolean isPremium(Context context) {
         if (isNetworkError && service != null)
             new GetPurchaseThread(this, service).start();
         return isPremium || isNetworkError;
     }
 
-    public void onPremium(final Activity activity) {
-        if (!isPremium()) {
+    @Override
+    public void onPremium(Activity activity) {
+        if (!isPremium(activity)) {
             View view = LayoutInflater.from(activity).inflate(R.layout.dialog_premium, null);
-            Glide.with(this).load("https://jfenn.me/images/headers/metronomePremium.png").into((ImageView) view.findViewById(R.id.image));
+            Glide.with(activity).load("https://jfenn.me/images/headers/metronomePremium.png").into((ImageView) view.findViewById(R.id.image));
 
             new MaterialDialog.Builder(activity)
                     .customView(view, false)
                     .backgroundColor(Color.WHITE)
                     .cancelable(false)
-                    .positiveText(getString(R.string.title_get_premium, getPrice()))
-                    .positiveColor(ContextCompat.getColor(this, R.color.colorAccent))
-                    .onPositive(new MaterialDialog.SingleButtonCallback() {
-                        @Override
-                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                            buyPremium(activity);
-                            dialog.dismiss();
-                        }
+                    .positiveText(activity.getString(R.string.title_get_premium, getPrice(activity)))
+                    .positiveColor(ContextCompat.getColor(activity, R.color.colorAccent))
+                    .onPositive((dialog, which) -> {
+                        buyPremium(activity);
+                        dialog.dismiss();
                     })
                     .negativeText(R.string.title_use_anyway)
-                    .negativeColor(ContextCompat.getColor(this, R.color.textColorSecondaryInverse))
-                    .onNegative(new MaterialDialog.SingleButtonCallback() {
-                        @Override
-                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                            dialog.dismiss();
-                        }
-                    })
+                    .negativeColor(ContextCompat.getColor(activity, R.color.textColorSecondaryInverse))
+                    .onNegative((dialog, which) -> dialog.dismiss())
                     .show();
         }
     }
 
+    @Override
     public void buyPremium(Activity activity) {
         if (service != null) {
             Bundle buyIntentBundle;
             try {
-                buyIntentBundle = service.getBuyIntent(VERSION_BILLING_API, getPackageName(), getSku(), "inapp", null);
+                buyIntentBundle = service.getBuyIntent(VERSION_BILLING_API, activity.getPackageName(), getSku(activity), "inapp", null);
             } catch (RemoteException | NullPointerException e) {
                 e.printStackTrace();
                 return;
@@ -130,7 +138,7 @@ public class Metronome extends Application {
             PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
             if (pendingIntent != null) {
                 try {
-                    activity.startIntentSenderForResult(pendingIntent.getIntentSender(), REQUEST_PURCHASE, new Intent(), 0, 0, 0);
+                    activity.startIntentSenderForResult(pendingIntent.getIntentSender(), Billing.REQUEST_PURCHASE, new Intent(), 0, 0, 0);
                 } catch (IntentSender.SendIntentException e) {
                     e.printStackTrace();
                 }
@@ -138,11 +146,12 @@ public class Metronome extends Application {
         }
     }
 
+    @Override
     public void onPremiumBought(int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK && data.hasExtra("INAPP_PURCHASE_DATA")) {
             try {
                 JSONObject object = new JSONObject(data.getStringExtra("INAPP_PURCHASE_DATA"));
-                String sku = getSku();
+                String sku = getSku(metronome);
                 if (sku != null && sku.equals(object.getString("productId")))
                     isPremium = true;
             } catch (Exception e) {
@@ -151,18 +160,13 @@ public class Metronome extends Application {
         }
     }
 
-    @Nullable
-    private String getSku() {
-        int skuRes = getResources().getIdentifier("sku", "string", getPackageName());
-        if (skuRes != 0)
-            return getString(skuRes);
-
-        return null;
+    private Context getContext() {
+        return metronome;
     }
 
     private static class GetPurchaseThread extends Thread {
 
-        private WeakReference<Metronome> metronomeReference;
+        private WeakReference<GplayBillingProvider> providerReference;
         private IInAppBillingService service;
         private String packageName;
 
@@ -171,11 +175,11 @@ public class Metronome extends Application {
 
         private String price;
 
-        public GetPurchaseThread(Metronome metronome, IInAppBillingService service) {
-            metronomeReference = new WeakReference<>(metronome);
+        public GetPurchaseThread(GplayBillingProvider provider, IInAppBillingService service) {
+            providerReference = new WeakReference<>(provider);
             this.service = service;
-            packageName = metronome.getPackageName();
-            sku = metronome.getSku();
+            packageName = provider.getContext().getPackageName();
+            sku = provider.getSku(provider.getContext());
         }
 
         @Override
@@ -191,13 +195,10 @@ public class Metronome extends Application {
                 skuDetails = service.getSkuDetails(VERSION_BILLING_API, packageName, "inapp", querySkus);
             } catch (RemoteException e) {
                 e.printStackTrace();
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Metronome metronome = metronomeReference.get();
-                        if (metronome != null)
-                            Toast.makeText(metronome, R.string.msg_purchase_refresh_error, Toast.LENGTH_SHORT).show();
-                    }
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    GplayBillingProvider provider = providerReference.get();
+                    if (provider != null)
+                        Toast.makeText(provider.getContext(), R.string.msg_purchase_refresh_error, Toast.LENGTH_SHORT).show();
                 });
                 return;
             }
@@ -212,26 +213,23 @@ public class Metronome extends Application {
                         e.printStackTrace();
                     }
 
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Bundle ownedItems;
-                            try {
-                                ownedItems = service.getPurchases(VERSION_BILLING_API, packageName, "inapp", null);
-                            } catch (RemoteException e) {
-                                e.printStackTrace();
-                                return;
-                            }
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        Bundle ownedItems;
+                        try {
+                            ownedItems = service.getPurchases(VERSION_BILLING_API, packageName, "inapp", null);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                            return;
+                        }
 
-                            if (ownedItems.getInt("RESPONSE_CODE") == 0) {
-                                Metronome metronome = metronomeReference.get();
-                                if (metronome != null) {
-                                    metronome.isNetworkError = false;
-                                    metronome.price = price;
+                        if (ownedItems.getInt("RESPONSE_CODE") == 0) {
+                            GplayBillingProvider provider = providerReference.get();
+                            if (provider != null) {
+                                provider.isNetworkError = false;
+                                provider.price = price;
 
-                                    List<String> ownedSkus = ownedItems.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");
-                                    metronome.isPremium = ownedSkus != null && ownedSkus.size() > 0 && ownedSkus.get(0).equals(sku);
-                                }
+                                List<String> ownedSkus = ownedItems.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");
+                                provider.isPremium = ownedSkus != null && ownedSkus.size() > 0 && ownedSkus.get(0).equals(sku);
                             }
                         }
                     });
@@ -239,4 +237,5 @@ public class Metronome extends Application {
             }
         }
     }
+
 }

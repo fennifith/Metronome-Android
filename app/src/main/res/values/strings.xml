@@ -35,7 +35,7 @@
     <string name="title_pro_key">Pro Key</string>
     <string name="title_no_connection">No Connection :(</string>
     <string name="title_use_anyway">Use Anyway</string>
-    <string name="msg_pro_key">This app is completely free to download and use, and it contains absolutely no advertisements. However, this means that I need another method of making a profit. In order to allow me to keep making great (and most importantly, free) apps like this one, please consider buying the \'pro key\' using the button below. This dialog does not limit the functionality of this app; you can press \'use anyway\' to ignore this message and continue using the app as normal. Buying the pro key will remove these dialogs.</string>
+    <string name="msg_pro_key">This app is completely free to download and use, and it contains absolutely no advertisements. However, this means that I need another method of making a profit. In order to allow me to keep making good (and most importantly, free) apps like this one, please consider buying a \'pro key\' using the button below. This dialog does not limit the functionality of this app; you can press \'use anyway\' to ignore this message and continue using the app as normal. Buying the pro key will remove these dialogs.</string>
     <string name="library_glide">Glide - Bump Technologies</string>
     <string name="library_glide_desc">An image loading and caching library for Android focused on smooth scrolling.</string>
     <string name="title_get_premium">Get Pro Key: %s</string>

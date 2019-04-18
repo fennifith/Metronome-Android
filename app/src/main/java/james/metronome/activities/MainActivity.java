@@ -4,7 +4,6 @@ import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -35,11 +34,10 @@ import java.util.List;
 import java.util.Locale;
 
 import androidx.appcompat.app.AlertDialog;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import james.metronome.Metronome;
 import james.metronome.R;
+import james.metronome.billing.Billing;
 import james.metronome.services.MetronomeService;
 import james.metronome.views.AppIconView;
 import james.metronome.views.EmphasisSwitch;
@@ -140,98 +138,73 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        playView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isBound()) {
-                    if (service.isPlaying())
-                        service.pause();
-                    else service.play();
+        playView.setOnClickListener(v -> {
+            if (isBound()) {
+                if (service.isPlaying())
+                    service.pause();
+                else service.play();
+            }
+        });
+
+        aboutView.setOnClickListener(v -> Attribouter.from(v.getContext()).show());
+
+        bookmarkView.setOnClickListener(view -> {
+            if (isBound()) {
+                int bpm = service.getBpm();
+                if (bookmarks.contains(bpm))
+                    removeBookmark(bpm);
+                else {
+                    metronome.onPremium(MainActivity.this);
+                    addBookmark(bpm);
                 }
             }
         });
 
-        aboutView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Attribouter.from(v.getContext()).show();
-            }
-        });
-
-        bookmarkView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isBound()) {
-                    int bpm = service.getBpm();
-                    if (bookmarks.contains(bpm))
-                        removeBookmark(bpm);
-                    else {
-                        metronome.onPremium(MainActivity.this);
-                        addBookmark(bpm);
-                    }
-                }
-            }
-        });
-
-        touchView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isBound()) {
-                    if (prevTouchTime > 0) {
-                        long interval = System.currentTimeMillis() - prevTouchTime;
-                        if (interval > 200) {
-                            if (interval < 20000) {
-                                if (prevTouchInterval == -1)
-                                    prevTouchInterval = interval;
-                                else prevTouchInterval = (prevTouchInterval + interval) / 2;
-                            } else prevTouchInterval = -1;
-                        }
-
-                        seekBar.setProgress((int) (60000 / prevTouchInterval));
+        touchView.setOnClickListener(view -> {
+            if (isBound()) {
+                if (prevTouchTime > 0) {
+                    long interval = System.currentTimeMillis() - prevTouchTime;
+                    if (interval > 200) {
+                        if (interval < 20000) {
+                            if (prevTouchInterval == -1)
+                                prevTouchInterval = interval;
+                            else prevTouchInterval = (prevTouchInterval + interval) / 2;
+                        } else prevTouchInterval = -1;
                     }
 
-                    prevTouchTime = System.currentTimeMillis();
+                    seekBar.setProgress((int) (60000 / prevTouchInterval));
+                }
+
+                prevTouchTime = System.currentTimeMillis();
+            }
+        });
+
+        addEmphasisView.setOnClickListener(view -> {
+            if (isBound()) {
+                if (service.getEmphasisList().size() < 50) {
+                    emphasisLayout.addView(getEmphasisSwitch(false, true));
+
+                    List<Boolean> emphasisList = service.getEmphasisList();
+                    emphasisList.add(false);
+                    service.setEmphasisList(emphasisList);
                 }
             }
         });
 
-        addEmphasisView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isBound()) {
-                    if (service.getEmphasisList().size() < 50) {
-                        emphasisLayout.addView(getEmphasisSwitch(false, true));
+        removeEmphasisView.setOnClickListener(view -> {
+            if (isBound() && service.getEmphasisList().size() > 2) {
+                List<Boolean> emphasisList = service.getEmphasisList();
+                int position = emphasisList.size() - 1;
+                emphasisList.remove(position);
+                service.setEmphasisList(emphasisList);
 
-                        List<Boolean> emphasisList = service.getEmphasisList();
-                        emphasisList.add(false);
-                        service.setEmphasisList(emphasisList);
-                    }
-                }
+                emphasisLayout.removeViewAt(position);
             }
         });
 
-        removeEmphasisView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isBound()) {
-                    if (service.getEmphasisList().size() > 2) {
-                        List<Boolean> emphasisList = service.getEmphasisList();
-                        int position = emphasisList.size() - 1;
-                        emphasisList.remove(position);
-                        service.setEmphasisList(emphasisList);
-
-                        emphasisLayout.removeViewAt(position);
-                    }
-                }
-            }
-        });
-
-        moreView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isBound() && service.getBpm() < 300)
-                    seekBar.setProgress(service.getBpm() + 1);
-            }
+        moreView.setOnClickListener(v -> {
+            if (isBound() && service.getBpm() < 300)
+                seekBar.setProgress(service.getBpm() + 1);
         });
 
         moreView.setOnTouchListener(new WhileHeldListener() {
@@ -242,12 +215,9 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
             }
         });
 
-        lessView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isBound() && service.getBpm() > 1)
-                    seekBar.setProgress(service.getBpm() - 1);
-            }
+        lessView.setOnClickListener(v -> {
+            if (isBound() && service.getBpm() > 1)
+                seekBar.setProgress(service.getBpm() - 1);
         });
 
         lessView.setOnTouchListener(new WhileHeldListener() {
@@ -331,52 +301,38 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
 
                     View view = LayoutInflater.from(this).inflate(R.layout.item_bookmark, bookmarkLayout, false);
                     view.setTag(bpm);
-                    view.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            if (isBound() && view.getTag() != null && view.getTag() instanceof Integer)
-                                service.setBpm((Integer) view.getTag());
-                        }
+                    view.setOnClickListener(view12 -> {
+                        if (isBound() && view12.getTag() != null && view12.getTag() instanceof Integer)
+                            service.setBpm((Integer) view12.getTag());
                     });
 
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) {
-                        view.setOnLongClickListener(new View.OnLongClickListener() {
-                            @Override
-                            public boolean onLongClick(View view) {
-                                view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-                                if (view.getTag() != null && view.getTag() instanceof Integer) {
-                                    final int bpm = (Integer) view.getTag();
+                        view.setOnLongClickListener(view1 -> {
+                            view1.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+                            if (view1.getTag() != null && view1.getTag() instanceof Integer) {
+                                final int bpm1 = (Integer) view1.getTag();
 
-                                    new AlertDialog.Builder(MainActivity.this)
-                                            .setTitle(R.string.title_add_shortcut)
-                                            .setMessage(R.string.msg_add_shortcut)
-                                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialogInterface, int i) {
-                                                    Intent intent = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
-                                                    intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, getBookmarkIntent(bpm));
-                                                    intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, getString(R.string.bpm, String.valueOf(bpm)));
-                                                    intent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.mipmap.ic_launcher));
-                                                    intent.putExtra("duplicate", false);
-                                                    sendBroadcast(intent);
+                                new AlertDialog.Builder(MainActivity.this)
+                                        .setTitle(R.string.title_add_shortcut)
+                                        .setMessage(R.string.msg_add_shortcut)
+                                        .setPositiveButton(android.R.string.ok, (dialogInterface, i12) -> {
+                                            Intent intent = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
+                                            intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, getBookmarkIntent(bpm1));
+                                            intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, getString(R.string.bpm, String.valueOf(bpm1)));
+                                            intent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.mipmap.ic_launcher));
+                                            intent.putExtra("duplicate", false);
+                                            sendBroadcast(intent);
 
-                                                    startActivity(new Intent(Intent.ACTION_MAIN)
-                                                            .addCategory(Intent.CATEGORY_HOME)
-                                                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                                            startActivity(new Intent(Intent.ACTION_MAIN)
+                                                    .addCategory(Intent.CATEGORY_HOME)
+                                                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
 
-                                                    dialogInterface.dismiss();
-                                                }
-                                            })
-                                            .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialogInterface, int i) {
-                                                    dialogInterface.dismiss();
-                                                }
-                                            })
-                                            .show();
-                                }
-                                return false;
+                                            dialogInterface.dismiss();
+                                        })
+                                        .setNegativeButton(android.R.string.cancel, (dialogInterface, i1) -> dialogInterface.dismiss())
+                                        .show();
                             }
+                            return false;
                         });
                     }
 
@@ -407,13 +363,10 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
 
                     ValueAnimator animator = ValueAnimator.ofObject(new ArgbEvaluator(), titleView.getCurrentTextColor(), isSelected ? colorAccent : textColorPrimary);
                     animator.setDuration(250);
-                    animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                        @Override
-                        public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                            int color = (int) valueAnimator.getAnimatedValue();
-                            imageView.setColorFilter(color);
-                            titleView.setTextColor(color);
-                        }
+                    animator.addUpdateListener(valueAnimator -> {
+                        int color = (int) valueAnimator.getAnimatedValue();
+                        imageView.setColorFilter(color);
+                        titleView.setTextColor(color);
                     });
                     animator.start();
                 }
@@ -473,40 +426,31 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
 
         colorAccentSubscription = Aesthetic.Companion.get()
                 .colorAccent()
-                .subscribe(new Consumer<Integer>() {
-                    @Override
-                    public void accept(Integer integer) throws Exception {
-                        colorAccent = integer;
-                        updateBookmarks(false);
-                    }
+                .subscribe(integer -> {
+                    colorAccent = integer;
+                    updateBookmarks(false);
                 });
 
         colorBackgroundSubscription = Aesthetic.Companion.get()
                 .colorWindowBackground()
-                .subscribe(new Consumer<Integer>() {
-                    @Override
-                    public void accept(@NonNull Integer integer) throws Exception {
-                        findViewById(R.id.topBar).setBackgroundColor(integer);
-                        findViewById(R.id.bottomBar).setBackgroundColor(integer);
-                    }
+                .subscribe(integer -> {
+                    findViewById(R.id.topBar).setBackgroundColor(integer);
+                    findViewById(R.id.bottomBar).setBackgroundColor(integer);
                 });
 
         textColorPrimarySubscription = Aesthetic.Companion.get()
                 .textColorPrimary()
-                .subscribe(new Consumer<Integer>() {
-                    @Override
-                    public void accept(@NonNull Integer integer) throws Exception {
-                        playView.setColorFilter(integer);
-                        addEmphasisView.setColorFilter(integer);
-                        removeEmphasisView.setColorFilter(integer);
-                        moreView.setColorFilter(integer);
-                        lessView.setColorFilter(integer);
-                        aboutView.setColorFilter(integer);
-                        bookmarkView.setColorFilter(integer);
-                        touchView.setColorFilter(integer);
-                        textColorPrimary = integer;
-                        updateBookmarks(false);
-                    }
+                .subscribe(integer -> {
+                    playView.setColorFilter(integer);
+                    addEmphasisView.setColorFilter(integer);
+                    removeEmphasisView.setColorFilter(integer);
+                    moreView.setColorFilter(integer);
+                    lessView.setColorFilter(integer);
+                    aboutView.setColorFilter(integer);
+                    bookmarkView.setColorFilter(integer);
+                    touchView.setColorFilter(integer);
+                    textColorPrimary = integer;
+                    updateBookmarks(false);
                 });
     }
 
@@ -673,7 +617,7 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (metronome != null && requestCode == Metronome.REQUEST_PURCHASE)
+        if (metronome != null && requestCode == Billing.REQUEST_PURCHASE)
             metronome.onPremiumBought(resultCode, data);
     }
 
@@ -693,13 +637,10 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
                 return;
             }
 
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    MainActivity activity = activityReference.get();
-                    if (activity != null)
-                        activity.findViewById(R.id.icon).setVisibility(View.GONE);
-                }
+            new Handler(Looper.getMainLooper()).post(() -> {
+                MainActivity activity = activityReference.get();
+                if (activity != null)
+                    activity.findViewById(R.id.icon).setVisibility(View.GONE);
             });
         }
     }
