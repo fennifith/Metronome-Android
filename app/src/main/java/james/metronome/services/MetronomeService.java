@@ -125,7 +125,7 @@ public class MetronomeService extends Service implements Runnable {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE))
-                    .createNotificationChannel(new NotificationChannel("metronome", getString(R.string.app_name), NotificationManager.IMPORTANCE_DEFAULT));
+                    .createNotificationChannel(new NotificationChannel("metronome", getString(R.string.app_name), NotificationManager.IMPORTANCE_LOW));
 
             builder = new NotificationCompat.Builder(this, "metronome");
         } else
