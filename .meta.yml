@@ -1,0 +1,7 @@
+icon: "app/src/main/res/mipmap-xxxhdpi/ic_launcher.png"
+googleplay: "https://play.google.com/store/apps/details?id=james.metronome"
+package: "james.metronome"
+screenshots:
+  - ".github/images/main.png"
+  - ".github/images/about.png"
+  - ".github/images/theme.png"
