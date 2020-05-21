@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <about>
 
-    <me.jfenn.attribouter.wedges.AppWedge
+    <AppWedge
         description="A lightweight, well designed metronome app for Android."
         repo="fennifith/Metronome-Android"
         websiteUrl="https://jfenn.me/projects/metronome-android" />
 
-    <me.jfenn.attribouter.wedges.ContributorsWedge repo="fennifith/Metronome-Android">
+    <ContributorsWedge repo="fennifith/Metronome-Android" showDefaults="false">
 
-        <me.jfenn.attribouter.wedges.ContributorWedge
+        <ContributorWedge
             name="James Fenn"
             avatar="https://avatars3.githubusercontent.com/u/13000407"
             bio="Enjoys writing software on loud keyboards. Starts too many projects. Consumes food."
@@ -17,7 +17,7 @@
             login="fennifith"
             task="^Developer" />
 
-        <me.jfenn.attribouter.wedges.ContributorWedge
+        <ContributorWedge
             name="Kevin Aguilar"
             avatar="https://avatars2.githubusercontent.com/u/16209409"
             bio="Into programming, productivity &amp; minimalism. Product Icon Designer. Laus Deo Semper."
@@ -25,11 +25,13 @@
             login="kevttob"
             task="^Designer" />
 
-    </me.jfenn.attribouter.wedges.ContributorsWedge>
+        <ContributorWedge login="TheAndroidMaster" hidden="true"/>
 
-    <me.jfenn.attribouter.wedges.LicensesWedge>
+    </ContributorsWedge>
 
-        <me.jfenn.attribouter.wedges.LicenseWedge
+    <LicensesWedge>
+
+        <LicenseWedge
             description="A fast, easy to use, dynamic theme engine. Powered by Rx and Kotlin, for Android apps."
             license="apache-2.0"
             licenseName="Apache License 2.0"
@@ -37,7 +39,7 @@
             repo="afollestad/aesthetic"
             website="https://aidanfollestad.com" />
 
-        <me.jfenn.attribouter.wedges.LicenseWedge
+        <LicenseWedge
             description="A beautiful and fluid dialogs API for Kotlin &amp; Android."
             license="apache-2.0"
             licenseName="Apache License 2.0"
@@ -45,6 +47,6 @@
             repo="afollestad/material-dialogs"
             website="https://aidanfollestad.com" />
 
-    </me.jfenn.attribouter.wedges.LicensesWedge>
+    </LicensesWedge>
 
 </about>
