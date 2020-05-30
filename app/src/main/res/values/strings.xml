@@ -42,4 +42,6 @@
     <string name="title_get_premium">Get Pro Key: %s</string>
     <string name="library_dialogs">Material Dialogs - Aidan Follestad</string>
     <string name="library_dialogs_desc">A beautiful, fluid, and customizable dialogs API.</string>
+    <string name="action_tap_tempo">Tap Tempo</string>
+    <string name="action_bookmark">Bookmark</string>
 </resources>

@@ -24,6 +24,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
+
 import com.afollestad.aesthetic.Aesthetic;
 import com.afollestad.aesthetic.AestheticActivity;
 
@@ -33,7 +35,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import androidx.appcompat.app.AlertDialog;
 import io.reactivex.disposables.Disposable;
 import james.metronome.BuildConfig;
 import james.metronome.Metronome;
@@ -65,8 +66,8 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
     private LinearLayout bookmarkLayout;
     private TextView bpmView;
     private ImageView aboutView;
-    private ImageView bookmarkView;
-    private ImageView touchView;
+    private View bookmarkView;
+    private View touchView;
     private ImageView lessView;
     private ImageView moreView;
     private ImageView addEmphasisView;
@@ -104,16 +105,16 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
         playView = findViewById(R.id.play);
         emphasisLayout = findViewById(R.id.emphasis);
         bookmarkLayout = findViewById(R.id.bookmarks);
-        addEmphasisView = findViewById(R.id.add);
-        removeEmphasisView = findViewById(R.id.remove);
+        addEmphasisView = findViewById(R.id.emphasis_add);
+        removeEmphasisView = findViewById(R.id.emphasis_remove);
         bpmView = findViewById(R.id.bpm);
-        lessView = findViewById(R.id.less);
-        moreView = findViewById(R.id.more);
+        lessView = findViewById(R.id.bpm_decrease);
+        moreView = findViewById(R.id.bpm_increase);
         ticksView = findViewById(R.id.ticks);
         aboutView = findViewById(R.id.about);
-        bookmarkView = findViewById(R.id.bookmark);
-        touchView = findViewById(R.id.touch);
-        seekBar = findViewById(R.id.seekBar);
+        bookmarkView = findViewById(R.id.button_bookmark);
+        touchView = findViewById(R.id.button_touch);
+        seekBar = findViewById(R.id.seekbar);
 
         seekBar.setMaxProgress(300);
 
@@ -435,8 +436,8 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
         colorBackgroundSubscription = Aesthetic.Companion.get()
                 .colorWindowBackground()
                 .subscribe(integer -> {
-                    findViewById(R.id.topBar).setBackgroundColor(integer);
-                    findViewById(R.id.bottomBar).setBackgroundColor(integer);
+                    //findViewById(R.id.topBar).setBackgroundColor(integer);
+                    //findViewById(R.id.bottomBar).setBackgroundColor(integer);
                 });
 
         textColorPrimarySubscription = Aesthetic.Companion.get()
@@ -448,8 +449,8 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
                     moreView.setColorFilter(integer);
                     lessView.setColorFilter(integer);
                     aboutView.setColorFilter(integer);
-                    bookmarkView.setColorFilter(integer);
-                    touchView.setColorFilter(integer);
+                    //bookmarkView.setColorFilter(integer);
+                    //touchView.setColorFilter(integer);
                     textColorPrimary = integer;
                     updateBookmarks(false);
                 });
@@ -577,7 +578,7 @@ public class MainActivity extends AestheticActivity implements TicksView.OnTickC
         if (isBound()) {
             metronomeView.setInterval(service.getInterval());
             bpmView.setText(String.format(Locale.getDefault(), getString(R.string.bpm), String.valueOf(bpm)));
-            bookmarkView.setImageResource(bookmarks.contains(bpm) ? R.drawable.ic_bookmark : R.drawable.ic_bookmark_border);
+            //bookmarkView.setImageResource(bookmarks.contains(bpm) ? R.drawable.ic_bookmark : R.drawable.ic_bookmark_border);
             updateBookmarks(false);
 
             if (seekBar.getProgress() != bpm) {

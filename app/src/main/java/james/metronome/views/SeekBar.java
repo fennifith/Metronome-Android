@@ -25,6 +25,8 @@ public class SeekBar extends View implements View.OnTouchListener {
     private int maxProgress = 100;
     private float touchDiff;
 
+    private float strokeWidth = DimenUtils.dpToPx(2);
+
     private Disposable textColorPrimarySubscription;
     private Disposable textColorSecondarySubscription;
     private Disposable colorAccentSubscription;
@@ -41,14 +43,17 @@ public class SeekBar extends View implements View.OnTouchListener {
         super(context, attrs, defStyleAttr);
         paint = new Paint();
         paint.setColor(Color.BLACK);
+        paint.setStrokeWidth(strokeWidth);
         paint.setAntiAlias(true);
 
         secondaryPaint = new Paint();
         secondaryPaint.setColor(Color.BLACK);
+        secondaryPaint.setStrokeWidth(strokeWidth);
         secondaryPaint.setAntiAlias(true);
 
         accentPaint = new Paint();
         accentPaint.setColor(Color.BLACK);
+        accentPaint.setStrokeWidth(strokeWidth);
         accentPaint.setAntiAlias(true);
 
         setOnTouchListener(this);
@@ -142,16 +147,16 @@ public class SeekBar extends View implements View.OnTouchListener {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         secondaryPaint.setAlpha(255);
-        canvas.drawRect(0, 0, canvas.getWidth(), 2, secondaryPaint);
+        canvas.drawLine(0, strokeWidth/2, canvas.getWidth(), strokeWidth/2, secondaryPaint);
 
         int currentWidth = (int) (canvas.getWidth() * ((float) progress / maxProgress));
         for (int i = 0; i < maxProgress; i += 10) {
             int width = (int) (canvas.getWidth() * ((float) i / maxProgress));
             secondaryPaint.setAlpha(Math.max(255 - (int) ((float) Math.abs(width - currentWidth) * 1000 / canvas.getWidth()), 0));
-            canvas.drawRect(width - 1, 0, width + 1, DimenUtils.dpToPx(i % 20 == 0 ? 6 : 4), secondaryPaint);
+            canvas.drawLine(width, strokeWidth/2, width, DimenUtils.dpToPx(i % 20 == 0 ? 14 : 8), secondaryPaint);
         }
 
-        canvas.drawRect(0, 0, currentWidth, 2, accentPaint);
-        canvas.drawRect(currentWidth - 1, 0, currentWidth + 1, DimenUtils.dpToPx(10), accentPaint);
+        canvas.drawLine(0, strokeWidth/2, currentWidth, strokeWidth/2, accentPaint);
+        canvas.drawLine(currentWidth, strokeWidth/2, currentWidth, DimenUtils.dpToPx(18), accentPaint);
     }
 }

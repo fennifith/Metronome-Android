@@ -1,25 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#F5F5F5</color>
-    <color name="colorPrimaryWood">#3E2723</color>
-    <color name="colorPrimaryDark">#212121</color>
-    <color name="colorPrimaryAmoled">#000000</color>
-    <color name="colorAccent">#F05656</color>
-    <color name="colorAccentWood">#A1887F</color>
-    <color name="colorAccentDark">#FF8A80</color>
-    <color name="colorAccentAmoled">#FFFFFF</color>
-    <color name="colorBorder">#30000000</color>
-    <color name="colorBorderDark">#20FFFFFF</color>
-    <color name="colorBackground">#FAFAFA</color>
-    <color name="colorBackgroundDark">#303030</color>
+    <color name="bgColor">#F5F5F5</color>
+    <color name="bgColorAccent">#feeef0</color>
+    <color name="colorAccent">#f58390</color>
+    <color name="textColorAccent">#f4707f</color>
+    <color name="highlightColorAccent">#cc3945</color>
+
+    <color name="bgColorWood">#F5F5F5</color>
+    <color name="bgColorAccentWood">#feeef0</color>
+    <color name="colorAccentWood">#f58390</color>
+    <color name="textColorAccentWood">#f4707f</color>
+    <color name="highlightColorAccentWood">#cc3945</color>
+
+    <color name="bgColorDark">#F5F5F5</color>
+    <color name="bgColorAccentDark">#feeef0</color>
+    <color name="colorAccentDark">#f58390</color>
+    <color name="textColorAccentDark">#f4707f</color>
+    <color name="highlightColorAccentDark">#cc3945</color>
+
+    <color name="bgColorAmoled">#F5F5F5</color>
+    <color name="bgColorAccentAmoled">#feeef0</color>
+    <color name="colorAccentAmoled">#f58390</color>
+    <color name="textColorAccentAmoled">#f4707f</color>
+    <color name="highlightColorAccentAmoled">#cc3945</color>
+
     <color name="textColorPrimary">#ffffff</color>
     <color name="textColorSecondary">#B3ffffff</color>
     <color name="textColorTertiary">#80FFFFFF</color>
     <color name="textColorPrimaryInverse">#DE000000</color>
     <color name="textColorSecondaryInverse">#8A000000</color>
     <color name="textColorTertiaryInverse">#61000000</color>
-    <color name="textColorPrimaryInverseRed">#7F0000</color>
-    <color name="textColorSecondaryInverseRed">#B71C1C</color>
-    <color name="textColorTertiaryInverseRed">#F05545</color>
-    <color name="cardColor">#ffebee</color>
 </resources>

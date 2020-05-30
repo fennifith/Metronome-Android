@@ -10,10 +10,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+
 import com.afollestad.aesthetic.Aesthetic;
 
-import androidx.annotation.Nullable;
-import androidx.core.graphics.drawable.DrawableCompat;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -171,7 +171,7 @@ public class TicksView extends LinearLayout {
                     @Override
                     public void accept(@NonNull Integer integer) throws Exception {
                         textColorPrimary = integer;
-                        DrawableCompat.setTint(getBackground(), integer);
+                        //DrawableCompat.setTint(getBackground(), integer);
                         for (int i = 0; i < getChildCount(); i++) {
                             View v = getChildAt(i);
                             if (!isExpanded || tick != i)

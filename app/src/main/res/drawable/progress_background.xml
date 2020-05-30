@@ -3,6 +3,6 @@
 
     <size android:height="1dip" />
 
-    <solid android:color="@color/colorBorder" />
+    <solid android:color="@color/textColorPrimary" />
 
 </shape>

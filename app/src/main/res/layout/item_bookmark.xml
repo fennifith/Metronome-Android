@@ -10,15 +10,15 @@
         android:layout_width="42dp"
         android:layout_height="42dp"
         android:scaleType="centerInside"
-        app:srcCompat="@drawable/ic_note" />
+        app:srcCompat="@drawable/ic_note"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginHorizontal="16dp"
         android:text="@string/bpm"
         android:textSize="16sp"
         android:textStyle="bold" />

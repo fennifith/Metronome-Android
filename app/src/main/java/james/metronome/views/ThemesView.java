@@ -10,10 +10,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.afollestad.aesthetic.Aesthetic;
-
 import androidx.annotation.Nullable;
 import androidx.core.graphics.drawable.DrawableCompat;
+
+import com.afollestad.aesthetic.Aesthetic;
+
 import io.reactivex.disposables.Disposable;
 import james.metronome.R;
 import james.metronome.data.ThemeData;
@@ -21,10 +22,10 @@ import james.metronome.data.ThemeData;
 public class ThemesView extends LinearLayout {
 
     public static final ThemeData[] themes = new ThemeData[]{
-            new ThemeData(R.string.title_theme_light, R.color.colorPrimary, R.color.colorAccent, R.color.colorBackground),
-            new ThemeData(R.string.title_theme_wood, R.color.colorPrimaryWood, R.color.colorAccentWood, R.color.colorPrimaryWood),
-            new ThemeData(R.string.title_theme_dark, R.color.colorPrimaryDark, R.color.colorAccentDark, R.color.colorBackgroundDark),
-            new ThemeData(R.string.title_theme_amoled, R.color.colorPrimaryAmoled, R.color.colorAccentAmoled, R.color.colorPrimaryAmoled)
+            //new ThemeData(R.string.title_theme_light, R.color.colorPrimary, R.color.colorAccent, R.color.colorBackground),
+            //new ThemeData(R.string.title_theme_wood, R.color.colorPrimaryWood, R.color.colorAccentWood, R.color.colorPrimaryWood),
+            //new ThemeData(R.string.title_theme_dark, R.color.colorPrimaryDark, R.color.colorAccentDark, R.color.colorBackgroundDark),
+            //new ThemeData(R.string.title_theme_amoled, R.color.colorPrimaryAmoled, R.color.colorAccentAmoled, R.color.colorPrimaryAmoled)
     };
 
     private OnThemeChangedListener listener;
