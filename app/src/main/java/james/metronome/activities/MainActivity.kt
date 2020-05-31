@@ -1,5 +1,6 @@
 package james.metronome.activities
 
+import android.animation.Animator
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.content.*
@@ -80,24 +81,10 @@ class MainActivity : AppCompatActivity(), OnTickChangedListener, ServiceConnecti
         }
     }
 
+    private var isPlaying: Boolean = false
     private var prevTouchInterval: Long = 0
     private var prevTouchTime: Long = 0
     private val metronome: Metronome get() = applicationContext as Metronome
-
-    private fun bindToService() {
-        service?.let {
-            ticksView?.setTick(it.tick)
-            seekBar?.setProgress(it.bpm)
-            bindTempo()
-            playView?.setImageResource(if (service!!.isPlaying) R.drawable.ic_pause else R.drawable.ic_play)
-            emphasisLayout?.apply {
-                removeAllViews()
-                for (isEmphasis in it.emphasisList) {
-                    addView(getEmphasisSwitch(isEmphasis, true))
-                }
-            }
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -201,6 +188,21 @@ class MainActivity : AppCompatActivity(), OnTickChangedListener, ServiceConnecti
         SplashThread(this).start()
     }
 
+    private fun bindToService() {
+        service?.let {
+            ticksView?.setTick(it.tick)
+            seekBar?.setProgress(it.bpm)
+            bindTempo()
+            bindPlayPause()
+            emphasisLayout?.apply {
+                removeAllViews()
+                for (isEmphasis in it.emphasisList) {
+                    addView(getEmphasisSwitch(isEmphasis, true))
+                }
+            }
+        }
+    }
+
     private fun bindTempo() = service?.let {
         metronomeView?.setInterval(it.interval)
         bpmView?.text = String.format(Locale.getDefault(), getString(R.string.bpm), it.bpm.toString())
@@ -217,6 +219,41 @@ class MainActivity : AppCompatActivity(), OnTickChangedListener, ServiceConnecti
             it.bpm <= 176 -> "Vivace"
             it.bpm <= 200 -> "Presto"
             else -> "Prestissimo"
+        }
+    }
+
+    private fun bindPlayPause() = service?.let { service ->
+        if (service.isPlaying != isPlaying) {
+            playView?.animate()?.alpha(0.5f)?.scaleX(0.5f)?.scaleY(0.5f)?.rotation(90f)?.setListener(object: Animator.AnimatorListener {
+                override fun onAnimationEnd(animation: Animator?) {
+                    playView?.setImageResource(
+                            if (service.isPlaying) R.drawable.ic_pause else R.drawable.ic_play
+                    )
+
+                    playView?.alpha = 0.5f
+                    playView?.scaleX = 0.5f
+                    playView?.scaleY = 0.5f
+                    playView?.rotation = 270f
+                    playView?.animate()?.alpha(1f)?.scaleX(1f)?.scaleY(1f)?.rotation(360f)?.setListener(object: Animator.AnimatorListener {
+                        override fun onAnimationEnd(animation: Animator?) {
+                            playView?.alpha = 1f
+                            playView?.scaleX = 1f
+                            playView?.scaleY = 1f
+                            playView?.rotation = 0f
+                        }
+
+                        override fun onAnimationRepeat(animation: Animator?) {}
+                        override fun onAnimationCancel(animation: Animator?) {}
+                        override fun onAnimationStart(animation: Animator?) {}
+                    })?.start()
+                }
+
+                override fun onAnimationRepeat(animation: Animator?) {}
+                override fun onAnimationCancel(animation: Animator?) {}
+                override fun onAnimationStart(animation: Animator?) {}
+            })?.start()
+
+            isPlaying = service.isPlaying
         }
     }
 
@@ -412,7 +449,7 @@ class MainActivity : AppCompatActivity(), OnTickChangedListener, ServiceConnecti
     }
 
     override fun onStartTicks() {
-        playView?.setImageResource(R.drawable.ic_pause)
+        bindPlayPause()
     }
 
     override fun onTick(isEmphasis: Boolean, index: Int) {
@@ -441,9 +478,9 @@ class MainActivity : AppCompatActivity(), OnTickChangedListener, ServiceConnecti
     }
 
     override fun onStopTicks() {
-        playView!!.setImageResource(R.drawable.ic_play)
-        for (i in 0 until emphasisLayout!!.childCount) {
-            (emphasisLayout!!.getChildAt(i) as EmphasisSwitch).setAccented(false)
+        bindPlayPause()
+        for (i in 0 until (emphasisLayout?.childCount ?: 0)) {
+            (emphasisLayout?.getChildAt(i) as? EmphasisSwitch)?.setAccented(false)
         }
     }
 
