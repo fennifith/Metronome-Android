@@ -21,6 +21,7 @@ class AppIconView @JvmOverloads constructor(context: Context?, attrs: AttributeS
     private var background: Bitmap? = null
     private var middleground: Bitmap? = null
     private var foreground: Bitmap? = null
+    private val bitmapMatrix = Matrix()
 
     private val paint = Paint().apply {
         isAntiAlias = true
@@ -69,27 +70,27 @@ class AppIconView @JvmOverloads constructor(context: Context?, attrs: AttributeS
         val mgBitmap = middleground ?: return
         val bgBitmap = background ?: return
 
-        var matrix = Matrix()
-        matrix.postTranslate(-fgBitmap.width / 2f, -fgBitmap.height / 2f)
-        matrix.postScale(scale, scale)
-        matrix.postTranslate(0f, 0f)
-        matrix.postTranslate(fgBitmap.width / 2f, fgBitmap.height / 2f)
-        canvas.drawBitmap(fgBitmap, matrix, paint)
+        bitmapMatrix.reset()
+        bitmapMatrix.postTranslate(-fgBitmap.width / 2f, -fgBitmap.height / 2f)
+        bitmapMatrix.postScale(scale, scale)
+        bitmapMatrix.postTranslate(0f, 0f)
+        bitmapMatrix.postTranslate(fgBitmap.width / 2f, fgBitmap.height / 2f)
+        canvas.drawBitmap(fgBitmap, bitmapMatrix, paint)
 
-        matrix = Matrix()
-        matrix.postTranslate(-mgBitmap.width / 2f, (-mgBitmap.height / 1.25f))
-        matrix.postRotate(pendulum)
-        matrix.postTranslate(mgBitmap.width / 2f, (mgBitmap.height / 1.25f))
-        matrix.postTranslate(-mgBitmap.width / 2f, -mgBitmap.height / 2f)
-        matrix.postScale(scale, scale)
-        matrix.postTranslate(mgBitmap.width / 2f, mgBitmap.height / 2f)
-        canvas.drawBitmap(mgBitmap, matrix, paint)
+        bitmapMatrix.reset()
+        bitmapMatrix.postTranslate(-mgBitmap.width / 2f, (-mgBitmap.height / 1.25f))
+        bitmapMatrix.postRotate(pendulum)
+        bitmapMatrix.postTranslate(mgBitmap.width / 2f, (mgBitmap.height / 1.25f))
+        bitmapMatrix.postTranslate(-mgBitmap.width / 2f, -mgBitmap.height / 2f)
+        bitmapMatrix.postScale(scale, scale)
+        bitmapMatrix.postTranslate(mgBitmap.width / 2f, mgBitmap.height / 2f)
+        canvas.drawBitmap(mgBitmap, bitmapMatrix, paint)
 
-        matrix = Matrix()
-        matrix.postTranslate(-bgBitmap.width / 2f, -bgBitmap.height / 2f)
-        matrix.postScale(scale, scale)
-        matrix.postTranslate(0f, 0f)
-        matrix.postTranslate(bgBitmap.width / 2f, bgBitmap.height / 2f)
-        canvas.drawBitmap(bgBitmap, matrix, paint)
+        bitmapMatrix.reset()
+        bitmapMatrix.postTranslate(-bgBitmap.width / 2f, -bgBitmap.height / 2f)
+        bitmapMatrix.postScale(scale, scale)
+        bitmapMatrix.postTranslate(0f, 0f)
+        bitmapMatrix.postTranslate(bgBitmap.width / 2f, bgBitmap.height / 2f)
+        canvas.drawBitmap(bgBitmap, bitmapMatrix, paint)
     }
 }
