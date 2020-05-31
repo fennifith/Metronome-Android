@@ -24,7 +24,9 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    compileOnly 'com.google.android.wearable:wearable:2.0.3'
-    implementation 'com.google.android.support:wearable:2.0.3'
-    implementation 'com.google.android.gms:play-services-wearable:11.0.1'
+    implementation 'androidx.wear:wear:1.0.0'
+    implementation 'com.google.android.support:wearable:2.7.0'
+    compileOnly 'com.google.android.wearable:wearable:2.7.0'
+
+    implementation 'com.google.android.gms:play-services-wearable:17.0.0'
 }

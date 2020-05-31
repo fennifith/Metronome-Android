@@ -25,10 +25,6 @@
         </activity>
 
         <activity
-            android:name=".activities.AboutActivity"
-            android:label="@string/title_about" />
-
-        <activity
             android:name=".activities.DummyShortcutActivity"
             android:theme="@style/AppTheme.Transparent">
             <intent-filter>

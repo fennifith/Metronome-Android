@@ -2,8 +2,10 @@
 <resources>
     <color name="bgColor">#F5F5F5</color>
     <color name="bgColorAccent">#feeef0</color>
-    <color name="colorAccent">#f58390</color>
-    <color name="textColorAccent">#f4707f</color>
+    <color name="insetColor">#E0E0E0</color>
+    <color name="foregroundColor">#FFFFFF</color>
+    <color name="colorAccent">#F4818E</color>
+    <color name="textColorAccent">#CC3945</color>
     <color name="highlightColorAccent">#cc3945</color>
 
     <color name="bgColorWood">#F5F5F5</color>
@@ -24,10 +26,10 @@
     <color name="textColorAccentAmoled">#f4707f</color>
     <color name="highlightColorAccentAmoled">#cc3945</color>
 
-    <color name="textColorPrimary">#ffffff</color>
-    <color name="textColorSecondary">#B3ffffff</color>
-    <color name="textColorTertiary">#80FFFFFF</color>
-    <color name="textColorPrimaryInverse">#DE000000</color>
-    <color name="textColorSecondaryInverse">#8A000000</color>
-    <color name="textColorTertiaryInverse">#61000000</color>
+    <color name="textColorPrimary">#DE000000</color>
+    <color name="textColorSecondary">#8A000000</color>
+    <color name="textColorTertiary">#61000000</color>
+    <color name="textColorPrimaryInverse">#ffffff</color>
+    <color name="textColorSecondaryInverse">#B3ffffff</color>
+    <color name="textColorTertiaryInverse">#80FFFFFF</color>
 </resources>

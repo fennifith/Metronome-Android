@@ -1,11 +1,21 @@
 <resources>
 
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme.Base" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="insetColor">@color/insetColor</item>
+        <item name="foregroundColor">@color/foregroundColor</item>
+
         <item name="colorPrimary">@color/colorAccent</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorButtonNormal">@color/colorAccent</item>
+
+        <item name="textColorAccent">@color/textColorAccent</item>
+        <item name="textColorPrimary">@color/textColorPrimary</item>
+        <item name="textColorSecondary">@color/textColorSecondary</item>
+        <item name="textColorTertiary">@color/textColorTertiary</item>
         <item name="android:windowBackground">@color/bgColor</item>
     </style>
+
+    <style name="AppTheme" parent="AppTheme.Base"/>
 
     <style name="AppTheme.Transparent" parent="@style/AppTheme">
         <item name="android:windowIsTranslucent">true</item>

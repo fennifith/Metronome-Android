@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
     android:background="?attr/selectableItemBackground">
@@ -10,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:alpha="0"
-        android:background="@color/colorAccent" />
+        android:background="?attr/colorAccent" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,17 +24,42 @@
             android:layout_width="?attr/actionBarSize"
             android:layout_height="?attr/actionBarSize"
             android:scaleType="centerInside"
-            android:tint="@color/colorAccent"
-            app:srcCompat="@drawable/ic_expand" />
+            android:tint="?attr/textColorPrimary"
+            app:srcCompat="@drawable/ic_note" />
 
         <TextView
             android:id="@+id/name"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:textColor="?android:textColorPrimary"
-            android:textSize="16sp" />
+            android:layout_weight="1"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="?attr/textColorPrimary"
+            tools:text="Beep" />
+
+        <ImageView
+            android:id="@+id/expand"
+            android:layout_width="40dp"
+            android:layout_height="56dp"
+            android:layout_marginEnd="4dp"
+            android:scaleType="centerInside"
+            android:tint="?android:textColorPrimary"
+            android:visibility="gone"
+            app:srcCompat="@drawable/ic_expand"
+            tools:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/about"
+            android:layout_width="40dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="centerInside"
+            android:tint="?android:textColorPrimary"
+            android:visibility="gone"
+            app:srcCompat="@drawable/ic_info"
+            tools:visibility="visible" />
 
     </LinearLayout>
 

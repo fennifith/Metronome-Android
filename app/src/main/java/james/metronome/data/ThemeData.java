@@ -2,13 +2,8 @@ package james.metronome.data;
 
 import android.content.Context;
 
-import com.afollestad.aesthetic.Aesthetic;
-
 import androidx.annotation.ColorRes;
 import androidx.annotation.StringRes;
-import androidx.core.content.ContextCompat;
-import james.metronome.R;
-import me.jfenn.androidutils.ColorUtils;
 
 public class ThemeData {
 
@@ -28,7 +23,7 @@ public class ThemeData {
         return context.getString(nameRes);
     }
 
-    public void apply(Context context) {
+    /*public void apply(Context context) {
         int backgroundColor = ContextCompat.getColor(context, colorBackgroundRes);
         boolean isBackgroundDark = ColorUtils.isColorDark(backgroundColor);
 
@@ -43,6 +38,6 @@ public class ThemeData {
                 .colorStatusBarAuto()
                 .colorNavigationBarAuto()
                 .apply();
-    }
+    }*/
 
 }

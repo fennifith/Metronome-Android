@@ -5,42 +5,34 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <james.metronome.views.TicksView
-        android:id="@+id/ticks"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-
-    <ImageView
-        android:id="@+id/about"
-        android:layout_width="40dp"
-        android:layout_height="56dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:scaleType="centerInside"
-        android:tint="?android:textColorPrimary"
-        app:srcCompat="@drawable/ic_info"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
     <james.metronome.views.MetronomeView
         android:id="@+id/metronome"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="?attr/actionBarSize"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/card"/>
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/play"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_gravity="center"
         android:scaleType="centerInside"
+        android:background="@null"
         app:srcCompat="@drawable/ic_play"
+        app:layout_constraintTop_toTopOf="@id/metronome"
+        app:layout_constraintBottom_toBottomOf="@id/metronome"/>
+
+    <james.metronome.views.TicksView
+        android:id="@+id/ticks"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        android:orientation="vertical"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/card"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card"
@@ -62,11 +54,13 @@
                 android:id="@+id/button_touch"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="56dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="4dp"
                 android:text="@string/action_tap_tempo"
+                android:textColor="?attr/textColorAccent"
                 app:icon="@drawable/ic_touch"
+                app:iconTint="?attr/textColorAccent"
                 app:iconGravity="textStart"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/button_bookmark"
@@ -77,18 +71,20 @@
                 android:id="@+id/button_bookmark"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="56dp"
                 android:layout_marginStart="4dp"
                 android:layout_marginEnd="8dp"
                 android:text="@string/action_bookmark"
+                android:textColor="?attr/textColorAccent"
                 app:icon="@drawable/ic_bookmark_border"
+                app:iconTint="?attr/textColorAccent"
                 app:iconGravity="textStart"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_weight="1"
                 app:layout_constraintStart_toEndOf="@id/button_touch" />
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/emphasis_remove"
                 android:layout_width="40dp"
                 android:layout_height="56dp"
@@ -111,7 +107,7 @@
                 app:layout_constraintHorizontal_weight="1"
                 app:layout_constraintStart_toEndOf="@+id/emphasis_remove">
 
-                <james.metronome.views.EmphasesLayout
+                <james.metronome.views.CenteredOverflowLayout
                     android:id="@+id/emphasis"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
@@ -122,7 +118,7 @@
 
             </HorizontalScrollView>
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/emphasis_add"
                 android:layout_width="40dp"
                 android:layout_height="56dp"
@@ -144,7 +140,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/bpm_mega_decrease"
                 android:layout_width="40dp"
                 android:layout_height="64dp"
@@ -156,13 +152,13 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:srcCompat="@drawable/ic_less" />
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/bpm_decrease"
                 android:layout_width="40dp"
                 android:layout_height="64dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
-                android:tint="?android:textColorPrimary"
+                android:tint="?attr/textColorPrimary"
                 app:layout_constraintBottom_toTopOf="@id/emphasis_remove"
                 app:layout_constraintStart_toEndOf="@id/bpm_mega_decrease"
                 app:srcCompat="@drawable/ic_less" />
@@ -172,9 +168,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:gravity="top"
-                android:textColor="?android:textColorSecondary"
+                android:textColor="?attr/textColorSecondary"
                 android:textSize="14sp"
-                android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@id/emphasis_remove"
                 app:layout_constraintTop_toBottomOf="@id/bpm"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -188,8 +183,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:gravity="bottom"
-                android:textColor="?android:textColorPrimary"
+                android:textColor="?attr/textColorPrimary"
                 android:textSize="16sp"
+                android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@id/bpm_title"
                 app:layout_constraintTop_toTopOf="@id/bpm_decrease"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -198,43 +194,46 @@
                 app:layout_constraintVertical_weight="1"
                 tools:text="180 BPM" />
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/bpm_mega_increase"
                 android:layout_width="40dp"
                 android:layout_height="64dp"
                 android:layout_marginEnd="8dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
-                android:tint="?android:textColorPrimary"
+                android:tint="?attr/textColorPrimary"
                 app:layout_constraintBottom_toTopOf="@id/emphasis_remove"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:srcCompat="@drawable/ic_more" />
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/bpm_increase"
                 android:layout_width="40dp"
                 android:layout_height="64dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
-                android:tint="?android:textColorPrimary"
+                android:tint="?attr/textColorPrimary"
                 app:layout_constraintBottom_toTopOf="@id/emphasis_remove"
                 app:layout_constraintEnd_toStartOf="@id/bpm_mega_increase"
                 app:srcCompat="@drawable/ic_more" />
 
             <HorizontalScrollView
                 android:id="@+id/bookmarks_scroll"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="42dp"
                 android:layout_marginBottom="24dp"
-                android:layout_gravity="bottom"
+                android:fillViewport="true"
+                android:scrollbars="horizontal"
                 app:layout_constraintBottom_toTopOf="@id/bpm_increase"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
-                <LinearLayout
+                <james.metronome.views.CenteredOverflowLayout
                     android:id="@+id/bookmarks"
                     android:layout_width="wrap_content"
                     android:layout_height="42dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
                     android:animateLayoutChanges="true"
                     android:orientation="horizontal"
                     android:paddingEnd="8dp"
