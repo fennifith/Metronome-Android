@@ -47,6 +47,7 @@ class MainActivity : AppCompatActivity(), OnTickChangedListener, ServiceConnecti
     private val emphasisLayout: LinearLayout? by bind(R.id.emphasis)
     private val bookmarkLayout: LinearLayout? by bind(R.id.bookmarks)
     private val bpmView: TextView? by bind(R.id.bpm)
+    private val bpmTitleView: TextView? by bind(R.id.bpm_title)
     private val bookmarkView: MaterialButton? by bind(R.id.button_bookmark)
     private val touchView: MaterialButton? by bind(R.id.button_touch)
     private val lessView: ImageView? by bind(R.id.bpm_decrease)
@@ -79,9 +80,8 @@ class MainActivity : AppCompatActivity(), OnTickChangedListener, ServiceConnecti
     private fun bindToService() {
         service?.let {
             ticksView?.setTick(it.tick)
-            metronomeView?.setInterval(it.interval)
             seekBar?.setProgress(it.bpm)
-            bpmView?.text = String.format(Locale.getDefault(), getString(R.string.bpm), it.bpm.toString())
+            bindTempo()
             playView?.setImageResource(if (service!!.isPlaying) R.drawable.ic_pause else R.drawable.ic_play)
             emphasisLayout?.apply {
                 removeAllViews()
@@ -180,6 +180,25 @@ class MainActivity : AppCompatActivity(), OnTickChangedListener, ServiceConnecti
         seekBar?.setOnProgressChangeListener(this)
         ticksView?.setListener(this)
         SplashThread(this).start()
+    }
+
+    private fun bindTempo() = service?.let {
+        metronomeView?.setInterval(it.interval)
+        bpmView?.text = String.format(Locale.getDefault(), getString(R.string.bpm), it.bpm.toString())
+        bpmTitleView?.text = when {
+            it.bpm <= 24 -> "Larghissimo"
+            it.bpm <= 45 -> "Grave"
+            it.bpm <= 60 -> "Largo"
+            it.bpm <= 66 -> "Larghetto"
+            it.bpm <= 76 -> "Adagio"
+            it.bpm <= 100 -> "Andante"
+            it.bpm <= 112 -> "Moderato"
+            it.bpm <= 120 -> "Allegro moderato"
+            it.bpm <= 156 -> "Allegro"
+            it.bpm <= 176 -> "Vivace"
+            it.bpm <= 200 -> "Presto"
+            else -> "Prestissimo"
+        }
     }
 
     private fun addBookmark(bpm: Int) = service?.let {
@@ -388,8 +407,7 @@ class MainActivity : AppCompatActivity(), OnTickChangedListener, ServiceConnecti
 
     override fun onBpmChanged(bpm: Int) {
         service?.let {
-            metronomeView?.setInterval(service!!.interval)
-            bpmView?.text = String.format(Locale.getDefault(), getString(R.string.bpm), bpm.toString())
+            bindTempo()
             bookmarkView?.setIconResource(
                     if (bookmarks.contains(bpm)) R.drawable.ic_bookmark else R.drawable.ic_bookmark_border
             )

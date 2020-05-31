@@ -184,7 +184,7 @@
                 android:layout_height="0dp"
                 android:gravity="bottom"
                 android:textColor="?attr/textColorPrimary"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@id/bpm_title"
                 app:layout_constraintTop_toTopOf="@id/bpm_decrease"
