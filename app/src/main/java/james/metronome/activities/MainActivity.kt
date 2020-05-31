@@ -1,6 +1,5 @@
 package james.metronome.activities
 
-import android.animation.Animator
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.content.*
@@ -18,6 +17,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.google.android.material.button.MaterialButton
 import james.metronome.BuildConfig
 import james.metronome.Metronome
@@ -224,34 +224,17 @@ class MainActivity : AppCompatActivity(), OnTickChangedListener, ServiceConnecti
 
     private fun bindPlayPause() = service?.let { service ->
         if (service.isPlaying != isPlaying) {
-            playView?.animate()?.alpha(0.5f)?.scaleX(0.5f)?.scaleY(0.5f)?.rotation(90f)?.setListener(object: Animator.AnimatorListener {
-                override fun onAnimationEnd(animation: Animator?) {
-                    playView?.setImageResource(
-                            if (service.isPlaying) R.drawable.ic_pause else R.drawable.ic_play
-                    )
-
-                    playView?.alpha = 0.5f
-                    playView?.scaleX = 0.5f
-                    playView?.scaleY = 0.5f
-                    playView?.rotation = 270f
-                    playView?.animate()?.alpha(1f)?.scaleX(1f)?.scaleY(1f)?.rotation(360f)?.setListener(object: Animator.AnimatorListener {
-                        override fun onAnimationEnd(animation: Animator?) {
-                            playView?.alpha = 1f
-                            playView?.scaleX = 1f
-                            playView?.scaleY = 1f
-                            playView?.rotation = 0f
-                        }
-
-                        override fun onAnimationRepeat(animation: Animator?) {}
-                        override fun onAnimationCancel(animation: Animator?) {}
-                        override fun onAnimationStart(animation: Animator?) {}
-                    })?.start()
-                }
-
-                override fun onAnimationRepeat(animation: Animator?) {}
-                override fun onAnimationCancel(animation: Animator?) {}
-                override fun onAnimationStart(animation: Animator?) {}
-            })?.start()
+            AnimatedVectorDrawableCompat.create(
+                    this,
+                    if (service.isPlaying) R.drawable.ic_play_to_pause else R.drawable.ic_pause_to_play
+            )?.also {
+                playView?.setImageDrawable(it)
+                it.start()
+            } ?: run {
+                playView?.setImageResource(
+                        if (service.isPlaying) R.drawable.ic_pause else R.drawable.ic_play
+                )
+            }
 
             isPlaying = service.isPlaying
         }

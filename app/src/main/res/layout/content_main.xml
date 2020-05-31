@@ -157,7 +157,7 @@
                 android:tint="?attr/textColorPrimary"
                 app:layout_constraintBottom_toTopOf="@id/emphasis_remove"
                 app:layout_constraintStart_toStartOf="parent"
-                app:srcCompat="@drawable/ic_less" />
+                app:srcCompat="@drawable/ic_much_less" />
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/bpm_decrease"
@@ -211,7 +211,7 @@
                 android:tint="?attr/textColorPrimary"
                 app:layout_constraintBottom_toTopOf="@id/emphasis_remove"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:srcCompat="@drawable/ic_more" />
+                app:srcCompat="@drawable/ic_much_more" />
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/bpm_increase"
