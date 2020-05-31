@@ -2,6 +2,7 @@
 <resources>
     <attr name="insetColor" format="color"/>
     <attr name="foregroundColor" format="color"/>
+    <attr name="borderColor" format="color"/>
     <attr name="textColorAccent" format="color"/>
 
     <attr name="textColorPrimary" format="color"/>

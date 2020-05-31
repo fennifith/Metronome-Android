@@ -52,6 +52,8 @@ class MainActivity : AppCompatActivity(), OnTickChangedListener, ServiceConnecti
     private val touchView: MaterialButton? by bind(R.id.button_touch)
     private val lessView: ImageView? by bind(R.id.bpm_decrease)
     private val moreView: ImageView? by bind(R.id.bpm_increase)
+    private val muchLessView: ImageView? by bind(R.id.bpm_mega_decrease)
+    private val muchMoreView: ImageView? by bind(R.id.bpm_mega_increase)
     private val addEmphasisView: ImageView? by bind(R.id.emphasis_add)
     private val removeEmphasisView: ImageView? by bind(R.id.emphasis_remove)
     private val ticksView: TicksView? by bind(R.id.ticks)
@@ -66,9 +68,14 @@ class MainActivity : AppCompatActivity(), OnTickChangedListener, ServiceConnecti
 
     private val bookmarks: MutableList<Int> by lazy {
         ArrayList<Int>().apply {
-            val bookmarksLength = prefs.getInt(PREF_BOOKMARKS_LENGTH, 0)
-            for (i in 0 until bookmarksLength) {
-                add(prefs.getInt(PREF_BOOKMARK + i, -1))
+            if (prefs.contains(PREF_BOOKMARKS_LENGTH)) {
+                val bookmarksLength = prefs.getInt(PREF_BOOKMARKS_LENGTH, 0)
+                for (i in 0 until bookmarksLength) {
+                    add(prefs.getInt(PREF_BOOKMARK + i, -1))
+                }
+            } else {
+                // preset BPM bookmarks
+                addAll(listOf(80, 120, 180))
             }
         }
     }
@@ -171,8 +178,20 @@ class MainActivity : AppCompatActivity(), OnTickChangedListener, ServiceConnecti
             }
         }
 
+        muchMoreView?.setOnClickListener { _ ->
+            service?.bpm?.plus(10)?.coerceIn(BPM_RANGE)?.let {
+                seekBar?.setProgress(it)
+            }
+        }
+
         lessView?.setOnClickListener { _ ->
             service?.bpm?.minus(1)?.coerceIn(BPM_RANGE)?.let {
+                seekBar?.setProgress(it)
+            }
+        }
+
+        muchLessView?.setOnClickListener { _ ->
+            service?.bpm?.minus(10)?.coerceIn(BPM_RANGE)?.let {
                 seekBar?.setProgress(it)
             }
         }

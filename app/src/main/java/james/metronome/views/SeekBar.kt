@@ -35,6 +35,7 @@ class SeekBar @JvmOverloads constructor(
 
     private var listener: OnProgressChangeListener? = null
     private var progress = 0
+    private var displayedProgress = 0f
     private var maxProgress = 100
     private var touchDiff = 0f
 
@@ -43,10 +44,12 @@ class SeekBar @JvmOverloads constructor(
         isClickable = true
     }
 
-    fun setProgress(progress: Int) {
+    fun setProgress(progress: Int, immediate: Boolean = false) {
         this.progress = progress
+        if (immediate) this.displayedProgress = progress.toFloat()
+
+        listener?.onProgressChange(progress)
         invalidate()
-        if (listener != null) listener!!.onProgressChange(progress)
     }
 
     fun getProgress(): Int {
@@ -69,12 +72,12 @@ class SeekBar @JvmOverloads constructor(
                 touchDiff = x - progress.toFloat() / maxProgress * view.measuredWidth
                 var progress = (maxProgress * ((x - touchDiff) / view.measuredWidth)).toInt()
                 if (progress < 0) progress = 0 else if (progress > maxProgress) progress = maxProgress
-                setProgress(progress)
+                setProgress(progress, true)
             }
             MotionEvent.ACTION_MOVE -> {
                 var progress = (maxProgress * ((x - touchDiff) / view.measuredWidth)).toInt()
                 if (progress < 0) progress = 0 else if (progress > maxProgress) progress = maxProgress
-                setProgress(progress)
+                setProgress(progress, true)
             }
         }
         return false
@@ -88,7 +91,7 @@ class SeekBar @JvmOverloads constructor(
         super.onDraw(canvas)
         secondaryPaint.alpha = 255
         canvas.drawLine(0f, lineWidth / 2, width.toFloat(), lineWidth / 2, secondaryPaint)
-        val currentWidth = (width * (progress.toFloat() / maxProgress)).toInt()
+        val currentWidth = (width * (displayedProgress / maxProgress)).toInt()
         var i = 0
         while (i < maxProgress) {
             val width = (width * (i.toFloat() / maxProgress)).toInt()
@@ -98,5 +101,13 @@ class SeekBar @JvmOverloads constructor(
         }
         canvas.drawLine(0f, lineWidth / 2, currentWidth.toFloat(), lineWidth / 2, accentPaint)
         canvas.drawLine(currentWidth.toFloat(), lineWidth / 2, currentWidth.toFloat(), DimenUtils.dpToPx(18f).toFloat(), accentPaint)
+
+        if (displayedProgress != progress.toFloat()) {
+            displayedProgress = if (abs(displayedProgress - progress) < 0.5f)
+                progress.toFloat()
+            else (displayedProgress + progress) / 2f
+
+            postInvalidate()
+        }
     }
 }

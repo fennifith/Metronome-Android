@@ -20,6 +20,7 @@
         android:layout_gravity="center"
         android:scaleType="centerInside"
         android:background="@null"
+        android:tint="?attr/colorAccent"
         app:srcCompat="@drawable/ic_play"
         app:layout_constraintTop_toTopOf="@id/metronome"
         app:layout_constraintBottom_toBottomOf="@id/metronome"/>
@@ -47,8 +48,8 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="24dp"
-            android:paddingTop="16dp">
+            android:paddingTop="16dp"
+            android:paddingBottom="24dp">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_touch"
@@ -60,8 +61,10 @@
                 android:text="@string/action_tap_tempo"
                 android:textColor="?attr/textColorAccent"
                 app:icon="@drawable/ic_touch"
-                app:iconTint="?attr/textColorAccent"
                 app:iconGravity="textStart"
+                app:iconTint="?attr/textColorAccent"
+                app:cornerRadius="8dp"
+                app:strokeColor="?attr/borderColor"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/button_bookmark"
                 app:layout_constraintHorizontal_weight="1"
@@ -77,8 +80,10 @@
                 android:text="@string/action_bookmark"
                 android:textColor="?attr/textColorAccent"
                 app:icon="@drawable/ic_bookmark_border"
-                app:iconTint="?attr/textColorAccent"
                 app:iconGravity="textStart"
+                app:iconTint="?attr/textColorAccent"
+                app:cornerRadius="8dp"
+                app:strokeColor="?attr/borderColor"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_weight="1"
@@ -91,6 +96,7 @@
                 android:layout_marginStart="8dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
+                android:tint="?attr/textColorPrimary"
                 app:layout_constraintBottom_toTopOf="@id/button_touch"
                 app:layout_constraintEnd_toStartOf="@id/emphasis_scroll"
                 app:layout_constraintStart_toStartOf="parent"
@@ -100,8 +106,8 @@
                 android:id="@+id/emphasis_scroll"
                 android:layout_width="0dp"
                 android:layout_height="56dp"
-                android:scrollbars="horizontal"
                 android:fillViewport="true"
+                android:scrollbars="horizontal"
                 app:layout_constraintBottom_toTopOf="@id/button_touch"
                 app:layout_constraintEnd_toStartOf="@id/emphasis_add"
                 app:layout_constraintHorizontal_weight="1"
@@ -125,6 +131,7 @@
                 android:layout_marginEnd="8dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
+                android:tint="?attr/textColorPrimary"
                 app:layout_constraintBottom_toTopOf="@id/button_touch"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/emphasis_scroll"
@@ -135,10 +142,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginTop="8dp"
-                app:layout_constraintTop_toBottomOf="@id/bookmarks_scroll"
                 app:layout_constraintBottom_toBottomOf="@id/bpm_decrease"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/bookmarks_scroll" />
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/bpm_mega_decrease"
@@ -147,7 +154,7 @@
                 android:layout_marginStart="8dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
-                android:tint="?android:textColorPrimary"
+                android:tint="?attr/textColorPrimary"
                 app:layout_constraintBottom_toTopOf="@id/emphasis_remove"
                 app:layout_constraintStart_toStartOf="parent"
                 app:srcCompat="@drawable/ic_less" />
@@ -166,32 +173,32 @@
             <TextView
                 android:id="@+id/bpm_title"
                 android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:gravity="top"
+                android:layout_height="wrap_content"
                 android:textColor="?attr/textColorSecondary"
                 android:textSize="14sp"
+                app:layout_constraintVertical_chainStyle="packed"
                 app:layout_constraintBottom_toTopOf="@id/emphasis_remove"
-                app:layout_constraintTop_toBottomOf="@id/bpm"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintWidth_percent="0.5"
+                app:layout_constraintTop_toBottomOf="@id/bpm"
                 app:layout_constraintVertical_weight="1"
+                app:layout_constraintWidth_percent="0.5"
                 tools:text="Presto" />
 
             <TextView
                 android:id="@+id/bpm"
                 android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:gravity="bottom"
+                android:layout_height="wrap_content"
                 android:textColor="?attr/textColorPrimary"
                 android:textSize="18sp"
                 android:textStyle="bold"
+                app:layout_constraintVertical_chainStyle="packed"
                 app:layout_constraintBottom_toTopOf="@id/bpm_title"
-                app:layout_constraintTop_toTopOf="@id/bpm_decrease"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintWidth_percent="0.5"
+                app:layout_constraintTop_toTopOf="@id/bpm_decrease"
                 app:layout_constraintVertical_weight="1"
+                app:layout_constraintWidth_percent="0.5"
                 tools:text="180 BPM" />
 
             <androidx.appcompat.widget.AppCompatImageButton
@@ -225,21 +232,26 @@
                 android:fillViewport="true"
                 android:scrollbars="horizontal"
                 app:layout_constraintBottom_toTopOf="@id/bpm_increase"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
 
                 <james.metronome.views.CenteredOverflowLayout
                     android:id="@+id/bookmarks"
                     android:layout_width="wrap_content"
                     android:layout_height="42dp"
                     android:layout_gravity="center"
-                    android:gravity="center"
                     android:animateLayoutChanges="true"
+                    android:gravity="center"
                     android:orientation="horizontal"
-                    android:paddingEnd="8dp"
-                    android:paddingStart="8dp" />
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp" />
 
             </HorizontalScrollView>
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
