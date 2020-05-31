@@ -43,6 +43,7 @@ class MainActivity : AppCompatActivity(), OnTickChangedListener, ServiceConnecti
 
     private var service: MetronomeService? = null
 
+    private val iconView: View? by bind(R.id.icon)
     private val metronomeView: MetronomeView? by bind(R.id.metronome)
     private val playView: ImageView? by bind(R.id.play)
     private val emphasisLayout: LinearLayout? by bind(R.id.emphasis)
@@ -185,7 +186,11 @@ class MainActivity : AppCompatActivity(), OnTickChangedListener, ServiceConnecti
 
         seekBar?.setOnProgressChangeListener(this)
         ticksView?.setListener(this)
-        SplashThread(this).start()
+        savedInstanceState?.run {
+            iconView?.visibility = View.GONE
+        } ?: run {
+            SplashThread(this).start()
+        }
     }
 
     private fun bindToService() {
@@ -498,7 +503,7 @@ class MainActivity : AppCompatActivity(), OnTickChangedListener, ServiceConnecti
             }
 
             Handler(Looper.getMainLooper()).post {
-                activityReference.get()?.findViewById<View>(R.id.icon)?.visibility = View.GONE
+                activityReference.get()?.iconView?.visibility = View.GONE
             }
         }
 
