@@ -8,7 +8,7 @@ def isRunningOnTravis = System.getenv("CI") == "true"
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "james.metronome"
+        applicationId "me.jfenn.metronome"
         minSdkVersion 19
         targetSdkVersion 28
         versionCode 15
@@ -56,6 +56,7 @@ android {
     productFlavors {
         gplay {
             dimension "distribution"
+            applicationId "james.metronome"
         }
 
         oss {

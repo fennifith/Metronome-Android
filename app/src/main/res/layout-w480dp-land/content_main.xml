@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <james.metronome.views.MetronomeView
+    <me.jfenn.metronome.views.MetronomeView
         android:id="@+id/metronome"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -29,7 +29,7 @@
         app:layout_constraintStart_toStartOf="@id/metronome"
         app:layout_constraintEnd_toEndOf="@id/metronome"/>
 
-    <james.metronome.views.TicksView
+    <me.jfenn.metronome.views.TicksView
         android:id="@+id/ticks"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -121,7 +121,7 @@
                 app:layout_constraintHorizontal_weight="1"
                 app:layout_constraintStart_toEndOf="@+id/emphasis_remove">
 
-                <james.metronome.views.CenteredOverflowLayout
+                <me.jfenn.metronome.views.CenteredOverflowLayout
                     android:id="@+id/emphasis"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
@@ -145,7 +145,7 @@
                 app:layout_constraintStart_toEndOf="@+id/emphasis_scroll"
                 app:srcCompat="@drawable/ic_add" />
 
-            <james.metronome.views.SeekBar
+            <me.jfenn.metronome.views.SeekBar
                 android:id="@+id/seekbar"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -243,7 +243,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
 
-                <james.metronome.views.CenteredOverflowLayout
+                <me.jfenn.metronome.views.CenteredOverflowLayout
                     android:id="@+id/bookmarks"
                     android:layout_width="wrap_content"
                     android:layout_height="42dp"

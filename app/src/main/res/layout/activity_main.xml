@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <james.metronome.views.AppIconView
+        <me.jfenn.metronome.views.AppIconView
             android:id="@+id/appIcon"
             android:layout_width="128dp"
             android:layout_height="128dp"
