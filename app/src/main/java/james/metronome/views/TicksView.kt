@@ -1,6 +1,5 @@
 package james.metronome.views
 
-import android.animation.Animator
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.content.Context
@@ -8,6 +7,7 @@ import android.graphics.Color
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -15,6 +15,7 @@ import androidx.core.view.ViewCompat
 import james.metronome.BuildConfig
 import james.metronome.R
 import james.metronome.data.TickData
+import james.metronome.utils.bind
 import james.metronome.utils.getThemedColor
 import me.jfenn.androidutils.DimenUtils
 import me.jfenn.attribouter.Attribouter
@@ -23,7 +24,7 @@ class TicksView @JvmOverloads constructor(
         context: Context?,
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0
-) : LinearLayout(context, attrs, defStyleAttr) {
+) : FrameLayout(context, attrs, defStyleAttr) {
 
     companion object {
         val ticks = arrayOf(
@@ -39,6 +40,10 @@ class TicksView @JvmOverloads constructor(
     private var isExpanded = false
     private var selectedItem = 0
 
+    private val itemsView: LinearLayout? by bind(R.id.items)
+    private val expandView: ImageView? by bind(R.id.button_expand)
+    private val aboutView: ImageView? by bind(R.id.button_about)
+
     private val foregroundColor: Int by lazy { context?.getThemedColor(R.attr.foregroundColor) ?: Color.WHITE }
     private val textColorPrimary: Int by lazy { context?.getThemedColor(R.attr.textColorPrimary) ?: Color.BLACK }
     private val textColorAccent: Int by lazy { context?.getThemedColor(R.attr.textColorAccent) ?: Color.RED }
@@ -47,10 +52,17 @@ class TicksView @JvmOverloads constructor(
 
     init {
         val inflater = LayoutInflater.from(getContext())
+        val layout = inflater.inflate(R.layout.content_dropdown, this, false)
+        addView(layout)
+
         for (tickIndex in ticks.indices) {
             val tickLayout = inflater.inflate(R.layout.item_tick, this, false)
             bindItem(tickLayout, tickIndex)
-            addView(tickLayout)
+            itemsView?.addView(tickLayout)
+        }
+
+        aboutView?.setOnClickListener {
+            Attribouter.from(context).withGitHubToken(BuildConfig.GITHUB_TOKEN).show()
         }
     }
 
@@ -58,8 +70,6 @@ class TicksView @JvmOverloads constructor(
         val backgroundView: View = rootView.findViewById(R.id.background)
         val iconView: ImageView = rootView.findViewById(R.id.image)
         val nameView: TextView = rootView.findViewById(R.id.name)
-        val expandView: ImageView = rootView.findViewById(R.id.expand)
-        val aboutView: ImageView = rootView.findViewById(R.id.about)
 
         iconView.setImageResource(if (ticks[index].isVibration) R.drawable.ic_vibration else R.drawable.ic_note)
         nameView.text = ticks[index].getName(context)
@@ -74,27 +84,13 @@ class TicksView @JvmOverloads constructor(
                 backgroundView.alpha = (Color.red(color) / 255f) * 0.3f
                 iconView.setColorFilter(color)
                 nameView.setTextColor(color)
-                expandView.setColorFilter(color)
-                expandView.rotationX = 180f * (if (isExpanded) it.animatedFraction else (1 - it.animatedFraction))
-                aboutView.setColorFilter(color)
+
+                if (index == 0) {
+                    expandView?.setColorFilter(color)
+                    expandView?.rotationX = 180f * (if (isExpanded) it.animatedFraction else (1 - it.animatedFraction))
+                    aboutView?.setColorFilter(color)
+                }
             }
-            addListener(object : Animator.AnimatorListener {
-                override fun onAnimationStart(animation: Animator?) {
-                    if ((index != 0 && isExpanded) || (index == selectedItem && !isExpanded)) {
-                        expandView.visibility = GONE
-                        aboutView.visibility = GONE
-                    }
-                }
-
-                override fun onAnimationEnd(animation: Animator?) {
-                    expandView.visibility = if (index == 0 || !isExpanded) VISIBLE else GONE
-                    aboutView.visibility = if (index == 0 || !isExpanded) VISIBLE else GONE
-                }
-
-                override fun onAnimationRepeat(animation: Animator?) {}
-                override fun onAnimationCancel(animation: Animator?) {}
-            })
-            duration = 500
             start()
         }
 
@@ -107,12 +103,6 @@ class TicksView @JvmOverloads constructor(
             }
         }
 
-        if (index == 0) {
-            expandView.visibility = VISIBLE
-            aboutView.visibility = VISIBLE
-        }
-
-        aboutView.setOnClickListener { Attribouter.from(context).withGitHubToken(BuildConfig.GITHUB_TOKEN).show() }
         rootView.visibility = if (index == selectedItem || isExpanded) VISIBLE else GONE
     }
 
@@ -143,8 +133,8 @@ class TicksView @JvmOverloads constructor(
     }
 
     private fun notifyItemsChanged() {
-        for (i in 0 until childCount) {
-            bindItem(getChildAt(i), i)
+        for (i in 0 until (itemsView?.childCount ?: 0)) {
+            itemsView?.getChildAt(i)?.let { bindItem(it, i) }
         }
     }
 

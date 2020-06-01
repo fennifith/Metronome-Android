@@ -36,30 +36,6 @@
             android:layout_weight="1"
             tools:text="Beep"/>
 
-        <ImageView
-            android:id="@+id/expand"
-            android:layout_width="40dp"
-            android:layout_height="56dp"
-            android:layout_marginEnd="4dp"
-            android:scaleType="centerInside"
-            android:tint="?android:textColorPrimary"
-            android:visibility="gone"
-            app:srcCompat="@drawable/ic_expand"
-            tools:visibility="visible" />
-
-        <ImageView
-            android:id="@+id/about"
-            android:layout_width="40dp"
-            android:layout_height="56dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:scaleType="centerInside"
-            android:tint="?android:textColorPrimary"
-            android:visibility="gone"
-            app:srcCompat="@drawable/ic_info"
-            tools:visibility="visible" />
-
     </LinearLayout>
 
 </FrameLayout>

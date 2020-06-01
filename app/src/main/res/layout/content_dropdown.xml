@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:id="@+id/items"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        android:orientation="vertical" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/button_expand"
+            android:layout_width="40dp"
+            android:layout_height="56dp"
+            android:layout_marginEnd="4dp"
+            android:scaleType="centerInside"
+            android:tint="?android:textColorPrimary"
+            app:layout_constraintTop_toTopOf="@id/items"
+            app:layout_constraintEnd_toStartOf="@id/button_about"
+            app:srcCompat="@drawable/ic_expand" />
+
+        <ImageView
+            android:id="@+id/button_about"
+            android:layout_width="40dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="centerInside"
+            android:tint="?android:textColorPrimary"
+            app:layout_constraintTop_toTopOf="@id/items"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/ic_info" />
+
+    </LinearLayout>
+
+</FrameLayout>
