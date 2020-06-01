@@ -43,14 +43,52 @@
         app:layout_constraintStart_toStartOf="parent"
         app:cardBackgroundColor="?attr/foregroundColor"
         app:cardElevation="8dp"
-        app:cardCornerRadius="0dp"
         app:cardPreventCornerOverlap="false"
         style="@style/BottomSheetCardView">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingTop="16dp"
             android:paddingBottom="24dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_touch"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="4dp"
+                android:text="@string/action_tap_tempo"
+                android:textColor="?attr/textColorAccent"
+                app:icon="@drawable/ic_touch"
+                app:iconGravity="textStart"
+                app:iconTint="?attr/textColorAccent"
+                app:cornerRadius="8dp"
+                app:strokeColor="?attr/borderColor"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/button_bookmark"
+                app:layout_constraintHorizontal_weight="1"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_bookmark"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="8dp"
+                android:text="@string/action_bookmark"
+                android:textColor="?attr/textColorAccent"
+                app:icon="@drawable/ic_bookmark_border"
+                app:iconGravity="textStart"
+                app:iconTint="?attr/textColorAccent"
+                app:cornerRadius="8dp"
+                app:strokeColor="?attr/borderColor"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_weight="1"
+                app:layout_constraintStart_toEndOf="@id/button_touch" />
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/emphasis_remove"
@@ -60,7 +98,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
                 android:tint="?attr/textColorPrimary"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/button_touch"
                 app:layout_constraintEnd_toStartOf="@id/emphasis_scroll"
                 app:layout_constraintStart_toStartOf="parent"
                 app:srcCompat="@drawable/ic_remove" />
@@ -71,7 +109,7 @@
                 android:layout_height="56dp"
                 android:fillViewport="true"
                 android:scrollbars="horizontal"
-                app:layout_constraintBottom_toBottomOf="@id/emphasis_remove"
+                app:layout_constraintBottom_toTopOf="@id/button_touch"
                 app:layout_constraintEnd_toStartOf="@id/emphasis_add"
                 app:layout_constraintHorizontal_weight="1"
                 app:layout_constraintStart_toEndOf="@+id/emphasis_remove">
@@ -95,7 +133,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
                 android:tint="?attr/textColorPrimary"
-                app:layout_constraintBottom_toBottomOf="@id/emphasis_remove"
+                app:layout_constraintBottom_toTopOf="@id/button_touch"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/emphasis_scroll"
                 app:srcCompat="@drawable/ic_add" />
@@ -104,10 +142,11 @@
                 android:id="@+id/seekbar"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_marginTop="8dp"
                 app:layout_constraintBottom_toBottomOf="@id/bpm_decrease"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@id/bookmarks_scroll" />
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/bpm_mega_decrease"
@@ -185,6 +224,35 @@
                 app:layout_constraintBottom_toTopOf="@id/emphasis_remove"
                 app:layout_constraintEnd_toStartOf="@id/bpm_mega_increase"
                 app:srcCompat="@drawable/ic_more" />
+
+            <HorizontalScrollView
+                android:id="@+id/bookmarks_scroll"
+                android:layout_width="0dp"
+                android:layout_height="42dp"
+                android:layout_marginBottom="24dp"
+                android:fillViewport="true"
+                android:scrollbars="horizontal"
+                app:layout_constraintBottom_toTopOf="@id/bpm_increase"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <james.metronome.views.CenteredOverflowLayout
+                    android:id="@+id/bookmarks"
+                    android:layout_width="wrap_content"
+                    android:layout_height="42dp"
+                    android:layout_gravity="center"
+                    android:animateLayoutChanges="true"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp" />
+
+            </HorizontalScrollView>
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
