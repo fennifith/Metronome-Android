@@ -8,7 +8,6 @@ import android.content.pm.ShortcutManager
 import android.graphics.drawable.Icon
 import android.os.*
 import android.preference.PreferenceManager
-import android.util.Log
 import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
@@ -393,7 +392,6 @@ class MainActivity : AppCompatActivity(), OnTickChangedListener, ServiceConnecti
     }
 
     override fun onTickChanged(tick: Int) {
-        Log.d(javaClass.name, "tick changed ${tick}")
         service?.tick = tick
     }
 

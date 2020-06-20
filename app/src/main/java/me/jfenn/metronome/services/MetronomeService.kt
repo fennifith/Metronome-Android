@@ -17,7 +17,7 @@ import me.jfenn.metronome.R
 import me.jfenn.metronome.views.TicksView
 import java.util.*
 
-class MetronomeService : Service(), Runnable {
+class MetronomeService : Service() {
 
     private val binder: IBinder = LocalBinder()
     private val prefs: SharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
@@ -46,7 +46,23 @@ class MetronomeService : Service(), Runnable {
         } else SoundPool(1, AudioManager.STREAM_MUSIC, 0)
     }
 
-    private val handler: Handler = Handler()
+    private var timer = Timer()
+    private var timerTask = MetronomeTask(this)
+
+    fun createTimerTask(delay: Long, interval: Long) {
+        val oldTimer = timer
+        timerTask = MetronomeTask(this)
+        timer = Timer().apply {
+            scheduleAtFixedRate(timerTask, delay, interval)
+        }
+
+        // cancel the old timer to stop executions (should be gc'd shortly after)
+        oldTimer.cancel()
+    }
+
+    fun cancelTimerTask() {
+        timer.cancel()
+    }
 
     var tick: Int
         get() = prefs.getInt(PREF_TICK, 0)
@@ -116,7 +132,6 @@ class MetronomeService : Service(), Runnable {
     }
 
     fun play() {
-        handler.post(this)
         isPlaying = true
         emphasisIndex = 0
         val intent = Intent(this, MetronomeService::class.java).apply { action = ACTION_PAUSE }
@@ -135,11 +150,12 @@ class MetronomeService : Service(), Runnable {
                         .build()
         )
 
+        createTimerTask(0, interval)
         listener?.onStartTicks()
     }
 
     fun pause() {
-        handler.removeCallbacks(this)
+        cancelTimerTask()
         stopForeground(true)
 
         isPlaying = false
@@ -160,29 +176,49 @@ class MetronomeService : Service(), Runnable {
     }
 
     override fun onDestroy() {
-        handler.removeCallbacks(this)
+        cancelTimerTask()
         super.onDestroy()
-    }
-
-    override fun run() {
-        if (isPlaying) {
-            handler.postDelayed(this, interval)
-            if (emphasisIndex >= emphasisList.size) emphasisIndex = 0
-            val isEmphasis = emphasisList[emphasisIndex]
-            listener?.onTick(isEmphasis, emphasisIndex)
-            emphasisIndex++
-
-            when {
-                soundId != -1 -> soundPool.play(soundId, 1f, 1f, 0, 0, if (isEmphasis) 1.5f else 1f)
-                Build.VERSION.SDK_INT >= 26 -> vibratorService.vibrate(VibrationEffect.createOneShot(if (isEmphasis) 50 else 20.toLong(), VibrationEffect.DEFAULT_AMPLITUDE))
-                else -> vibratorService.vibrate(if (isEmphasis) 50 else 20.toLong())
-            }
-        }
     }
 
     inner class LocalBinder : Binder() {
         val service: MetronomeService
             get() = this@MetronomeService
+    }
+
+    private inner class MetronomeTask(
+            val service: MetronomeService
+    ) : TimerTask() {
+
+        var interval = -1L
+        val mainHandler = Handler(Looper.getMainLooper())
+
+        override fun run() {
+            if (service.isPlaying) {
+                if (interval == -1L)
+                    interval = service.interval
+
+                if (service.emphasisIndex >= service.emphasisList.size)
+                    service.emphasisIndex = 0
+
+                val isEmphasis = service.emphasisList[service.emphasisIndex]
+
+                when {
+                    service.soundId != -1 -> service.soundPool.play(service.soundId, 1f, 1f, 0, 0, if (isEmphasis) 1.5f else 1f)
+                    Build.VERSION.SDK_INT >= 26 -> service.vibratorService.vibrate(VibrationEffect.createOneShot(if (isEmphasis) 50 else 20.toLong(), VibrationEffect.DEFAULT_AMPLITUDE))
+                    else -> service.vibratorService.vibrate(if (isEmphasis) 50 else 20.toLong())
+                }
+
+                mainHandler.post {
+                    service.listener?.onTick(isEmphasis, service.emphasisIndex)
+                    service.emphasisIndex++
+                }
+
+                if (interval != service.interval) {
+                    interval = service.interval
+                    service.createTimerTask(interval, interval)
+                }
+            }
+        }
     }
 
     interface TickListener {
