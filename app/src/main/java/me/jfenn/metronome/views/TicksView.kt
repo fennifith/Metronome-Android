@@ -72,7 +72,7 @@ class TicksView @JvmOverloads constructor(
         val nameView: TextView = rootView.findViewById(R.id.name)
 
         iconView.setImageResource(if (ticks[index].isVibration) R.drawable.ic_vibration else R.drawable.ic_note)
-        nameView.text = ticks[index].getName(context)
+        nameView.text = context.getString(ticks[index].nameRes)
 
         ValueAnimator.ofObject(
                 ArgbEvaluator(),
@@ -129,6 +129,7 @@ class TicksView @JvmOverloads constructor(
 
     fun setTick(tick: Int) {
         this.selectedItem = tick
+        listener?.onTickChanged(tick)
         notifyItemsChanged()
     }
 

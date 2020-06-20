@@ -52,14 +52,21 @@ class MetronomeService : Service(), Runnable {
         get() = prefs.getInt(PREF_TICK, 0)
         set(tick) {
             prefs.edit().putInt(PREF_TICK, tick).apply()
+            soundId = createSoundId(tick)
         }
 
-    private val soundId: Int
+    private fun createSoundId(tick: Int): Int {
+        return if (tick >= 0 && tick < TicksView.ticks.size && !TicksView.ticks[tick].isVibration)
+            soundPool.load(this, TicksView.ticks[tick].soundRes, 1)
+        else -1
+    }
+
+    private var soundId: Int = -1
         get() {
-            val tickIndex = tick
-            return if (!TicksView.ticks[tickIndex].isVibration)
-                TicksView.ticks[tickIndex].getSoundId(this, soundPool)
-            else -1
+            if (field == -1)
+                field = createSoundId(tick)
+
+            return field
         }
 
     var isPlaying = false
