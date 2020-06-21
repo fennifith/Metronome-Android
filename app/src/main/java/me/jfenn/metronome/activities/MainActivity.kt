@@ -27,8 +27,9 @@ import me.jfenn.metronome.billing.Billing
 import me.jfenn.metronome.services.MetronomeService
 import me.jfenn.metronome.services.MetronomeService.LocalBinder
 import me.jfenn.metronome.services.MetronomeService.TickListener
+import me.jfenn.metronome.utils.PREF_BOOKMARK
+import me.jfenn.metronome.utils.PreferenceDelegate
 import me.jfenn.metronome.utils.bind
-import me.jfenn.metronome.utils.edit
 import me.jfenn.metronome.utils.getThemedColor
 import me.jfenn.metronome.views.EmphasisSwitch
 import me.jfenn.metronome.views.MetronomeView
@@ -68,19 +69,7 @@ class MainActivity : AppCompatActivity(), OnTickChangedListener, ServiceConnecti
         PreferenceManager.getDefaultSharedPreferences(this)
     }
 
-    private val bookmarks: MutableList<Int> by lazy {
-        ArrayList<Int>().apply {
-            if (prefs.contains(PREF_BOOKMARKS_LENGTH)) {
-                val bookmarksLength = prefs.getInt(PREF_BOOKMARKS_LENGTH, 0)
-                for (i in 0 until bookmarksLength) {
-                    add(prefs.getInt(PREF_BOOKMARK + i, -1))
-                }
-            } else {
-                // preset BPM bookmarks
-                addAll(listOf(80, 120, 180))
-            }
-        }
-    }
+    private var bookmarks: MutableList<Int> by PreferenceDelegate(PREF_BOOKMARK, mutableListOf(80, 120, 180))
 
     private var isPlaying: Boolean = false
     private var prevTouchInterval: Long = 0
@@ -245,51 +234,47 @@ class MainActivity : AppCompatActivity(), OnTickChangedListener, ServiceConnecti
         }
     }
 
-    private fun addBookmark(bpm: Int) = service?.let {
-        if (!bookmarks.contains(bpm)) {
-            bookmarks.add(bpm)
-            saveBookmarks()
-            it.bpm = bpm
+    private fun addBookmark(bpm: Int) = bookmarks.let {
+        if (!it.contains(bpm)) {
+            it.add(bpm)
+            it.sort()
+            bookmarks = it
+
+            updateBookmarks(true)
         }
     }
 
-    private fun removeBookmark(bpm: Int) = service?.let {
-        bookmarks.remove(bpm)
-        saveBookmarks()
+    private fun removeBookmark(bpm: Int) = bookmarks.let {
+        if (it.contains(bpm)) {
+            it.remove(bpm)
+            bookmarks = it
 
-        if (it.bpm == bpm)
-            it.bpm = bpm
+            updateBookmarks(true)
+        }
     }
 
-    private fun saveBookmarks() {
-        prefs.edit {
-            for (i in bookmarks.indices) {
-                putInt(PREF_BOOKMARK + i, bookmarks[i])
+    private fun updateBookmarks(contentChanged: Boolean) = bookmarks.let { bookmarks ->
+        if (contentChanged) {
+            service?.let {
+                // call bpm listener (to update bookmark icon)
+                onBpmChanged(it.bpm)
             }
-            putInt(PREF_BOOKMARKS_LENGTH, bookmarks.size)
-        }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-            bookmarks.sort()
-
-            val shortcutManager = getSystemService(Context.SHORTCUT_SERVICE) as? ShortcutManager
-            shortcutManager?.dynamicShortcuts = ArrayList<ShortcutInfo>().apply {
-                for (bpm in bookmarks) {
-                    add(ShortcutInfo.Builder(this@MainActivity, bpm.toString())
-                            .setShortLabel(getString(R.string.bpm, bpm.toString()))
-                            .setIcon(Icon.createWithResource(this@MainActivity, R.drawable.ic_note))
-                            .setIntent(getBookmarkIntent(bpm))
-                            .build())
+            // set launcher shortcuts
+            if (Build.VERSION.SDK_INT >= 25) {
+                val shortcutManager = getSystemService(Context.SHORTCUT_SERVICE) as? ShortcutManager
+                shortcutManager?.dynamicShortcuts = ArrayList<ShortcutInfo>().apply {
+                    for (bpm in bookmarks) {
+                        add(ShortcutInfo.Builder(this@MainActivity, bpm.toString())
+                                .setShortLabel(getString(R.string.bpm, bpm.toString()))
+                                .setIcon(Icon.createWithResource(this@MainActivity, R.drawable.ic_note))
+                                .setIntent(getBookmarkIntent(bpm))
+                                .build())
+                    }
                 }
             }
-        }
 
-        updateBookmarks(true)
-    }
-
-    private fun updateBookmarks(contentChanged: Boolean) {
-        if (contentChanged) {
-            bookmarks.sort()
+            // recreate bookmark views
             for (i in bookmarks.indices) {
                 if (!isBookmark(bookmarks[i])) {
                     val bpm = bookmarks[i]
@@ -353,7 +338,7 @@ class MainActivity : AppCompatActivity(), OnTickChangedListener, ServiceConnecti
                 val view = bookmarkLayout?.getChildAt(i)
                 val bpm = (view?.tag as? Int) ?: continue
 
-                val isSelected = service?.bpm == bpm
+                val isSelected = it.bpm == bpm
                 val titleView = view.findViewById<TextView>(R.id.title)
                 ValueAnimator.ofObject(
                         ArgbEvaluator(),
@@ -510,8 +495,6 @@ class MainActivity : AppCompatActivity(), OnTickChangedListener, ServiceConnecti
     }
 
     companion object {
-        private const val PREF_BOOKMARKS_LENGTH = "bookmarksLength"
-        private const val PREF_BOOKMARK = "bookmark"
         private val BPM_RANGE = (1..300)
     }
 }

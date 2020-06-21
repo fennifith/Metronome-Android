@@ -14,6 +14,10 @@ import android.os.*
 import android.preference.PreferenceManager
 import androidx.core.app.NotificationCompat
 import me.jfenn.metronome.R
+import me.jfenn.metronome.utils.PREF_EMPHASIS
+import me.jfenn.metronome.utils.PREF_INTERVAL
+import me.jfenn.metronome.utils.PREF_TICK
+import me.jfenn.metronome.utils.PreferenceDelegate
 import me.jfenn.metronome.views.TicksView
 import java.util.*
 
@@ -22,29 +26,14 @@ class MetronomeService : Service() {
     private val binder: IBinder = LocalBinder()
     private val prefs: SharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
 
-    var interval: Long
-        get() = prefs.getLong(PREF_INTERVAL, 500)
-        set(value) {
-            prefs.edit().putLong(PREF_INTERVAL, value).apply()
-            listener?.onBpmChanged(toBpm(value))
-        }
+    var interval: Long by PreferenceDelegate<Long>(PREF_INTERVAL, 500) {
+        listener?.onBpmChanged(toBpm(it))
+    }
 
+    // this.bpm just delegates itself to `this.interval`
     var bpm: Int
         get() = toBpm(interval)
-        set(value) {
-            interval = toInterval(value)
-        }
-
-    private val soundPool: SoundPool by lazy {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            SoundPool.Builder()
-                    .setMaxStreams(1)
-                    .setAudioAttributes(AudioAttributes.Builder()
-                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                            .build())
-                    .build()
-        } else SoundPool(1, AudioManager.STREAM_MUSIC, 0)
-    }
+        set(value) { interval = toInterval(value) }
 
     private var timer = Timer()
     private var timerTask = MetronomeTask(this)
@@ -64,58 +53,34 @@ class MetronomeService : Service() {
         timer.cancel()
     }
 
-    var tick: Int
-        get() = prefs.getInt(PREF_TICK, 0)
-        set(tick) {
-            prefs.edit().putInt(PREF_TICK, tick).apply()
-            soundId = createSoundId(tick)
-        }
-
-    private fun createSoundId(tick: Int): Int {
-        return if (tick >= 0 && tick < TicksView.ticks.size && !TicksView.ticks[tick].isVibration)
-            soundPool.load(this, TicksView.ticks[tick].soundRes, 1)
-        else -1
+    var tick: Int by PreferenceDelegate(PREF_TICK, 0) {
+        soundId = createSoundId(tick)
     }
 
-    private var soundId: Int = -1
-        get() {
-            if (field == -1)
-                field = createSoundId(tick)
-
-            return field
-        }
-
     var isPlaying = false
-        private set
-
-    var emphasisList: MutableList<Boolean>
-        get() = ArrayList<Boolean>().apply {
-            val emphasisSize = prefs.getInt(PREF_EMPHASIS_SIZE, 4)
-            for (i in 0 until emphasisSize) {
-                add(prefs.getBoolean(PREF_EMPHASIS + i, false))
-            }
-        }
-        set(value) {
-            emphasisIndex = 0
-            prefs.edit().apply {
-                putInt(PREF_EMPHASIS_SIZE, value.size)
-                for (i in value.indices) {
-                    putBoolean(PREF_EMPHASIS + i, value[i])
-                }
-
-                apply()
-            }
-        }
-
     private var emphasisIndex = 0
+    var emphasisList: MutableList<Boolean> by PreferenceDelegate(PREF_EMPHASIS, mutableListOf(false, false, false, false))
+
+    private var soundId: Int = -1
+    private val soundPool: SoundPool by lazy {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            SoundPool.Builder()
+                    .setMaxStreams(1)
+                    .setAudioAttributes(AudioAttributes.Builder()
+                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                            .build())
+                    .build()
+        } else SoundPool(1, AudioManager.STREAM_MUSIC, 0)
+    }
+
     private val vibratorService: Vibrator by lazy { getSystemService(Context.VIBRATOR_SERVICE) as Vibrator }
     private val notificationManager: NotificationManager by lazy { getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager }
+
     private var listener: TickListener? = null
 
     override fun onCreate() {
         super.onCreate()
-        interval = prefs.getLong(PREF_INTERVAL, 500)
-        bpm = toBpm(interval)
+        soundId = createSoundId(tick)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -131,13 +96,35 @@ class MetronomeService : Service() {
         return START_STICKY
     }
 
+    override fun onBind(intent: Intent): IBinder? {
+        return binder
+    }
+
+    override fun onUnbind(intent: Intent): Boolean {
+        listener = null
+        return super.onUnbind(intent)
+    }
+
+    override fun onDestroy() {
+        cancelTimerTask()
+        super.onDestroy()
+    }
+
+    fun setTickListener(listener: TickListener?) {
+        this.listener = listener
+    }
+
     fun play() {
         isPlaying = true
         emphasisIndex = 0
         val intent = Intent(this, MetronomeService::class.java).apply { action = ACTION_PAUSE }
 
         val builder: NotificationCompat.Builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            notificationManager.createNotificationChannel(NotificationChannel("metronome", getString(R.string.app_name), NotificationManager.IMPORTANCE_LOW))
+            notificationManager.createNotificationChannel(NotificationChannel("metronome", getString(R.string.app_name), NotificationManager.IMPORTANCE_LOW).apply {
+                setSound(null, null)
+                enableVibration(false)
+            })
+
             NotificationCompat.Builder(this, "metronome")
         } else NotificationCompat.Builder(this)
 
@@ -147,6 +134,8 @@ class MetronomeService : Service() {
                         .setSmallIcon(R.drawable.ic_notification)
                         .setContentIntent(PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_ONE_SHOT))
                         .setPriority(NotificationCompat.PRIORITY_LOW)
+                        .setSound(null)
+                        .setVibrate(longArrayOf(0L))
                         .build()
         )
 
@@ -162,22 +151,10 @@ class MetronomeService : Service() {
         listener?.onStopTicks()
     }
 
-    fun setTickListener(listener: TickListener?) {
-        this.listener = listener
-    }
-
-    override fun onBind(intent: Intent): IBinder? {
-        return binder
-    }
-
-    override fun onUnbind(intent: Intent): Boolean {
-        listener = null
-        return super.onUnbind(intent)
-    }
-
-    override fun onDestroy() {
-        cancelTimerTask()
-        super.onDestroy()
+    private fun createSoundId(tick: Int): Int {
+        return if (tick >= 0 && tick < TicksView.ticks.size && !TicksView.ticks[tick].isVibration)
+            soundPool.load(this, TicksView.ticks[tick].soundRes, 1)
+        else -1
     }
 
     inner class LocalBinder : Binder() {
@@ -204,8 +181,8 @@ class MetronomeService : Service() {
 
                 when {
                     service.soundId != -1 -> service.soundPool.play(service.soundId, 1f, 1f, 0, 0, if (isEmphasis) 1.5f else 1f)
-                    Build.VERSION.SDK_INT >= 26 -> service.vibratorService.vibrate(VibrationEffect.createOneShot(if (isEmphasis) 50 else 20.toLong(), VibrationEffect.DEFAULT_AMPLITUDE))
-                    else -> service.vibratorService.vibrate(if (isEmphasis) 50 else 20.toLong())
+                    Build.VERSION.SDK_INT >= 26 -> service.vibratorService.vibrate(VibrationEffect.createOneShot(15L, if (isEmphasis) 255 else 70))
+                    else -> service.vibratorService.vibrate(if (isEmphasis) 50L else 20L)
                 }
 
                 mainHandler.post {
@@ -232,10 +209,6 @@ class MetronomeService : Service() {
         const val ACTION_START = "james.metronome.ACTION_START"
         const val ACTION_PAUSE = "james.metronome.ACTION_PAUSE"
         const val EXTRA_BPM = "james.metronome.EXTRA_BPM"
-        const val PREF_TICK = "tick"
-        const val PREF_INTERVAL = "interval"
-        const val PREF_EMPHASIS_SIZE = "emphasisSize"
-        const val PREF_EMPHASIS = "emphasis"
 
         private fun toBpm(interval: Long): Int {
             return (60000 / interval).toInt()

@@ -1,10 +1,10 @@
 package me.jfenn.metronome
 
 import android.app.Activity
-import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
+import androidx.multidex.MultiDexApplication
 import me.jfenn.metronome.billing.Billing
 import me.jfenn.metronome.billing.BillingInterface
 
@@ -12,7 +12,7 @@ import me.jfenn.metronome.billing.BillingInterface
  * Metronome's application class, handles global states and fun things
  * that should be accessible to the rest of the app / UI.
  */
-class Metronome : Application(), BillingInterface {
+class Metronome : MultiDexApplication(), BillingInterface {
 
     private var billing: BillingInterface? = null
 
