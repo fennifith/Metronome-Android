@@ -10,8 +10,8 @@ import kotlin.reflect.KType
 
 const val PREF_TICK = "tick"
 const val PREF_INTERVAL = "interval"
-const val PREF_EMPHASIS = "emphasis"
-const val PREF_BOOKMARK = "bookmark"
+const val PREF_EMPHASES = "emphases"
+const val PREF_BOOKMARKS = "bookmarks"
 
 /**
  * Edits the calling SharedPreferences instance through the provided

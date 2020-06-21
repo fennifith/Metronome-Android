@@ -14,7 +14,7 @@ import android.os.*
 import android.preference.PreferenceManager
 import androidx.core.app.NotificationCompat
 import me.jfenn.metronome.R
-import me.jfenn.metronome.utils.PREF_EMPHASIS
+import me.jfenn.metronome.utils.PREF_EMPHASES
 import me.jfenn.metronome.utils.PREF_INTERVAL
 import me.jfenn.metronome.utils.PREF_TICK
 import me.jfenn.metronome.utils.PreferenceDelegate
@@ -59,7 +59,7 @@ class MetronomeService : Service() {
 
     var isPlaying = false
     private var emphasisIndex = 0
-    var emphasisList: MutableList<Boolean> by PreferenceDelegate(PREF_EMPHASIS, mutableListOf(false, false, false, false))
+    var emphasisList: MutableList<Boolean> by PreferenceDelegate(PREF_EMPHASES, mutableListOf(false, false, false, false))
 
     private var soundId: Int = -1
     private val soundPool: SoundPool by lazy {

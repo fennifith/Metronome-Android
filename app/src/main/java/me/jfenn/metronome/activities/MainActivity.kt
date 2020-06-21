@@ -27,7 +27,7 @@ import me.jfenn.metronome.billing.Billing
 import me.jfenn.metronome.services.MetronomeService
 import me.jfenn.metronome.services.MetronomeService.LocalBinder
 import me.jfenn.metronome.services.MetronomeService.TickListener
-import me.jfenn.metronome.utils.PREF_BOOKMARK
+import me.jfenn.metronome.utils.PREF_BOOKMARKS
 import me.jfenn.metronome.utils.PreferenceDelegate
 import me.jfenn.metronome.utils.bind
 import me.jfenn.metronome.utils.getThemedColor
@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity(), OnTickChangedListener, ServiceConnecti
         PreferenceManager.getDefaultSharedPreferences(this)
     }
 
-    private var bookmarks: MutableList<Int> by PreferenceDelegate(PREF_BOOKMARK, mutableListOf(80, 120, 180))
+    private var bookmarks: MutableList<Int> by PreferenceDelegate(PREF_BOOKMARKS, mutableListOf(80, 120, 180))
 
     private var isPlaying: Boolean = false
     private var prevTouchInterval: Long = 0
