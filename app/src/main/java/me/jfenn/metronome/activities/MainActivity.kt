@@ -267,7 +267,7 @@ class MainActivity : AppCompatActivity(), OnTickChangedListener, ServiceConnecti
                     for (bpm in bookmarks) {
                         add(ShortcutInfo.Builder(this@MainActivity, bpm.toString())
                                 .setShortLabel(getString(R.string.bpm, bpm.toString()))
-                                .setIcon(Icon.createWithResource(this@MainActivity, R.drawable.ic_note))
+                                .setIcon(Icon.createWithResource(this@MainActivity, R.drawable.ic_metronome))
                                 .setIntent(getBookmarkIntent(bpm))
                                 .build())
                     }
