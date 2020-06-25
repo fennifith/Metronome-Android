@@ -8,7 +8,7 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.DecelerateInterpolator
-import me.jfenn.androidutils.DimenUtils
+import me.jfenn.androidutils.dpToPx
 import me.jfenn.metronome.R
 import me.jfenn.metronome.utils.getThemedColor
 import kotlin.math.min
@@ -19,8 +19,8 @@ class EmphasisSwitch @JvmOverloads constructor(
         defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr), View.OnClickListener {
 
-    private val circleRadius = DimenUtils.dpToPx(10f).toFloat()
-    private val borderWidth = DimenUtils.dpToPx(3f).toFloat()
+    private val circleRadius = dpToPx(10f).toFloat()
+    private val borderWidth = dpToPx(3f).toFloat()
 
     private val paint = Paint().apply {
         color = Color.BLACK

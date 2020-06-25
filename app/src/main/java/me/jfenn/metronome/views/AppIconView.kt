@@ -12,7 +12,7 @@ import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import androidx.core.content.ContextCompat
-import me.jfenn.androidutils.ImageUtils
+import me.jfenn.androidutils.toBitmap
 import me.jfenn.metronome.R
 import kotlin.math.min
 
@@ -61,9 +61,9 @@ class AppIconView @JvmOverloads constructor(context: Context?, attrs: AttributeS
 
         if (currentBitmapSize != size || background == null || middleground == null || foreground == null) {
             currentBitmapSize = size
-            background = ThumbnailUtils.extractThumbnail(ImageUtils.drawableToBitmap(ContextCompat.getDrawable(context, R.mipmap.ic_splash_fg)), size, size)
-            middleground = ThumbnailUtils.extractThumbnail(ImageUtils.drawableToBitmap(ContextCompat.getDrawable(context, R.mipmap.ic_splash_mg)), size, size)
-            foreground = ThumbnailUtils.extractThumbnail(ImageUtils.drawableToBitmap(ContextCompat.getDrawable(context, R.mipmap.ic_splash_bg)), size, size)
+            background = ThumbnailUtils.extractThumbnail(ContextCompat.getDrawable(context, R.mipmap.ic_splash_fg)?.toBitmap(), size, size)
+            middleground = ThumbnailUtils.extractThumbnail(ContextCompat.getDrawable(context, R.mipmap.ic_splash_mg)?.toBitmap(), size, size)
+            foreground = ThumbnailUtils.extractThumbnail(ContextCompat.getDrawable(context, R.mipmap.ic_splash_bg)?.toBitmap(), size, size)
         }
 
         val fgBitmap = foreground ?: return

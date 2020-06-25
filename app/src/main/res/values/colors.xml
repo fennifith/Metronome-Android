@@ -5,6 +5,7 @@
     <color name="insetColor">#E0E0E0</color>
     <color name="foregroundColor">#FFFFFF</color>
     <color name="colorAccent">#F4818E</color>
+    <color name="colorAccentSecondary">#F4818E</color>
     <color name="textColorAccent">#CC3945</color>
     <color name="highlightColorAccent">#cc3945</color>
 
@@ -16,7 +17,8 @@
 
     <color name="bgColorDark">#F5F5F5</color>
     <color name="bgColorAccentDark">#feeef0</color>
-    <color name="colorAccentDark">#f58390</color>
+    <color name="colorAccentDark">#ffabb4</color>
+    <color name="colorAccentSecondaryDark">#ed959f</color>
     <color name="textColorAccentDark">#f4707f</color>
     <color name="highlightColorAccentDark">#cc3945</color>
 
@@ -32,4 +34,14 @@
     <color name="textColorPrimaryInverse">#ffffff</color>
     <color name="textColorSecondaryInverse">#B3ffffff</color>
     <color name="textColorTertiaryInverse">#80FFFFFF</color>
+
+    <!-- Attribouter themes -->
+    <color name="attribouter_colorPrimary">@color/foregroundColor</color>
+    <color name="attribouter_colorPrimaryDark">@color/insetColor</color>
+    <color name="attribouter_colorAccent">@color/textColorAccent</color>
+    <color name="attribouter_textColorAccent">@color/textColorAccent</color>
+
+    <color name="attribouter_colorPrimary_night">@color/colorAccentDark</color>
+    <color name="attribouter_colorPrimaryDark_night">@color/colorAccentSecondaryDark</color>
+    <color name="attribouter_colorAccent_night">@color/colorAccentDark</color>
 </resources>

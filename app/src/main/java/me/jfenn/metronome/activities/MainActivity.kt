@@ -19,7 +19,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.google.android.material.button.MaterialButton
-import me.jfenn.androidutils.DimenUtils
+import me.jfenn.androidutils.bind
+import me.jfenn.androidutils.dpToPx
 import me.jfenn.metronome.BuildConfig
 import me.jfenn.metronome.Metronome
 import me.jfenn.metronome.R
@@ -29,7 +30,6 @@ import me.jfenn.metronome.services.MetronomeService.LocalBinder
 import me.jfenn.metronome.services.MetronomeService.TickListener
 import me.jfenn.metronome.utils.PREF_BOOKMARKS
 import me.jfenn.metronome.utils.PreferenceDelegate
-import me.jfenn.metronome.utils.bind
 import me.jfenn.metronome.utils.getThemedColor
 import me.jfenn.metronome.views.EmphasisSwitch
 import me.jfenn.metronome.views.MetronomeView
@@ -384,7 +384,7 @@ class MainActivity : AppCompatActivity(), OnTickChangedListener, ServiceConnecti
         val emphasisSwitch = EmphasisSwitch(this)
         emphasisSwitch.setChecked(isChecked)
         emphasisSwitch.setOnCheckedChangeListener(this)
-        emphasisSwitch.layoutParams = LinearLayout.LayoutParams(DimenUtils.dpToPx(40f), DimenUtils.dpToPx(40f))
+        emphasisSwitch.layoutParams = LinearLayout.LayoutParams(dpToPx(40f), dpToPx(40f))
         return emphasisSwitch
     }
 

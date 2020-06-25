@@ -8,7 +8,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
-import me.jfenn.androidutils.DimenUtils
+import me.jfenn.androidutils.dpToPx
 import me.jfenn.metronome.R
 import me.jfenn.metronome.utils.getThemedColor
 import kotlin.math.abs
@@ -19,7 +19,7 @@ class SeekBar @JvmOverloads constructor(
         defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr), OnTouchListener {
 
-    private val lineWidth = DimenUtils.dpToPx(2f).toFloat()
+    private val lineWidth = dpToPx(2f).toFloat()
 
     private val secondaryPaint = Paint().apply {
         color = context?.getThemedColor(R.attr.textColorPrimary) ?: Color.BLACK
@@ -96,11 +96,11 @@ class SeekBar @JvmOverloads constructor(
         while (i < maxProgress) {
             val width = (width * (i.toFloat() / maxProgress)).toInt()
             secondaryPaint.alpha = (255 - (abs(width - currentWidth).toFloat() * 1000 / this.width).toInt()).coerceAtLeast(0)
-            canvas.drawLine(width.toFloat(), lineWidth / 2, width.toFloat(), DimenUtils.dpToPx(if (i % 20 == 0) 14f else 8f).toFloat(), secondaryPaint)
+            canvas.drawLine(width.toFloat(), lineWidth / 2, width.toFloat(), dpToPx(if (i % 20 == 0) 14f else 8f).toFloat(), secondaryPaint)
             i += 10
         }
         canvas.drawLine(0f, lineWidth / 2, currentWidth.toFloat(), lineWidth / 2, accentPaint)
-        canvas.drawLine(currentWidth.toFloat(), lineWidth / 2, currentWidth.toFloat(), DimenUtils.dpToPx(18f).toFloat(), accentPaint)
+        canvas.drawLine(currentWidth.toFloat(), lineWidth / 2, currentWidth.toFloat(), dpToPx(18f).toFloat(), accentPaint)
 
         if (displayedProgress != progress.toFloat()) {
             displayedProgress = if (abs(displayedProgress - progress) < 0.5f)

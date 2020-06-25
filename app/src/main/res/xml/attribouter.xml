@@ -4,7 +4,27 @@
     <AppWedge
         description="A lightweight, well designed metronome app for Android."
         repo="fennifith/Metronome-Android"
-        websiteUrl="https://jfenn.me/projects/metronome-android" />
+        websiteUrl="https://jfenn.me/projects/metronome-android"
+        repoUrl="https://github.com/fennifith/Metronome-Android"
+        playStoreUrl="https://play.google.com/store/apps/details?id=james.metronome">
+
+        <LinkWedge
+            name="F-Droid"
+            url="https://f-droid.org/packages/me.jfenn.metronome/"
+            icon="@drawable/ic_fdroid" />
+
+    </AppWedge>
+
+    <TextWedge text="@string/about_support" centered="true">
+        <LinkWedge
+            name="Support"
+            url="https://221pxls.com/"
+            icon="@drawable/ic_support"/>
+        <LinkWedge
+            name="Change Theme"
+            url="https://twitter.com/221pxls"
+            icon="@drawable/ic_theme"/>
+    </TextWedge>
 
     <ContributorsWedge repo="fennifith/Metronome-Android" showDefaults="false">
 
@@ -12,32 +32,34 @@
             name="James Fenn"
             avatar="https://avatars3.githubusercontent.com/u/13000407"
             bio="Enjoys writing software on loud keyboards. Starts too many projects. Consumes food."
-            blog="https://jfenn.me/"
+            websiteUrl="https://jfenn.me/"
+            profileUrl="https://github.com/fennifith"
             email="me@jfenn.me"
             login="fennifith"
-            task="^Developer" />
+            task="^Developer"
+            order="1" />
 
         <ContributorWedge
             name="Kevin Aguilar"
             avatar="https://avatars2.githubusercontent.com/u/16209409"
             bio="Into programming, productivity &amp; minimalism. Product Icon Designer. Laus Deo Semper."
-            blog="https://www.kevaguilar.com"
+            websiteUrl="https://221pxls.com/"
             login="kevttob"
-            task="^Designer" />
+            task="^Designer"
+            order="2">
+
+            <LinkWedge
+                name="Twitter"
+                url="https://twitter.com/kevttob"
+                icon="@drawable/ic_twitter"/>
+
+        </ContributorWedge>
 
         <ContributorWedge login="TheAndroidMaster" hidden="true"/>
 
     </ContributorsWedge>
 
     <LicensesWedge>
-
-        <LicenseWedge
-            description="A fast, easy to use, dynamic theme engine. Powered by Rx and Kotlin, for Android apps."
-            license="apache-2.0"
-            licenseName="Apache License 2.0"
-            licenseUrl="https://choosealicense.com/licenses/apache-2.0/"
-            repo="afollestad/aesthetic"
-            website="https://aidanfollestad.com" />
 
         <LicenseWedge
             description="A beautiful and fluid dialogs API for Kotlin &amp; Android."

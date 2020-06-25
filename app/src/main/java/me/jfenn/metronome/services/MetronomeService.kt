@@ -6,12 +6,10 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.SoundPool
 import android.os.*
-import android.preference.PreferenceManager
 import androidx.core.app.NotificationCompat
 import me.jfenn.metronome.R
 import me.jfenn.metronome.utils.PREF_EMPHASES
@@ -24,7 +22,6 @@ import java.util.*
 class MetronomeService : Service() {
 
     private val binder: IBinder = LocalBinder()
-    private val prefs: SharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
 
     var interval: Long by PreferenceDelegate<Long>(PREF_INTERVAL, 500) {
         listener?.onBpmChanged(toBpm(it))

@@ -12,12 +12,12 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.ViewCompat
-import me.jfenn.androidutils.DimenUtils
+import me.jfenn.androidutils.bind
+import me.jfenn.androidutils.dpToPx
 import me.jfenn.attribouter.Attribouter
 import me.jfenn.metronome.BuildConfig
 import me.jfenn.metronome.R
 import me.jfenn.metronome.data.TickData
-import me.jfenn.metronome.utils.bind
 import me.jfenn.metronome.utils.getThemedColor
 
 class TicksView @JvmOverloads constructor(
@@ -62,7 +62,12 @@ class TicksView @JvmOverloads constructor(
         }
 
         aboutView?.setOnClickListener {
-            Attribouter.from(context).withGitHubToken(BuildConfig.GITHUB_TOKEN).show()
+            context?.let {
+                Attribouter.from(it).apply {
+                    if (BuildConfig.GITHUB_TOKEN != null)
+                        withGitHubToken(BuildConfig.GITHUB_TOKEN)
+                }.show()
+            }
         }
     }
 
@@ -121,7 +126,7 @@ class TicksView @JvmOverloads constructor(
             addUpdateListener {
                 val color = it.animatedValue as Int
                 setBackgroundColor(color)
-                ViewCompat.setElevation(this@TicksView, DimenUtils.dpToPx(2f) * (if (expanded) it.animatedFraction else (1 - it.animatedFraction)))
+                ViewCompat.setElevation(this@TicksView, dpToPx(2f) * (if (expanded) it.animatedFraction else (1 - it.animatedFraction)))
             }
             start()
         }

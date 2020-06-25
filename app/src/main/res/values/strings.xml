@@ -3,8 +3,6 @@
     <string name="app_desc">Metronome is a simple metronome app that is designed to be easy to use and look nice. To keep this app free to use without ads and support the development of other apps like it, please consider making a donation using the button below.</string>
 
     <string name="action_donate">Donate</string>
-    <string name="action_github">GitHub</string>
-    <string name="action_play_store">Play Store</string>
 
     <string name="bpm">%1$s BPM</string>
 
@@ -20,12 +18,7 @@
     <string name="title_theme_dark">Dark Theme</string>
     <string name="title_theme_amoled">Amoled Theme</string>
 
-    <string name="tewtwenteyonepx">Kevin Aguilar</string>
-    <string name="tewtwenteyonepx_desc">Special thanks to Kevin Aguilar for making this app\'s icon. Kevin Aguilar is the founder of 221 Pixels, a design service that specializes in iconography and user interfaces.</string>
-
-    <string name="library_aesthetic">Aesthetic - Aidan Follestad</string>
-    <string name="library_aesthetic_desc">A fast and easy to use plug-and-play dynamic theme engine. Powered by Rx, for Android apps.</string>
-    <string name="title_libraries">Libraries</string>
+    <string name="about_support">Metronome is open source and free to use without advertisements. Please consider supporting my work so that I can continue to maintain this project &amp; others like it!</string>
 
     <string name="notification_title">Metronome is running…</string>
     <string name="notification_desc">Touch to stop.</string>
@@ -37,11 +30,7 @@
     <string name="title_use_anyway">Use Anyway</string>
     <string name="msg_pro_key">This app is completely free to download and use, and it contains absolutely no advertisements. However, this means that I need another method of making a profit. In order to allow me to keep working on useful apps like this one, please consider buying a \'pro key\' / donation using the button below. This dialog does not limit the functionality of this app; you can press \'use anyway\' to ignore this message and continue using the app as normal. Buying the pro key will remove these dialogs.</string>
     <string name="msg_pro_key_hide">Don\'t show this message again.</string>
-    <string name="library_glide">Glide - Bump Technologies</string>
-    <string name="library_glide_desc">An image loading and caching library for Android focused on smooth scrolling.</string>
     <string name="title_get_premium">Get Pro Key: %s</string>
-    <string name="library_dialogs">Material Dialogs - Aidan Follestad</string>
-    <string name="library_dialogs_desc">A beautiful, fluid, and customizable dialogs API.</string>
     <string name="action_tap_tempo">Tap Tempo</string>
     <string name="action_bookmark">Bookmark</string>
 </resources>
