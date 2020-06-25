@@ -5,7 +5,6 @@
     <color name="insetColor">#E0E0E0</color>
     <color name="foregroundColor">#FFFFFF</color>
     <color name="colorAccent">#F4818E</color>
-    <color name="colorAccentSecondary">#F4818E</color>
     <color name="textColorAccent">#CC3945</color>
     <color name="highlightColorAccent">#cc3945</color>
 
@@ -18,7 +17,6 @@
     <color name="bgColorDark">#F5F5F5</color>
     <color name="bgColorAccentDark">#feeef0</color>
     <color name="colorAccentDark">#ffabb4</color>
-    <color name="colorAccentSecondaryDark">#ed959f</color>
     <color name="textColorAccentDark">#f4707f</color>
     <color name="highlightColorAccentDark">#cc3945</color>
 
@@ -42,6 +40,7 @@
     <color name="attribouter_textColorAccent">@color/textColorAccent</color>
 
     <color name="attribouter_colorPrimary_night">@color/colorAccentDark</color>
-    <color name="attribouter_colorPrimaryDark_night">@color/colorAccentSecondaryDark</color>
+    <color name="attribouter_colorPrimaryDark_night">#ed959f</color>
     <color name="attribouter_colorAccent_night">@color/colorAccentDark</color>
+    <color name="attribouter_textColorAccent_night">#ffc9cf</color>
 </resources>
