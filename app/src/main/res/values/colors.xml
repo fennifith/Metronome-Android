@@ -1,30 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="bgColor">#F5F5F5</color>
-    <color name="bgColorAccent">#feeef0</color>
     <color name="insetColor">#E0E0E0</color>
     <color name="foregroundColor">#FFFFFF</color>
+    <color name="borderColor">#FEEAEC</color>
     <color name="colorAccent">#F4818E</color>
     <color name="textColorAccent">#CC3945</color>
-    <color name="highlightColorAccent">#cc3945</color>
 
-    <color name="bgColorWood">#F5F5F5</color>
-    <color name="bgColorAccentWood">#feeef0</color>
-    <color name="colorAccentWood">#f58390</color>
-    <color name="textColorAccentWood">#f4707f</color>
-    <color name="highlightColorAccentWood">#cc3945</color>
+    <color name="bgColorWood">#1f0e0a</color>
+    <color name="insetColorWood">#1f0e0a</color>
+    <color name="foregroundColorWood">#301f12</color>
+    <color name="borderColorWood">#543425</color>
+    <color name="colorAccentWood">#b79a96</color>
+    <color name="textColorAccentWood">#d8c1be</color>
 
-    <color name="bgColorDark">#F5F5F5</color>
-    <color name="bgColorAccentDark">#feeef0</color>
+    <color name="bgColorDark">#000000</color>
+    <color name="insetColorDark">#000000</color>
+    <color name="foregroundColorDark">#303030</color>
+    <color name="borderColorDark">#4affabb4</color>
     <color name="colorAccentDark">#ffabb4</color>
-    <color name="textColorAccentDark">#f4707f</color>
-    <color name="highlightColorAccentDark">#cc3945</color>
-
-    <color name="bgColorAmoled">#F5F5F5</color>
-    <color name="bgColorAccentAmoled">#feeef0</color>
-    <color name="colorAccentAmoled">#f58390</color>
-    <color name="textColorAccentAmoled">#f4707f</color>
-    <color name="highlightColorAccentAmoled">#cc3945</color>
+    <color name="textColorAccentDark">#ffc9cf</color>
 
     <color name="textColorPrimary">#DE000000</color>
     <color name="textColorSecondary">#8A000000</color>
@@ -42,5 +37,5 @@
     <color name="attribouter_colorPrimary_night">@color/colorAccentDark</color>
     <color name="attribouter_colorPrimaryDark_night">#ed959f</color>
     <color name="attribouter_colorAccent_night">@color/colorAccentDark</color>
-    <color name="attribouter_textColorAccent_night">#ffc9cf</color>
+    <color name="attribouter_textColorAccent_night">@color/textColorAccentDark</color>
 </resources>

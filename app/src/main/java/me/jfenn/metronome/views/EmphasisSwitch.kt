@@ -23,13 +23,13 @@ class EmphasisSwitch @JvmOverloads constructor(
     private val borderWidth = dpToPx(3f).toFloat()
 
     private val paint = Paint().apply {
-        color = Color.BLACK
+        color = context?.getThemedColor(android.R.attr.textColorPrimary) ?: Color.BLACK
         style = Paint.Style.FILL
         isAntiAlias = true
     }
 
     private val outlinePaint = Paint().apply {
-        color = Color.BLACK
+        color = context?.getThemedColor(android.R.attr.textColorPrimary) ?: Color.BLACK
         style = Paint.Style.STROKE
         strokeWidth = borderWidth
         isAntiAlias = true

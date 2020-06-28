@@ -19,6 +19,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.google.android.material.button.MaterialButton
+import me.jfenn.androidutils.autoSystemUiColors
 import me.jfenn.androidutils.bind
 import me.jfenn.androidutils.dpToPx
 import me.jfenn.metronome.BuildConfig
@@ -63,7 +64,7 @@ class MainActivity : AppCompatActivity(), OnTickChangedListener, ServiceConnecti
     private val seekBar: SeekBar? by bind(R.id.seekbar)
 
     private val textColorAccent by lazy { getThemedColor(R.attr.textColorAccent) }
-    private val textColorPrimary by lazy { getThemedColor(R.attr.textColorPrimary) }
+    private val textColorPrimary by lazy { getThemedColor(android.R.attr.textColorPrimary) }
 
     private val prefs: SharedPreferences by lazy {
         PreferenceManager.getDefaultSharedPreferences(this)
@@ -79,6 +80,7 @@ class MainActivity : AppCompatActivity(), OnTickChangedListener, ServiceConnecti
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        window.autoSystemUiColors()
         metronome.onCreateActivity()
 
         // max tempo = 300 BPM

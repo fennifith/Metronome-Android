@@ -2,10 +2,9 @@
 <about>
 
     <AppWedge
+        repo="github:fennifith/Metronome-Android"
         description="A lightweight, well designed metronome app for Android."
-        repo="fennifith/Metronome-Android"
         websiteUrl="https://jfenn.me/projects/metronome-android"
-        repoUrl="https://github.com/fennifith/Metronome-Android"
         playStoreUrl="https://play.google.com/store/apps/details?id=james.metronome">
 
         <LinkWedge
@@ -33,9 +32,8 @@
             avatar="https://avatars3.githubusercontent.com/u/13000407"
             bio="Enjoys writing software on loud keyboards. Starts too many projects. Consumes food."
             websiteUrl="https://jfenn.me/"
-            profileUrl="https://github.com/fennifith"
             email="me@jfenn.me"
-            login="fennifith"
+            login="github:fennifith"
             task="^Developer"
             order="1" />
 
@@ -44,7 +42,7 @@
             avatar="https://avatars2.githubusercontent.com/u/16209409"
             bio="Into programming, productivity &amp; minimalism. Product Icon Designer. Laus Deo Semper."
             websiteUrl="https://221pxls.com/"
-            login="kevttob"
+            login="github:kevttob"
             task="^Designer"
             order="2">
 

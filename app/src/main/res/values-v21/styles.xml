@@ -1,8 +1,18 @@
 <resources>
 
-    <style name="AppTheme" parent="AppTheme.Base">
-        <item name="android:navigationBarColor">@color/insetColor</item>
-        <item name="android:statusBarColor">@color/insetColor</item>
+    <style name="AppTheme.Base" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">?attr/colorAccent</item>
+        <item name="colorAccent">?attr/colorAccent</item>
+        <item name="colorButtonNormal">?attr/colorAccent</item>
+
+        <item name="textColorAccent">?attr/textColorAccent</item>
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
+        <item name="android:textColorSecondary">@color/textColorSecondary</item>
+        <item name="android:textColorTertiary">@color/textColorTertiary</item>
+        <item name="android:windowBackground">?attr/backgroundColor</item>
+
+        <item name="android:navigationBarColor">?attr/insetColor</item>
+        <item name="android:statusBarColor">?attr/insetColor</item>
     </style>
 
 </resources>

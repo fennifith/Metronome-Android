@@ -8,6 +8,8 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.DecelerateInterpolator
+import me.jfenn.metronome.R
+import me.jfenn.metronome.utils.getThemedColor
 
 class MetronomeView @JvmOverloads constructor(
         context: Context?,
@@ -19,14 +21,14 @@ class MetronomeView @JvmOverloads constructor(
         style = Paint.Style.STROKE
         strokeWidth = 2f
         isAntiAlias = true
-        color = Color.BLACK
+        color = context?.getThemedColor(android.R.attr.textColorPrimary) ?: Color.BLACK
     }
 
     private val accentPaint = Paint().apply {
         style = Paint.Style.STROKE
         strokeWidth = 8f
         isAntiAlias = true
-        color = Color.BLACK
+        color = context?.getThemedColor(R.attr.colorAccent) ?: Color.RED
     }
 
     private var interval: Long = 500

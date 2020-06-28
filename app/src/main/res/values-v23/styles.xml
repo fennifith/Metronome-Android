@@ -1,9 +1,0 @@
-<resources>
-
-    <style name="AppTheme" parent="AppTheme.Base">
-        <item name="android:navigationBarColor">@color/insetColor</item>
-        <item name="android:statusBarColor">@color/insetColor</item>
-        <item name="android:windowLightStatusBar">true</item>
-    </style>
-
-</resources>

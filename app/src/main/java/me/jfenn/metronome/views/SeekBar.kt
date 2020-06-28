@@ -22,7 +22,7 @@ class SeekBar @JvmOverloads constructor(
     private val lineWidth = dpToPx(2f).toFloat()
 
     private val secondaryPaint = Paint().apply {
-        color = context?.getThemedColor(R.attr.textColorPrimary) ?: Color.BLACK
+        color = context?.getThemedColor(android.R.attr.textColorPrimary) ?: Color.BLACK
         strokeWidth = lineWidth
         isAntiAlias = true
     }

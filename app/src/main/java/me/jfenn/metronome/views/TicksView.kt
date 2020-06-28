@@ -45,7 +45,7 @@ class TicksView @JvmOverloads constructor(
     private val aboutView: ImageView? by bind(R.id.button_about)
 
     private val foregroundColor: Int by lazy { context?.getThemedColor(R.attr.foregroundColor) ?: Color.WHITE }
-    private val textColorPrimary: Int by lazy { context?.getThemedColor(R.attr.textColorPrimary) ?: Color.BLACK }
+    private val textColorPrimary: Int by lazy { context?.getThemedColor(android.R.attr.textColorPrimary) ?: Color.BLACK }
     private val textColorAccent: Int by lazy { context?.getThemedColor(R.attr.textColorAccent) ?: Color.RED }
 
     val itemColors: MutableMap<Int, Int> = HashMap()
@@ -79,14 +79,15 @@ class TicksView @JvmOverloads constructor(
         iconView.setImageResource(if (ticks[index].isVibration) R.drawable.ic_vibration else R.drawable.ic_note)
         nameView.text = context.getString(ticks[index].nameRes)
 
+        val isSelected = index == selectedItem && isExpanded
         ValueAnimator.ofObject(
                 ArgbEvaluator(),
                 itemColors[index] ?: textColorPrimary,
-                if (index == selectedItem && isExpanded) textColorAccent else textColorPrimary
+                if (isSelected) textColorAccent else textColorPrimary
         ).apply {
             addUpdateListener {
                 val color = it.animatedValue as Int
-                backgroundView.alpha = (Color.red(color) / 255f) * 0.3f
+                backgroundView.alpha = if (isSelected) it.animatedFraction * 0.2f else (1 - it.animatedFraction) * 0.2f
                 iconView.setColorFilter(color)
                 nameView.setTextColor(color)
 
