@@ -15,14 +15,8 @@
     </AppWedge>
 
     <TextWedge text="@string/about_support" centered="true">
-        <LinkWedge
-            name="Support"
-            url="https://221pxls.com/"
-            icon="@drawable/ic_support"/>
-        <LinkWedge
-            name="Change Theme"
-            url="https://twitter.com/221pxls"
-            icon="@drawable/ic_theme"/>
+        <me.jfenn.metronome.utils.attribouter.SupportLinkWedge/>
+        <me.jfenn.metronome.utils.attribouter.ThemeLinkWedge/>
     </TextWedge>
 
     <ContributorsWedge repo="fennifith/Metronome-Android" showDefaults="false">

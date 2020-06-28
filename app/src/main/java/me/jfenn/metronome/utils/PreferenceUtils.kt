@@ -1,6 +1,6 @@
 package me.jfenn.metronome.utils
 
-import android.content.ContextWrapper
+import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import android.util.Log
@@ -12,6 +12,7 @@ const val PREF_TICK = "tick"
 const val PREF_INTERVAL = "interval"
 const val PREF_EMPHASES = "emphases"
 const val PREF_BOOKMARKS = "bookmarks"
+const val PREF_THEME = "theme"
 
 /**
  * Edits the calling SharedPreferences instance through the provided
@@ -23,11 +24,16 @@ inline fun SharedPreferences.edit(block: SharedPreferences.Editor.() -> Unit) {
     editor.apply()
 }
 
-open class PreferenceDelegate<T>(
+fun <T, V> Context.preference(key: String, defaultValue: V? = null, onSet: (value: V) -> Unit = {}) : PreferenceDelegate<T, V> {
+    return PreferenceDelegate(this, key, defaultValue, onSet)
+}
+
+open class PreferenceDelegate<T, V>(
+        private val context: Context,
         private val key: String,
-        private val defaultValue: T? = null,
-        private val onSet: (value: T) -> Unit = {}
-) : ReadWriteProperty<ContextWrapper, T> {
+        private val defaultValue: V? = null,
+        private val onSet: (value: V) -> Unit = {}
+) : ReadWriteProperty<T, V> {
 
     private fun <V> SharedPreferences.get(key: String, type: KType, defaultValue: V? = null) : V {
         return when (type.classifier) {
@@ -73,12 +79,12 @@ open class PreferenceDelegate<T>(
         }
     }
 
-    override operator fun getValue(thisRef: ContextWrapper, property: KProperty<*>) : T {
-        return PreferenceManager.getDefaultSharedPreferences(thisRef).get(key, property.returnType, defaultValue)
+    override operator fun getValue(thisRef: T, property: KProperty<*>) : V {
+        return PreferenceManager.getDefaultSharedPreferences(context).get(key, property.returnType, defaultValue)
     }
 
-    override operator fun setValue(thisRef: ContextWrapper, property: KProperty<*>, value: T) {
-        PreferenceManager.getDefaultSharedPreferences(thisRef).edit {
+    override operator fun setValue(thisRef: T, property: KProperty<*>, value: V) {
+        PreferenceManager.getDefaultSharedPreferences(context).edit {
             put(key, property.returnType, value)
         }
 

@@ -15,7 +15,7 @@ import me.jfenn.metronome.R
 import me.jfenn.metronome.utils.PREF_EMPHASES
 import me.jfenn.metronome.utils.PREF_INTERVAL
 import me.jfenn.metronome.utils.PREF_TICK
-import me.jfenn.metronome.utils.PreferenceDelegate
+import me.jfenn.metronome.utils.preference
 import me.jfenn.metronome.views.TicksView
 import java.util.*
 
@@ -23,7 +23,7 @@ class MetronomeService : Service() {
 
     private val binder: IBinder = LocalBinder()
 
-    var interval: Long by PreferenceDelegate<Long>(PREF_INTERVAL, 500) {
+    var interval: Long by preference<Service, Long>(PREF_INTERVAL, 500) {
         listener?.onBpmChanged(toBpm(it))
     }
 
@@ -50,13 +50,13 @@ class MetronomeService : Service() {
         timer.cancel()
     }
 
-    var tick: Int by PreferenceDelegate(PREF_TICK, 0) {
+    var tick: Int by preference(PREF_TICK, 0) {
         soundId = createSoundId(tick)
     }
 
     var isPlaying = false
     private var emphasisIndex = 0
-    var emphasisList: MutableList<Boolean> by PreferenceDelegate(PREF_EMPHASES, mutableListOf(false, false, false, false))
+    var emphasisList: MutableList<Boolean> by preference(PREF_EMPHASES, mutableListOf(false, false, false, false))
 
     private var soundId: Int = -1
     private val soundPool: SoundPool by lazy {

@@ -1,9 +1,7 @@
 package me.jfenn.metronome
 
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.multidex.MultiDexApplication
 import me.jfenn.metronome.billing.Billing
 import me.jfenn.metronome.billing.BillingInterface
@@ -31,27 +29,23 @@ class Metronome : MultiDexApplication(), BillingInterface {
         billing?.onDestroyActivity()
     }
 
-    override fun getPrice(context: Context): String? {
-        return billing?.getPrice(context)
+    override fun getPrice(): String? {
+        return billing?.getPrice()
     }
 
-    override fun getSku(context: Context): String? {
-        return billing?.getSku(context)
+    override fun getSku(): String? {
+        return billing?.getSku()
     }
 
-    override fun isPremium(context: Context): Boolean {
-        return billing?.isPremium(context) ?: true
+    override fun isPremium(): Boolean {
+        return billing?.isPremium() ?: true
     }
 
-    override fun onPremium(activity: Activity) {
+    override fun onPremium(activity: AppCompatActivity) {
         billing?.onPremium(activity)
     }
 
-    override fun buyPremium(activity: Activity) {
+    override fun buyPremium(activity: AppCompatActivity) {
         billing?.buyPremium(activity)
-    }
-
-    override fun onPremiumBought(resultCode: Int, data: Intent) {
-        billing?.onPremiumBought(resultCode, data)
     }
 }

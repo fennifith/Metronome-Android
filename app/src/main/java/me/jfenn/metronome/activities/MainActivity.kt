@@ -25,13 +25,14 @@ import me.jfenn.androidutils.dpToPx
 import me.jfenn.metronome.BuildConfig
 import me.jfenn.metronome.Metronome
 import me.jfenn.metronome.R
-import me.jfenn.metronome.billing.Billing
 import me.jfenn.metronome.services.MetronomeService
 import me.jfenn.metronome.services.MetronomeService.LocalBinder
 import me.jfenn.metronome.services.MetronomeService.TickListener
 import me.jfenn.metronome.utils.PREF_BOOKMARKS
-import me.jfenn.metronome.utils.PreferenceDelegate
+import me.jfenn.metronome.utils.PREF_THEME
+import me.jfenn.metronome.utils.attribouter.THEMES
 import me.jfenn.metronome.utils.getThemedColor
+import me.jfenn.metronome.utils.preference
 import me.jfenn.metronome.views.EmphasisSwitch
 import me.jfenn.metronome.views.MetronomeView
 import me.jfenn.metronome.views.SeekBar
@@ -70,7 +71,9 @@ class MainActivity : AppCompatActivity(), OnTickChangedListener, ServiceConnecti
         PreferenceManager.getDefaultSharedPreferences(this)
     }
 
-    private var bookmarks: MutableList<Int> by PreferenceDelegate(PREF_BOOKMARKS, mutableListOf(80, 120, 180))
+    private val themeIndex: Int by preference(PREF_THEME, 0)
+    private var themeResource = 0
+    private var bookmarks: MutableList<Int> by preference(PREF_BOOKMARKS, mutableListOf(80, 120, 180))
 
     private var isPlaying: Boolean = false
     private var prevTouchInterval: Long = 0
@@ -79,8 +82,11 @@ class MainActivity : AppCompatActivity(), OnTickChangedListener, ServiceConnecti
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        themeResource = THEMES.values.elementAt(themeIndex)
+        setTheme(themeResource)
         setContentView(R.layout.activity_main)
         window.autoSystemUiColors()
+
         metronome.onCreateActivity()
 
         // max tempo = 300 BPM
@@ -390,6 +396,13 @@ class MainActivity : AppCompatActivity(), OnTickChangedListener, ServiceConnecti
         return emphasisSwitch
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        if (themeResource != THEMES.values.elementAt(themeIndex))
+            recreate()
+    }
+
     override fun onStart() {
         val intent = Intent(this, MetronomeService::class.java)
         startService(intent)
@@ -469,13 +482,6 @@ class MainActivity : AppCompatActivity(), OnTickChangedListener, ServiceConnecti
 
     override fun onProgressChange(progress: Int) {
         if (progress > 0) service?.apply { bpm = progress }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == Billing.REQUEST_PURCHASE) data?.let {
-            metronome.onPremiumBought(resultCode, it)
-        }
     }
 
     private inner class SplashThread(activity: MainActivity) : Thread() {

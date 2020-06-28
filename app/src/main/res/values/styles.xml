@@ -4,6 +4,7 @@
         <item name="colorPrimary">?attr/colorAccent</item>
         <item name="colorAccent">?attr/colorAccent</item>
         <item name="colorButtonNormal">?attr/colorAccent</item>
+        <item name="colorBackgroundFloating">?attr/foregroundColor</item>
 
         <item name="textColorAccent">?attr/textColorAccent</item>
         <item name="android:textColorPrimary">@color/textColorPrimary</item>

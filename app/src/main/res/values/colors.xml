@@ -16,8 +16,8 @@
 
     <color name="bgColorDark">#000000</color>
     <color name="insetColorDark">#000000</color>
-    <color name="foregroundColorDark">#303030</color>
-    <color name="borderColorDark">#4affabb4</color>
+    <color name="foregroundColorDark">#212121</color>
+    <color name="borderColorDark">#30ffabb4</color>
     <color name="colorAccentDark">#ffabb4</color>
     <color name="textColorAccentDark">#ffc9cf</color>
 
