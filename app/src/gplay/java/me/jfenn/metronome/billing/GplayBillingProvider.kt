@@ -1,8 +1,5 @@
 package me.jfenn.metronome.billing
 
-import android.app.Activity
-import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -16,7 +13,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import me.jfenn.metronome.Metronome
 import me.jfenn.metronome.R
-import org.json.JSONObject
 
 class GplayBillingProvider(
         private val applicationContext: Metronome
@@ -99,17 +95,21 @@ class GplayBillingProvider(
 
     override fun onPurchasesUpdated(result: BillingResult, p1: MutableList<Purchase>?) {
         hasPremium = result.responseCode == BillingClient.BillingResponseCode.OK || result.responseCode == BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED
+        isNetworkError = false
     }
 
     override fun onBillingSetupFinished(result: BillingResult) {
         if (result.responseCode == BillingClient.BillingResponseCode.OK) {
+            isNetworkError = false
+
             GlobalScope.launch(context = Dispatchers.IO) {
                 val skuDetailsResult = billingClient?.querySkuDetails(getSkuParams())
-
                 skuDetailsResult?.let {
                     price = it.skuDetailsList?.getOrNull(0)?.price
-                    onPurchasesUpdated(result, null)
                 }
+
+                val purchase = billingClient?.queryPurchases(BillingClient.SkuType.INAPP)?.purchasesList?.lastOrNull()
+                hasPremium = purchase?.purchaseState == Purchase.PurchaseState.PURCHASED && purchase.sku == sku
             }
         }
     }
