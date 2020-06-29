@@ -30,7 +30,7 @@
     <string name="title_pro_key">Pro Key</string>
     <string name="title_no_connection">No Connection :(</string>
     <string name="title_use_anyway">Use Anyway</string>
-    <string name="msg_pro_key">This app is free to download and use, and contains absolutely no advertisements or otherwise privacy-invasive or intrusive malware. As an individual developer, I believe it to be ethically imperative that I do not sell out my users\' information for profit - no matter how many other developers might do otherwise. That said, regardless of how moral it may be, this stance offers comparatively little profit. In order to help me continue maintaining useful apps like this one, please consider buying a \'pro key\' using the button below.</string>
+    <string name="msg_pro_key">This app is free to download and use, and contains absolutely no advertisements or otherwise privacy-invasive or intrusive malware. However moral it may be, this stance offers comparatively little profit. In place of that cost, please consider supporting my work so that I can continue to maintain this project &amp; others like it!</string>
     <string name="msg_pro_key_disclaimer">This popup does not limit the functionality of this app; you can press \'use anyway\' to ignore this message and continue using the app as normal. Buying the pro key will remove these dialogs.</string>
     <string name="msg_pro_key_hide">Don\'t show this message again.</string>
     <string name="title_get_premium">Get Pro Key: %s</string>
